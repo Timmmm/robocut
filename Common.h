@@ -6,25 +6,52 @@
 #include <sstream>
 #include <cstdio>
 #include <vector>
+#include <cstdlib>
 
 using std::vector;
 using std::string;
 
+typedef string::size_type stringpos;
+
 /// Error Handling
 
-class Result
+class Error
 {
-	public:
-		Result(bool S) : Success(S) { }
-		Result(const char* C) : Success(false), Message(C) { }
-		Result(const string& Msg) : Success(false), Message(Msg) { }
-		operator bool() { return Success; }
-		operator string() { if (Message.empty()) return "Unspecified Error"; return Message; }
+public:
+	explicit Error(bool S) : s(S) { }
+	Error(const char* C) : s(false), m(C) { }
+	Error(const string& msg) : s(false), m(msg) { }
+	operator bool() { return s; } // TODO: Use bool hack from boost so int i = Error(); doesn't work.
+	string message() { if (m.empty()) return "Unspecified Error"; return m; }
 
-	private:
-		bool Success;
-		string Message;
+private:
+	bool s;
+	string m;
 };
+
+const Error Success(true);
+const Error Failure(false);
+
+/// String Securification
+
+/** Some standard char sets. */
+extern const string& Alpha;
+extern const string& Num;
+extern const string& Punct; // Includes underscore, but not space.
+extern const string& Space;
+extern const string& Underscore;
+
+/** Secure a string. */
+string Securify(const string& S, const string& AllowedChars);
+
+/** Escape \ to \\ and ' to \'. */
+string EscapeSingleQuotes(const string& S);
+
+/** HTML escape. */
+string HTMLEscape(const string& S);
+
+/** Escape attribute strings. */
+string AttributeEscape(const string& S);
 
 /** Integer to string. */
 inline string ItoS(int I)
@@ -62,7 +89,7 @@ inline int StoI(const string& S, int Fail = 0)
 }
 
 /** String to unsigned integer, returns Fail on fail. */
-inline unsigned int StoUI(const string& S, int Fail = 0)
+inline unsigned int StoUI(const string& S, unsigned int Fail = 0)
 {
 	char* EP;
 	const char* P = S.c_str();
@@ -72,17 +99,16 @@ inline unsigned int StoUI(const string& S, int Fail = 0)
 	return R;
 }
 
-/** String to double, returns Fail on fail. */
-inline double StoD(const string& S, double Fail = 0)
+/** String to unsigned integer, returns Fail on fail. */
+inline unsigned int StoULL(const string& S, unsigned long long Fail = 0)
 {
 	char* EP;
 	const char* P = S.c_str();
-	double R = strtod(P, &EP);
+	int R = strtoull(P, &EP, 0);
 	if (EP == P)
 		return Fail;
 	return R;
 }
-
 
 /** Get an environmental variable. */
 inline string GetEnv(const string& Var)
@@ -97,18 +123,18 @@ inline string GetEnv(const string& Var)
 inline vector<string> Split(const string& str, const string& delim)
 {
 	vector<string> ret;
-	
+
 	unsigned int offset = 0;
-	
-	for (unsigned int delimIndex = str.find(delim, offset); delimIndex != string::npos;
-	     delimIndex = str.find(delim, offset))
+
+	for (stringpos delimIndex = str.find(delim, offset); delimIndex != string::npos;
+		 delimIndex = str.find(delim, offset))
 	{
 		ret.push_back(str.substr(offset, delimIndex - offset));
 		offset += delimIndex - offset + delim.length();
 	}
-	
+
 	ret.push_back(str.substr(offset));
-	
+
 	return ret;
 }
 
@@ -126,7 +152,7 @@ inline string Trim(const string& text)
 					return text.substr(i, j-i + 1);
 				}
 			}
-			
+
 			// Probably a better way - can't be bothered to look it up though.
 			return string(&(text[i]), 1);
 		}

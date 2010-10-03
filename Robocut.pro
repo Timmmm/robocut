@@ -6,12 +6,11 @@ TEMPLATE = app
 SOURCES += main.cpp \
     MainWindow.cpp \
     Plotter.cpp \
-    Device.cpp
+    Common.cpp
 HEADERS += MainWindow.h \
     Plotter.h \
     NoCopy.h \
     Line.h \
     Letters.h \
-    Device.h \
     Common.h
 FORMS += MainWindow.ui

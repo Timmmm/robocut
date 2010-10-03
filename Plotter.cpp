@@ -1,41 +1,12 @@
 #include "Plotter.h"
 
+#include <libusb-1.0/libusb.h>
+
 const int VENDOR_ID = 0x0b4d;
 const int PRODUCT_ID = 0x110a;
 
 #include <iostream>
-
-Plotter::Plotter() : dev(NULL)
-{
-	usb_init();
-
-	usb_find_busses();
-	usb_find_devices();
-
-	for (usb_bus* bus = usb_busses; bus; bus = bus->next)
-	{	
-		for (struct usb_device* usb_dev = bus->devices; usb_dev; usb_dev = usb_dev->next)
-		{
-			if (usb_dev->descriptor.idVendor ==	VENDOR_ID
-					&& usb_dev->descriptor.idProduct == PRODUCT_ID)
-			{
-				dev = new Device(usb_dev);
-				return;
-			}
-		}
-	}
-}
-Plotter::~Plotter()
-{
-	if (dev)
-		delete dev;
-}
-
-void Plotter::StartPage()
-{
-	page.clear();
-}
-
+/*
 void Plotter::MoveTo(double x, double y)
 {
 	if (x < 0.0)
@@ -78,14 +49,133 @@ void Plotter::SetSpeedPage(int p)
 		p = 10;
 	
 	page << "!" << p << "\x03";
+}*/
+
+
+Error UsbSend(libusb_device_handle* handle, const string& s, int timeout)
+{
+	for (int i = 0; i < s.length(); i += 4096) // TODO: Get 4096 from the device.
+	{
+		string data = s.substr(i, 4096);
+		int r = usb_bulk_transfer(handle, 1, const_cast<char*>(data.c_str()), data.length(), timeout);
+		if (r < 0)
+		{
+			libusb_release_interface(handle, 0);
+			libusb_close(handle);
+			return Error("Error writing to device.");
+		}
+		cout << "Sent: ";
+		for (int i = 0; i < s.length(); ++i)
+			printf ("%0.2x ", s[i]);
+		cout << endl;
+	}
+}
+
+string UsbReceive(libusb_device_handle* handle, int length, int timeout)
+{
+	char buffer[length];
+
+	int r = usb_bulk_transfer(usb_handle, 2, buffer, length, timeout);
+	if (r < 0)
+	{
+		libusb_release_interface(handle, 0);
+		libusb_close(handle);
+		return Error("Error writing to device.");
+	}
+
+	cout << "Received: ";
+	for (int i = 0; i < r; ++i)
+		printf("%0.2x ", buffer[i]);
+	cout << endl;
+	return string(buffer, r);
 }
 
 
-void Plotter::SendPage()
+Error Cut(MultiPoly cuts, int speed, int pressure)
 {
-	if (!dev)
-		return;
-	
+	libusb_device** list;
+	ssize_t cnt = libusb_get_device_list(NULL, &list);
+	if (cnt < 1)
+		return Error("Couldn't get usb device list.");
+
+	int err = 0;
+
+	libusb_device* found = NULL;
+	for (ssize_t i = 0; i < cnt; ++i)
+	{
+		libusb_device* device = list[i];
+		libusb_device_descriptor desc;
+		libusb_get_device_descriptor(device, &desc);
+		if (desc->idVendor == VENDOR_ID && desc->idProduct == PRODUCT_ID)
+		{
+			found = device;
+			break;
+		}
+	}
+
+	if (!found)
+		return Error("Couldn't connect to craft robo.");
+
+	libusb_device_handle* handle;
+
+	err = libusb_open(found, &handle);
+	if (err)
+		return Error("Error opening usb device.");
+
+	libusb_free_device_list(list, 1);
+
+	// Now do stuff with the handle.
+
+	cout << "Selecting configuration." << endl;
+	int r = usb_set_configuration(usb_handle, 1);
+	if (r < 0)
+	{
+		libusb_close(handle);
+		return Error("Error setting conf.");
+	}
+
+
+	cout << "Claiming main control interface." << endl;
+	r = usb_claim_interface(usb_handle, 0);
+	if (r < 0)
+	{
+		libusb_close(handle);
+		return Error("Error claiming interface.");
+	}
+
+	cout << "Setting alt interface." << endl;
+	r = usb_set_altinterface(usb_handle, 0);
+	if (r < 0)
+	{
+		usb_release_interface(handle, 0);
+		libusb_close(handle);
+		return Error("Error setting alt interface.");
+	}
+
+	cout << "Initialisation successful." << endl;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 	dev->Send("\x1b\x04");
 	dev->Send("\x1b\x05");
 	cout << dev->Receive(2) << endl; // "0"
@@ -114,7 +204,7 @@ void Plotter::SendPage()
 "FO0\x03" // This must be the feed command...?
 "H,\x03";
 	
-	dev->Send(send, 0);
+	dev->Send(send, 0);*/
 //	dev->Send("FW300\x03!10\x03""FX0,0\x03""FC18\x03", 0); // Cutting mode - stop the weird noise!
 }
 

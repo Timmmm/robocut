@@ -3,25 +3,8 @@
 #include "Device.h"
 #include <string>
 #include <sstream>
+#include "Common.h"
 
 using namespace std;
 
-class Plotter
-{
-public:
-	Plotter();
-	~Plotter();
-	
-	void StartPage();
-	
-	void MoveTo(double x, double y);
-	void DrawTo(double x, double y);
-	void SetPressurePage(int p);
-	void SetSpeedPage(int p);
-	
-	void SendPage();
-		
-private:
-	Device* dev;
-	stringstream page;
-};
+Error Cut(MultiPoly cuts, int speed = 10, int pressure = 10);
