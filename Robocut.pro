@@ -7,7 +7,6 @@ SOURCES += main.cpp \
     MainWindow.cpp \
     Plotter.cpp \
     Common.cpp \
-	SvgReader.cpp \
     PlotterPage.cpp \
     PathPaintEngine.cpp
 HEADERS += MainWindow.h \
@@ -16,7 +15,6 @@ HEADERS += MainWindow.h \
     Line.h \
     Letters.h \
     Common.h \
-	SvgReader.h \
     PlotterPage.h \
     PathPaintEngine.h
 FORMS += MainWindow.ui
