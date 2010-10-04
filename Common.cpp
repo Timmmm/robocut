@@ -1,4 +1,4 @@
-#include "common.h"
+#include "Common.h"
 
 const string& Alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 const string& Num = "0123456789";

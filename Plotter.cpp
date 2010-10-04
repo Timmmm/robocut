@@ -54,44 +54,49 @@ void Plotter::SetSpeedPage(int p)
 
 Error UsbSend(libusb_device_handle* handle, const string& s, int timeout)
 {
-	for (int i = 0; i < s.length(); i += 4096) // TODO: Get 4096 from the device.
+	for (unsigned int i = 0; i < s.length(); i += 4096) // TODO: Get 4096 from the device.
 	{
 		string data = s.substr(i, 4096);
-		int r = usb_bulk_transfer(handle, 1, const_cast<char*>(data.c_str()), data.length(), timeout);
-		if (r < 0)
+		int transferred;
+		int ret = libusb_bulk_transfer(handle, 1, reinterpret_cast<unsigned char*>(const_cast<char*>(data.c_str())),
+									 data.length(), &transferred, timeout);
+		if (ret < 0)
 		{
 			libusb_release_interface(handle, 0);
 			libusb_close(handle);
 			return Error("Error writing to device.");
 		}
+		if (transferred != data.length())
+			cout << "Warning, some data not transferred correctly." << endl;
 		cout << "Sent: ";
-		for (int i = 0; i < s.length(); ++i)
-			printf ("%0.2x ", s[i]);
+		for (unsigned int i = 0; i < data.length(); ++i)
+			printf ("%.2x ", data[i]);
 		cout << endl;
 	}
+	return Success;
 }
 
 string UsbReceive(libusb_device_handle* handle, int length, int timeout)
 {
-	char buffer[length];
-
-	int r = usb_bulk_transfer(usb_handle, 2, buffer, length, timeout);
-	if (r < 0)
+	unsigned char buffer[length];
+	int transferred = 0;
+	int ret = libusb_bulk_transfer(handle, 2, buffer, length, &transferred, timeout);
+	if (ret != 0) // But it could be a timout.
 	{
 		libusb_release_interface(handle, 0);
 		libusb_close(handle);
-		return Error("Error writing to device.");
+		return "";
 	}
 
 	cout << "Received: ";
-	for (int i = 0; i < r; ++i)
-		printf("%0.2x ", buffer[i]);
+	for (int i = 0; i < transferred; ++i)
+		printf("%.2x ", buffer[i]);
 	cout << endl;
-	return string(buffer, r);
+	return string(reinterpret_cast<char*>(buffer), transferred);
 }
 
 
-Error Cut(MultiPoly cuts, int speed, int pressure)
+Error Cut(Lines cuts, int speed, int pressure)
 {
 	libusb_device** list;
 	ssize_t cnt = libusb_get_device_list(NULL, &list);
@@ -106,7 +111,7 @@ Error Cut(MultiPoly cuts, int speed, int pressure)
 		libusb_device* device = list[i];
 		libusb_device_descriptor desc;
 		libusb_get_device_descriptor(device, &desc);
-		if (desc->idVendor == VENDOR_ID && desc->idProduct == PRODUCT_ID)
+		if (desc.idVendor == VENDOR_ID && desc.idProduct == PRODUCT_ID)
 		{
 			found = device;
 			break;
@@ -127,7 +132,7 @@ Error Cut(MultiPoly cuts, int speed, int pressure)
 	// Now do stuff with the handle.
 
 	cout << "Selecting configuration." << endl;
-	int r = usb_set_configuration(usb_handle, 1);
+	int r = libusb_set_configuration(handle, 1);
 	if (r < 0)
 	{
 		libusb_close(handle);
@@ -136,21 +141,21 @@ Error Cut(MultiPoly cuts, int speed, int pressure)
 
 
 	cout << "Claiming main control interface." << endl;
-	r = usb_claim_interface(usb_handle, 0);
+	r = libusb_claim_interface(handle, 0);
 	if (r < 0)
 	{
 		libusb_close(handle);
 		return Error("Error claiming interface.");
 	}
 
-	cout << "Setting alt interface." << endl;
-	r = usb_set_altinterface(usb_handle, 0);
+/*	cout << "Setting alt interface." << endl;
+	r = libusb_set_altinterface(handle, 0); // Is this necessary?
 	if (r < 0)
 	{
-		usb_release_interface(handle, 0);
+		libusb_release_interface(handle, 0);
 		libusb_close(handle);
 		return Error("Error setting alt interface.");
-	}
+	}*/
 
 	cout << "Initialisation successful." << endl;
 
@@ -206,5 +211,21 @@ Error Cut(MultiPoly cuts, int speed, int pressure)
 	
 	dev->Send(send, 0);*/
 //	dev->Send("FW300\x03!10\x03""FX0,0\x03""FC18\x03", 0); // Cutting mode - stop the weird noise!
+
+
+
+
+
+
+
+
+
+
+
+
+	libusb_release_interface(handle, 0);
+	libusb_close(handle);
+
+	return Success;
 }
 

@@ -6,11 +6,17 @@ TEMPLATE = app
 SOURCES += main.cpp \
     MainWindow.cpp \
     Plotter.cpp \
-    Common.cpp
+    Common.cpp \
+	SvgReader.cpp
 HEADERS += MainWindow.h \
     Plotter.h \
     NoCopy.h \
     Line.h \
     Letters.h \
-    Common.h
+    Common.h \
+	SvgReader.h
 FORMS += MainWindow.ui
+
+LIBS += -lusb-1.0
+
+QT += xml
