@@ -36,13 +36,12 @@ QList<QPolygonF> PlotterPage::paths()
 
 int PlotterPage::metric(PaintDeviceMetric metric) const
 {
-	const double ppm = 100.0; // Points per mm.
 	switch (metric)
 	{
 	case PdmWidth:
-		return width*ppm;
+		return width;
 	case PdmHeight:
-		return height*ppm;
+		return height;
 	case PdmWidthMM:
 		return width;
 	case PdmHeightMM:
@@ -52,13 +51,13 @@ int PlotterPage::metric(PaintDeviceMetric metric) const
 	case PdmDepth:
 		return 1;
 	case PdmDpiX:
-		return ppm * 25.4; // Convert to inches.
+		return 25.4; // Convert to inches.
 	case PdmDpiY:
-		return ppm * 25.4;
+		return 25.4;
 	case PdmPhysicalDpiX:
-		return ppm * 25.4;
+		return 25.4;
 	case PdmPhysicalDpiY:
-		return ppm * 25.4;
+		return 25.4;
 	}
 	return 0;
 }

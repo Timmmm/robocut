@@ -5,6 +5,8 @@
 
 #include <QGraphicsScene>
 
+#include "CutDialog.h"
+
 namespace Ui
 {
 	class MainWindow;
@@ -25,8 +27,14 @@ private:
 
 	QGraphicsScene* scene;
 
+	CutDialog* cutDialog;
+
 private slots:
-	void on_actionOpen_triggered();
+	void on_actionPreview_triggered();
+ void on_actionCut_triggered();
+ void on_actionExit_triggered();
+ void on_actionAbout_triggered();
+ void on_actionOpen_triggered();
 };
 
 #endif // MAINWINDOW_H

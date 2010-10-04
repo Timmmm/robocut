@@ -8,15 +8,21 @@ SOURCES += main.cpp \
     Plotter.cpp \
     Common.cpp \
     PlotterPage.cpp \
-    PathPaintEngine.cpp
+    PathPaintEngine.cpp \
+    CutDialog.cpp
 HEADERS += MainWindow.h \
     Plotter.h \
     NoCopy.h \
     Common.h \
     PlotterPage.h \
-    PathPaintEngine.h
-FORMS += MainWindow.ui
+    PathPaintEngine.h \
+    CutDialog.h
+FORMS += MainWindow.ui \
+    CutDialog.ui
 
 LIBS += -lusb-1.0
 
 QT += svg
+
+RESOURCES += \
+    resources.qrc
