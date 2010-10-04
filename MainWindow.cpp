@@ -84,6 +84,8 @@ void MainWindow::on_actionOpen_triggered()
 	pen.setWidthF(0.5);
 	for (int i = 0; i < newPaths.size(); ++i)
 	{
+		// Need to remove duplicates because the SVG paint engine draws these twice
+		// for some reason...
 		if (addedAlready.contains(newPaths[i]))
 			continue;
 
@@ -112,7 +114,7 @@ void MainWindow::on_actionOpen_triggered()
 
 void MainWindow::on_actionAbout_triggered()
 {
-	QMessageBox::information(this, "About", "Graphtec Craft Robo 2 software by Tim Hutt");
+	QMessageBox::information(this, "About", "Graphtec Craft Robo 2 software by Tim Hutt.");
 }
 
 void MainWindow::on_actionExit_triggered()

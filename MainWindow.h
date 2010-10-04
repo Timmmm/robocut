@@ -30,7 +30,8 @@ private:
 	CutDialog* cutDialog;
 
 private slots:
-	void on_actionPreview_triggered();
+	void on_actionManual_triggered();
+ void on_actionPreview_triggered();
  void on_actionCut_triggered();
  void on_actionExit_triggered();
  void on_actionAbout_triggered();
