@@ -5,7 +5,6 @@
 PathPaintEngine::PathPaintEngine(QPaintDevice* pdev)
 	: QPaintEngine(AllFeatures)
 {
-	qDebug("PathPaintEngine Created");
 	dev = dynamic_cast<PlotterPage*>(pdev);
 	if (!dev)
 		qWarning("PathPaintEngine: unsupported target device.");
@@ -13,7 +12,6 @@ PathPaintEngine::PathPaintEngine(QPaintDevice* pdev)
 
 bool PathPaintEngine::begin(QPaintDevice* pdev)
 {
-	qDebug("PathPaintEngine begin");
 	dev = dynamic_cast<PlotterPage*>(pdev);
 	if (!dev)
 		qWarning("PathPaintEngine: unsupported target device.");
@@ -24,7 +22,6 @@ bool PathPaintEngine::begin(QPaintDevice* pdev)
 
 void PathPaintEngine::drawPath(const QPainterPath& path)
 {
-	qDebug("PathPaintEngine drawPath");
 	if (!dev)
 		return;
 
@@ -35,13 +32,11 @@ void PathPaintEngine::drawPath(const QPainterPath& path)
 
 void PathPaintEngine::drawPixmap(const QRectF& r, const QPixmap& pm, const QRectF& sr)
 {
-	qDebug("PathPaintEngine drawPixmap");
 	// Nop.
 }
 
 void PathPaintEngine::drawPolygon(const QPointF* points, int pointCount, PolygonDrawMode mode)
 {
-	qDebug("PathPaintEngine drawPolygon");
 	if (!dev)
 		return;
 
@@ -53,7 +48,6 @@ void PathPaintEngine::drawPolygon(const QPointF* points, int pointCount, Polygon
 
 bool PathPaintEngine::end()
 {
-	qDebug("PathPaintEngine end");
 	if (!dev)
 		return false;
 	return true;
@@ -61,12 +55,10 @@ bool PathPaintEngine::end()
 
 QPaintEngine::Type PathPaintEngine::type() const
 {
-	qDebug("PathPaintEngine type");
 	return QPaintEngine::User;
 }
 void PathPaintEngine::updateState(const QPaintEngineState& state)
 {
-	qDebug("PathPaintEngine updateState");
 	// Nop
 }
 

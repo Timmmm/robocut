@@ -19,8 +19,7 @@ PlotterPage::~PlotterPage()
 
 void PlotterPage::addPath(QPolygonF& path)
 {
-	qDebug() << "Got path: " << path << endl;
-	paths.append(path);
+	pagePaths.append(path);
 }
 
 QPaintEngine* PlotterPage::paintEngine() const
@@ -30,6 +29,10 @@ QPaintEngine* PlotterPage::paintEngine() const
 	return engine;
 }
 
+QList<QPolygonF> PlotterPage::paths()
+{
+	return pagePaths;
+}
 
 int PlotterPage::metric(PaintDeviceMetric metric) const
 {

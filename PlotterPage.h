@@ -14,13 +14,15 @@ public:
 
 	void addPath(QPolygonF& path);
 
+	QList<QPolygonF> paths();
+
 	QPaintEngine* paintEngine() const;
 
 protected:
 	int metric(PaintDeviceMetric metric) const;
 private:
 	mutable PathPaintEngine* engine;
-	QList<QPolygonF> paths;
+	QList<QPolygonF> pagePaths;
 
 	double width;
 	double height;

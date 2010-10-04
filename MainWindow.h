@@ -3,6 +3,8 @@
 
 #include <QtGui/QMainWindow>
 
+#include <QGraphicsScene>
+
 namespace Ui
 {
 	class MainWindow;
@@ -18,6 +20,10 @@ public:
 
 private:
 	Ui::MainWindow *ui;
+
+	QList<QPolygonF> paths;
+
+	QGraphicsScene* scene;
 
 private slots:
 	void on_actionOpen_triggered();
