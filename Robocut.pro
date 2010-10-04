@@ -7,16 +7,20 @@ SOURCES += main.cpp \
     MainWindow.cpp \
     Plotter.cpp \
     Common.cpp \
-	SvgReader.cpp
+	SvgReader.cpp \
+    PlotterPage.cpp \
+    PathPaintEngine.cpp
 HEADERS += MainWindow.h \
     Plotter.h \
     NoCopy.h \
     Line.h \
     Letters.h \
     Common.h \
-	SvgReader.h
+	SvgReader.h \
+    PlotterPage.h \
+    PathPaintEngine.h
 FORMS += MainWindow.ui
 
 LIBS += -lusb-1.0
 
-QT += xml
+QT += svg

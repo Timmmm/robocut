@@ -2,6 +2,8 @@
 
 #include <vector>
 #include <QString>
+#include <QPaintDevice>
+#include <QPaintEngine>
 
 using namespace std;
 
@@ -9,3 +11,4 @@ using namespace std;
 typedef vector<vector<double> > Lines;
 
 Lines ReadSVG(QString filename);
+
