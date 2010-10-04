@@ -96,7 +96,7 @@ string UsbReceive(libusb_device_handle* handle, int length, int timeout)
 }
 
 
-Error Cut(Lines cuts, int speed, int pressure)
+Error Cut(QList<QPolygonF> cuts, int speed, int pressure)
 {
 	libusb_device** list;
 	ssize_t cnt = libusb_get_device_list(NULL, &list);

@@ -5,19 +5,19 @@
 
 namespace Ui
 {
-    class MainWindow;
+	class MainWindow;
 }
 
 class MainWindow : public QMainWindow
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+	MainWindow(QWidget *parent = 0);
+	~MainWindow();
 
 private:
-    Ui::MainWindow *ui;
+	Ui::MainWindow *ui;
 
 private slots:
 	void on_actionOpen_triggered();

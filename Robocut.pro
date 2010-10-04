@@ -12,8 +12,6 @@ SOURCES += main.cpp \
 HEADERS += MainWindow.h \
     Plotter.h \
     NoCopy.h \
-    Line.h \
-    Letters.h \
     Common.h \
     PlotterPage.h \
     PathPaintEngine.h

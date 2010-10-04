@@ -1,11 +1,9 @@
 #pragma once
 
-#include <string>
-#include <sstream>
+#include <QList>
+#include <QPolygonF>
 #include "Common.h"
 
 using namespace std;
 
-#include "SvgReader.h"
-
-Error Cut(Lines cuts, int speed = 10, int pressure = 10);
+Error Cut(QList<QPolygonF> cuts, int speed = 10, int pressure = 10);
