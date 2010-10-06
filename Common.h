@@ -19,7 +19,7 @@ class Error
 {
 public:
 	explicit Error(bool S) : s(S) { }
-	Error(const char* C) : s(false), m(C) { }
+	explicit Error(const char* C) : s(false), m(C) { }
 	Error(const string& msg) : s(false), m(msg) { }
 	operator bool() { return s; } // TODO: Use bool hack from boost so int i = Error(); doesn't work.
 	string message() { if (m.empty()) return "Unspecified Error"; return m; }

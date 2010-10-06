@@ -9,16 +9,21 @@ SOURCES += main.cpp \
     Common.cpp \
     PlotterPage.cpp \
     PathPaintEngine.cpp \
-    CutDialog.cpp
+    CutDialog.cpp \
+    CuttingDialog.cpp \
+    CuttingThread.cpp
 HEADERS += MainWindow.h \
     Plotter.h \
     NoCopy.h \
     Common.h \
     PlotterPage.h \
     PathPaintEngine.h \
-    CutDialog.h
+    CutDialog.h \
+    CuttingDialog.h \
+    CuttingThread.h
 FORMS += MainWindow.ui \
-    CutDialog.ui
+    CutDialog.ui \
+    CuttingDialog.ui
 
 LIBS += -lusb-1.0
 
