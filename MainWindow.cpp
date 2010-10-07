@@ -185,13 +185,14 @@ void MainWindow::on_actionCut_triggered()
 
 	// Create a new dialog and run the actual cutting in a different thread.
 
-//	CuttingDialog* cuttingDlg = new CuttingDialog(this);
-//	cuttingDlg->show();// TODO:
+	CuttingDialog* cuttingDlg = new CuttingDialog(this);
+	cuttingDlg->startCut(paths, cutDialog->media(), cutDialog->speed(), cutDialog->pressure(), cutDialog->trackEnhancing());
+	cuttingDlg->show();
 
-
+/*
 	Error e = Cut(paths, cutDialog->media(), cutDialog->speed(), cutDialog->pressure(), cutDialog->trackEnhancing());
 	if (!e)
-		qDebug() << e.message().c_str();
+		qDebug() << e.message().c_str();*/
 }
 
 void MainWindow::on_actionManual_triggered()
