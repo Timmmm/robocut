@@ -3,7 +3,7 @@
 #include <QPaintEngine>
 #include <QPaintDevice>
 #include <QPainterPath>
-#include "PlotterPage.h"
+#include "PathPaintPage.h"
 
 // This is a simple paint engine that records all the paths painted.
 // It is used with QSvgPainter to record the paths in an SVG.

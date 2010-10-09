@@ -1,4 +1,4 @@
-#include "PlotterPage.h"
+#include "PathPaintPage.h"
 
 #include "PathPaintEngine.h"
 

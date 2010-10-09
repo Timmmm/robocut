@@ -1,7 +1,7 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 
-#include "PlotterPage.h"
+#include "PathPaintPage.h"
 #include "Plotter.h"
 
 #include "CuttingDialog.h"
