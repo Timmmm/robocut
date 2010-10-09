@@ -25,16 +25,21 @@ public:
 private:
 	Ui::MainWindow *ui;
 
+	// The cutting paths that were loaded from the SVG.
 	QList<QPolygonF> paths;
 
+	// For displaying the cuts.
 	QGraphicsScene* scene;
 
+	// The dialog that asks what settings to use. We keep this around and reuse it as necessary.
 	CutDialog* cutDialog;
 
+	// The directory that the last file was opened from.
 	QString lastOpenDir;
 
+	// Timer for the cutting animation.
 	QTimer* animationTimer;
-
+	// The circle that marks where the cutter blade is.
 	QGraphicsItem* cutMarker;
 	// Cut marker progress.
 	int cutMarkerPath; // Current path.

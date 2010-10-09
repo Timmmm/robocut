@@ -32,27 +32,6 @@ private:
 const Error Success(true);
 const Error Failure(false);
 
-/// String Securification
-
-/** Some standard char sets. */
-extern const string& Alpha;
-extern const string& Num;
-extern const string& Punct; // Includes underscore, but not space.
-extern const string& Space;
-extern const string& Underscore;
-
-/** Secure a string. */
-string Securify(const string& S, const string& AllowedChars);
-
-/** Escape \ to \\ and ' to \'. */
-string EscapeSingleQuotes(const string& S);
-
-/** HTML escape. */
-string HTMLEscape(const string& S);
-
-/** Escape attribute strings. */
-string AttributeEscape(const string& S);
-
 /** Integer to string. */
 inline string ItoS(int I)
 {
@@ -117,45 +96,4 @@ inline string GetEnv(const string& Var)
 	if (!V)
 		return "";
 	return V;
-}
-
-/** Split a string. */
-inline vector<string> Split(const string& str, const string& delim)
-{
-	vector<string> ret;
-
-	unsigned int offset = 0;
-
-	for (stringpos delimIndex = str.find(delim, offset); delimIndex != string::npos;
-		 delimIndex = str.find(delim, offset))
-	{
-		ret.push_back(str.substr(offset, delimIndex - offset));
-		offset += delimIndex - offset + delim.length();
-	}
-
-	ret.push_back(str.substr(offset));
-
-	return ret;
-}
-
-/** Trim leading and trailing whitespace. */
-inline string Trim(const string& text)
-{
-	for (unsigned int i = 0; i < text.length(); ++i)
-	{
-		if (!isspace(text[i]))
-		{
-			for (unsigned int j = text.length()-1; j > i; --j)
-			{
-				if (!isspace(text[j]))
-				{
-					return text.substr(i, j-i + 1);
-				}
-			}
-
-			// Probably a better way - can't be bothered to look it up though.
-			return string(&(text[i]), 1);
-		}
-	}
-	return string();
 }

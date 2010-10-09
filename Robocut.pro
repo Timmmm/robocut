@@ -7,20 +7,20 @@ SOURCES += main.cpp \
     MainWindow.cpp \
     Plotter.cpp \
     Common.cpp \
-    PlotterPage.cpp \
     PathPaintEngine.cpp \
     CutDialog.cpp \
     CuttingDialog.cpp \
-    CuttingThread.cpp
+    CuttingThread.cpp \
+    PathPaintPage.cpp
 HEADERS += MainWindow.h \
     Plotter.h \
     NoCopy.h \
     Common.h \
-    PlotterPage.h \
     PathPaintEngine.h \
     CutDialog.h \
     CuttingDialog.h \
-    CuttingThread.h
+    CuttingThread.h \
+    PathPaintPage.h
 FORMS += MainWindow.ui \
     CutDialog.ui \
     CuttingDialog.ui

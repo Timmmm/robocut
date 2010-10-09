@@ -1,8 +1,9 @@
 <RCC>
-    <qresource>
+    <qresource prefix="/">
         <file>images/cap-blue.png</file>
         <file>images/cap-pen.png</file>
         <file>images/cap-red.png</file>
         <file>images/cap-yellow.png</file>
+        <file>images/icon.png</file>
     </qresource>
 </RCC>

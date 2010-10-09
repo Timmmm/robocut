@@ -8,6 +8,8 @@ namespace Ui {
 	class CuttingDialog;
 }
 
+// This is the dialog that shows while the cut is progressing. The thread that does the cutting
+// is also owned by the dialog, in a slightly bad design.
 class CuttingDialog : public QDialog
 {
 	Q_OBJECT
@@ -16,6 +18,8 @@ public:
 	explicit CuttingDialog(QWidget *parent = 0);
 	~CuttingDialog();
 
+	// Start the cutting thread. Call this only once, before the dialog is shown.
+	// It creates the thread, passes it the cutting details, and runs it.
 	void startCut(QList<QPolygonF> cuts, int media, int speed, int pressure, bool trackenhancing);
 
 protected:
@@ -25,9 +29,12 @@ protected:
 private:
 	Ui::CuttingDialog *ui;
 
+	// The cutting thread. It is pretty basic - just one long run() routine and then it calls onSuccess() or
+	// onError().
 	CuttingThread* thread;
 
 private slots:
+	// These are called from the thread when it has finished. Only one is called.
 	void onSuccess();
 	void onError(QString message);
 };

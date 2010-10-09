@@ -5,6 +5,9 @@
 #include <QPainterPath>
 #include "PlotterPage.h"
 
+// This is a simple paint engine that records all the paths painted.
+// It is used with QSvgPainter to record the paths in an SVG.
+// The only device it can draw to is PathPaintDevice
 class PathPaintEngine : public QPaintEngine
 {
 public:
@@ -22,6 +25,6 @@ public:
 	Type type() const;
 	void updateState(const QPaintEngineState& state);
 private:
-	PlotterPage* dev;
+	PathPaintDevice* dev;
 };
 

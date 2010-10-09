@@ -7,6 +7,7 @@ CutDialog::CutDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
+	// Default = Vinyl Sticker.
 	ui->mediaCombo->setCurrentIndex(2);
 }
 
@@ -31,6 +32,7 @@ int CutDialog::media() const
 {
 	int idx = ui->mediaCombo->currentIndex();
 
+	// Media code for each entry.
 	int medias[] = {
 		100, 101, 102, 106, 111, 112, 113, 120, 121, 122, 123, 124, 125,
 		126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138
@@ -58,11 +60,13 @@ void CutDialog::onMediaChanged(int idx)
 	if (idx < 0 || idx >= 26)
 		idx = 0;
 
+	// Pressure for each entry.
 	int pressures[] = {
 		27, 27, 10, 14, 27, 2, 10, 30, 30, 30, 30, 1, 1,
 		1, 30, 20, 27, 30, 30, 5, 25, 20, 20, 30, 30, 30
 	};
 
+	// Default speed is max except for magnetic sheet.
 	int newspeed = idx == 17 ? 3 : 10;
 	int newpressure = pressures[idx];
 

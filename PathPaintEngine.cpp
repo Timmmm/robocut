@@ -5,14 +5,14 @@
 PathPaintEngine::PathPaintEngine(QPaintDevice* pdev)
 	: QPaintEngine(AllFeatures)
 {
-	dev = dynamic_cast<PlotterPage*>(pdev);
+	dev = dynamic_cast<PathPaintDevice*>(pdev);
 	if (!dev)
 		qWarning("PathPaintEngine: unsupported target device.");
 }
 
 bool PathPaintEngine::begin(QPaintDevice* pdev)
 {
-	dev = dynamic_cast<PlotterPage*>(pdev);
+	dev = dynamic_cast<PathPaintDevice*>(pdev);
 	if (!dev)
 		qWarning("PathPaintEngine: unsupported target device.");
 
@@ -27,7 +27,7 @@ void PathPaintEngine::drawPath(const QPainterPath& path)
 
 	QList<QPolygonF> polys = path.toSubpathPolygons();
 	for (int i = 0; i < polys.size(); ++i)
-	dev->addPath(polys[i]);
+		dev->addPath(polys[i]);
 }
 
 void PathPaintEngine::drawPixmap(const QRectF& r, const QPixmap& pm, const QRectF& sr)

@@ -49,19 +49,6 @@ MainWindow::~MainWindow()
 	delete ui;
 }
 
-uint qHash(const QPolygonF& key)
-{
-	QByteArray repr;
-	for (int i = 0; i < key.size(); ++i)
-	{
-		double x = key[i].x();
-		double y = key[i].y();
-
-		repr.append(reinterpret_cast<char*>(&x), sizeof(x));
-		repr.append(reinterpret_cast<char*>(&y), sizeof(y));
-	}
-	return qHash(repr);
-}
 
 void MainWindow::on_actionOpen_triggered()
 {
@@ -75,8 +62,6 @@ void MainWindow::on_actionOpen_triggered()
 
 	lastOpenDir = QFileInfo(filename).absoluteDir().path();
 
-	qDebug() << "lastOpenDir: " << lastOpenDir;
-
 	qDebug() << "Reading file: " << filename;
 
 	QSvgRenderer rend;
@@ -87,81 +72,43 @@ void MainWindow::on_actionOpen_triggered()
 		return;
 	}
 
-	PlotterPage pg(210.0, 297.0);
+	double width = 210.0;
+	double height = 297.0;
+	double dpi = 90.0;
+
+	PathPaintDevice pg(width, height, dpi);
 	QPainter p(&pg);
 
 	rend.render(&p);
 
-	// TODO: Remove duplicate paths.
-	QList<QPolygonF> newPaths = pg.paths();
-
-	paths.clear();
-
-	QSet<QPolygonF> addedAlready;
+	paths = pg.paths();
 
 	scene->clear();
 	scene->setBackgroundBrush(QBrush(Qt::lightGray));
 
 	// The page.
-	scene->addRect(0.0, 0.0, 210.0, 297.0, QPen(), QBrush(Qt::white));
+	scene->addRect(0.0, 0.0, width, height, QPen(), QBrush(Qt::white));
 
-	bool pathsClipped = false;
-	int addedPaths = 0;
 	QPen pen;
 	pen.setWidthF(0.5);
-	for (int i = 0; i < newPaths.size(); ++i)
+	for (int i = 0; i < paths.size(); ++i)
 	{
-		// Need to remove duplicates because the SVG paint engine draws these twice
-		// for some reason...
-		if (addedAlready.contains(newPaths[i]))
-			continue;
-
-		addedAlready.insert(newPaths[i]);
-		++addedPaths;
-
-		for (int j = 0; j < newPaths[i].size(); ++j)
-		{
-			// Because inkscape is retarded and *always* exports SVG in units of px, with a default
-			// resolution of 90 dpi.
-			newPaths[i][j] /= 90.0/25.4;
-			if (newPaths[i][j].x() < 0.0)
-			{
-				pathsClipped = true;
-				newPaths[i][j].setX(0.0);
-			}
-			if (newPaths[i][j].y() < 0.0)
-			{
-				pathsClipped = true;
-				newPaths[i][j].setY(0.0);
-			}
-			if (newPaths[i][j].x() > 210.0)
-			{
-				pathsClipped = true;
-				newPaths[i][j].setX(210.0);
-			}
-			if (newPaths[i][j].y() > 297.0)
-			{
-				pathsClipped = true;
-				newPaths[i][j].setY(297.0);
-			}
-		}
-
 		pen.setColor(QColor(rand() % 155, rand() % 155, rand() % 155));
-		scene->addPolygon(newPaths[i], pen);
-
-		paths.append(newPaths[i]);
+		scene->addPolygon(paths[i], pen);
 	}
 
 	// Handle the animation. I.e. stop it.
 	// The old one was deleted when we cleared the scene.
 	cutMarker = scene->addEllipse(-1.0, -1.0, 2.0, 2.0, QPen(Qt::black), QBrush(Qt::red));
+	cutMarker->hide();
 	ui->actionAnimate->setChecked(false);
 
-	qDebug() << "Paths: " << addedPaths;
+	// Reset the viewport.
 	on_actionReset_triggered();
+	// Redraw. Probably not necessary.
 	update();
 
-	if (pathsClipped)
+	if (pg.clipped())
 		QMessageBox::warning(this, "Paths clipped", "<b>BIG FAT WARNING!</b><br><br>Some paths lay outside the 210&times;297&thinsp;mm A4 area. These have been squeezed back onto the page in a most ugly fashion, so cutting will almost certainly not do what you want.");
 }
 
@@ -188,11 +135,6 @@ void MainWindow::on_actionCut_triggered()
 	CuttingDialog* cuttingDlg = new CuttingDialog(this);
 	cuttingDlg->startCut(paths, cutDialog->media(), cutDialog->speed(), cutDialog->pressure(), cutDialog->trackEnhancing());
 	cuttingDlg->show();
-
-/*
-	Error e = Cut(paths, cutDialog->media(), cutDialog->speed(), cutDialog->pressure(), cutDialog->trackEnhancing());
-	if (!e)
-		qDebug() << e.message().c_str();*/
 }
 
 void MainWindow::on_actionManual_triggered()
@@ -208,7 +150,7 @@ void MainWindow::on_actionAnimate_toggled(bool animate)
 		if (cutMarker)
 		{
 			cutMarker->setPos(0, 0);
-			cutMarker->setVisible(true);
+			cutMarker->show();
 		}
 
 		cutMarkerPath = 0;
@@ -219,7 +161,7 @@ void MainWindow::on_actionAnimate_toggled(bool animate)
 	{
 		animationTimer->stop();
 		if (cutMarker)
-			cutMarker->setVisible(false);
+			cutMarker->hide();
 	}
 }
 
@@ -236,7 +178,7 @@ void MainWindow::on_actionZoom_In_triggered()
 
 void MainWindow::on_actionZoom_Out_triggered()
 {
-	ui->graphicsView->scale(0.8, 0.8);
+	ui->graphicsView->scale(1.0/1.2, 1.0/1.2);
 }
 
 void MainWindow::animate()

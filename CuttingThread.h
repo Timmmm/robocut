@@ -19,15 +19,18 @@ class CuttingThread : public QThread
 public:
 	explicit CuttingThread(QObject *parent = 0);
 
+	// Set the parameters to use for the cut.
 	void setParams(QList<QPolygonF> cuts, int media, int speed, int pressure, bool trackenhancing);
 
 signals:
+	// Emitted if the cutting was (as far as we can tell) successful.
 	void success();
+	// Emitted if the cutting failed.
 	void error(QString message);
 public slots:
 
 protected:
-	// This reads the params, tries to send the signals to the cutter and all that.
+	// This reads the params, then tries to send the data to the cutter.
 	// When it is done, it runs exec() to send the success() or error() signal.
 	void run();
 

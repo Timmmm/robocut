@@ -5,6 +5,8 @@
 #include <QPushButton>
 #include <QCloseEvent>
 
+#include <QDebug>
+
 CuttingDialog::CuttingDialog(QWidget *parent) :
 	QDialog(parent),
 	ui(new Ui::CuttingDialog)
@@ -16,6 +18,11 @@ CuttingDialog::CuttingDialog(QWidget *parent) :
 CuttingDialog::~CuttingDialog()
 {
 	delete ui;
+	if (thread)
+	{
+		thread->exit();
+		thread->wait(1000);
+	}
 }
 
 void CuttingDialog::changeEvent(QEvent *e)
@@ -34,7 +41,10 @@ void CuttingDialog::changeEvent(QEvent *e)
 void CuttingDialog::startCut(QList<QPolygonF> cuts, int media, int speed, int pressure, bool trackenhancing)
 {
 	if (thread)
-		delete thread;
+	{
+		qDebug() << "Internal error: startCut() called twice.";
+		return;
+	}
 	thread = new CuttingThread(this);
 
 	connect(thread, SIGNAL(success()), SLOT(onSuccess()));
@@ -49,13 +59,18 @@ void CuttingDialog::onSuccess()
 {
 	ui->status->setText("Finished");
 	ui->buttonBox->button(QDialogButtonBox::Cancel)->setText("Close");
+	thread->exit();
+	thread->wait(1000);
 	delete thread;
+	thread = NULL;
 }
 
 void CuttingDialog::onError(QString message)
 {
 	ui->status->setText("Error: " + message);
 	ui->buttonBox->button(QDialogButtonBox::Cancel)->setText("Close");
+	thread->exit();
+	thread->wait(1000);
 	delete thread;
 	thread = NULL;
 }
@@ -73,6 +88,7 @@ void CuttingDialog::closeEvent(QCloseEvent* e)
 		}
 
 		thread->terminate();
+		thread->wait(5000);
 		delete thread;
 		thread = NULL;
 	}
