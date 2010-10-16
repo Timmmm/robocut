@@ -17,7 +17,7 @@
    <item>
     <widget class="QLabel" name="status">
      <property name="text">
-      <string>Status</string>
+      <string>Cutting</string>
      </property>
     </widget>
    </item>
