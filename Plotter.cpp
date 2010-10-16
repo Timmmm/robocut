@@ -121,8 +121,7 @@ Error Cut(QList<QPolygonF> cuts, int media, int speed, int pressure, bool tracke
 		libusb_device_descriptor desc;
 		libusb_get_device_descriptor(device, &desc);
 		// I don't want to be more specific than this really.
-		if (desc.idVendor == VENDOR_ID && desc.idProduct == PRODUCT_ID
-			&& desc.bDeviceClass == LIBUSB_CLASS_PRINTER)
+		if (desc.idVendor == VENDOR_ID && desc.idProduct == PRODUCT_ID)
 		{
 			// Just use the first one. Who has two?!
 			found = device;
