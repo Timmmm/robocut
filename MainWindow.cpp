@@ -74,9 +74,9 @@ void MainWindow::on_actionOpen_triggered()
 
 	double width = 210.0;
 	double height = 297.0;
-	double dpi = 90.0;
+	double ppm = 90.0/25.4; // Pixels per mm.
 
-	PathPaintDevice pg(width, height, dpi);
+	PathPaintDevice pg(width, height, ppm);
 	QPainter p(&pg);
 
 	rend.render(&p);

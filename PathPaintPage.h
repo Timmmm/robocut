@@ -15,7 +15,7 @@ uint qHash(const QPolygonF& key);
 class PathPaintDevice : public QPaintDevice
 {
 public:
-	PathPaintDevice(double widthInMm, double heightInMm, double pixelsPerInch = 90.0);
+	PathPaintDevice(double widthInMm, double heightInMm, double pixelsPerMm = 90.0/25.4);
 	~PathPaintDevice();
 
 	// Adds a path to the device.
@@ -47,5 +47,5 @@ private:
 	double width;
 	double height;
 
-	double ppi;
+	double ppm;
 };

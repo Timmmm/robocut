@@ -22,15 +22,15 @@ uint qHash(const QPolygonF& key)
 
 
 
-PathPaintDevice::PathPaintDevice(double widthInMm, double heightInMm, double pixelsPerInch)
+PathPaintDevice::PathPaintDevice(double widthInMm, double heightInMm, double pixelsPerMm)
 {
 	engine = NULL;
 	width = widthInMm;
 	height = heightInMm;
 	pathsClipped = false;
-	ppi = pixelsPerInch;
-	if (ppi == 0.0)
-		ppi = 1.0;
+	ppm = pixelsPerMm;
+	if (ppm == 0.0)
+		ppm = 1.0;
 }
 
 PathPaintDevice::~PathPaintDevice()
@@ -49,10 +49,8 @@ void PathPaintDevice::addPath(const QPolygonF& path)
 	// Clip the path.
 	for (int j = 0; j < pagePaths.back().size(); ++j)
 	{
-		// Because inkscape is retarded and *always* exports SVG in units of px, with a default
-		// resolution of 90 dpi.
-
-		pagePaths.back()[j] /= (ppi / 25.4);
+		// pagePaths are in mm, so convert from pixels to mm.
+		pagePaths.back()[j] /= ppm;
 
 		if (pagePaths.back()[j].x() < 0.0)
 		{
@@ -94,10 +92,11 @@ int PathPaintDevice::metric(PaintDeviceMetric metric) const
 {
 	switch (metric)
 	{
+	// Width in pixels.
 	case PdmWidth:
-		return width;
+		return width * ppm;
 	case PdmHeight:
-		return height;
+		return height * ppm;
 	case PdmWidthMM:
 		return width;
 	case PdmHeightMM:
@@ -107,13 +106,13 @@ int PathPaintDevice::metric(PaintDeviceMetric metric) const
 	case PdmDepth:
 		return 1;
 	case PdmDpiX:
-		return 25.4; // Convert to inches.
+		return 25.4 * ppm; // Convert to inches.
 	case PdmDpiY:
-		return 25.4;
+		return 25.4 * ppm;
 	case PdmPhysicalDpiX:
-		return 25.4;
+		return 25.4 * ppm;
 	case PdmPhysicalDpiY:
-		return 25.4;
+		return 25.4 * ppm;
 	}
 	return 0;
 }

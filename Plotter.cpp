@@ -2,8 +2,9 @@
 
 #include <libusb-1.0/libusb.h>
 
-const int VENDOR_ID = 0x0b4d;
-const int PRODUCT_ID = 0x110a;
+const int VENDOR_ID_GRAPHTEC = 0x0b4d;
+const int PRODUCT_ID_CC200_20 = 0x110a;
+const int PRODUCT_ID_SILHOUETTE_SD = 0x111d; // Possibly the same as CC330-20.
 
 #include <iostream>
 
@@ -121,7 +122,8 @@ Error Cut(QList<QPolygonF> cuts, int media, int speed, int pressure, bool tracke
 		libusb_device_descriptor desc;
 		libusb_get_device_descriptor(device, &desc);
 		// I don't want to be more specific than this really.
-		if (desc.idVendor == VENDOR_ID && desc.idProduct == PRODUCT_ID)
+		if (desc.idVendor == VENDOR_ID_GRAPHTEC &&
+				(desc.idProduct == PRODUCT_ID_CC200_20 || desc.idProduct == PRODUCT_ID_SILHOUETTE_SD))
 		{
 			// Just use the first one. Who has two?!
 			found = device;
