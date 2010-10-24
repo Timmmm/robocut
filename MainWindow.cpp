@@ -114,7 +114,7 @@ void MainWindow::on_actionOpen_triggered()
 
 void MainWindow::on_actionAbout_triggered()
 {
-	QMessageBox::information(this, "About", "<b>Robocut 0.1</b><br><br>By Tim Hutt, &copy; 2010<br/><br/>This software allows you to read a vector image in <a href=\"http://en.wikipedia.org/wiki/Scalable_Vector_Graphics\">SVG format</a>, and send it to a <a href=\"http://www.graphteccorp.com/craftrobo/\">Graphtec Craft Robo 2</a> (or possibly 3) for cutting. It is designed to work with SVGs produced by the excellent free vector graphics editor <a href=\"http://www.inkscape.org/\">Inkscape</a>. It may work with other software but this has not been tested.<br/><br/>See <a href=\"http://concentriclivers.com/\">the online manual for instructions</a>.");
+	QMessageBox::information(this, "About", "<b>Robocut 0.2</b><br><br>By Tim Hutt, &copy; 2010<br/><br/>This software allows you to read a vector image in <a href=\"http://en.wikipedia.org/wiki/Scalable_Vector_Graphics\">SVG format</a>, and send it to a <a href=\"http://www.graphteccorp.com/craftrobo/\">Graphtec Craft Robo 2</a> (or possibly 3) for cutting. It is designed to work with SVGs produced by the excellent free vector graphics editor <a href=\"http://www.inkscape.org/\">Inkscape</a>. It may work with other software but this has not been tested.<br/><br/>See <a href=\"http://concentriclivers.com/\">the online manual for instructions</a>.");
 }
 
 void MainWindow::on_actionExit_triggered()
