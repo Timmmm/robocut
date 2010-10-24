@@ -132,7 +132,7 @@ Error Cut(QList<QPolygonF> cuts, int media, int speed, int pressure, bool tracke
 	if (!found)
 	{
 		libusb_free_device_list(list, 1);
-		return Error("Couldn't find Craft Robo 2 (USB printer with Vendor ID with USB VendorID 0b4d and ProductID 110a). Is it connected to the system and powered on?");
+		return Error("Couldn't find Craft Robo 2 (USB device with Vendor ID with USB VendorID 0b4d and ProductID 110a). Is it connected to the system and powered on?");
 	}
 
 	libusb_device_handle* handle;
