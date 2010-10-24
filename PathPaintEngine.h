@@ -26,5 +26,6 @@ public:
 	void updateState(const QPaintEngineState& state);
 private:
 	PathPaintDevice* dev;
+	QTransform transform;
 };
 

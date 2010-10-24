@@ -27,7 +27,7 @@ void PathPaintEngine::drawPath(const QPainterPath& path)
 
 	QList<QPolygonF> polys = path.toSubpathPolygons();
 	for (int i = 0; i < polys.size(); ++i)
-		dev->addPath(polys[i]);
+		dev->addPath(transform.map(polys[i]));
 }
 
 void PathPaintEngine::drawPixmap(const QRectF& r, const QPixmap& pm, const QRectF& sr)
@@ -43,7 +43,7 @@ void PathPaintEngine::drawPolygon(const QPointF* points, int pointCount, Polygon
 	QPolygonF p;
 	for (int i = 0; i < pointCount; ++i)
 		p.append(points[i]);
-	dev->addPath(p);
+	dev->addPath(transform.map(p));
 }
 
 bool PathPaintEngine::end()
@@ -59,6 +59,6 @@ QPaintEngine::Type PathPaintEngine::type() const
 }
 void PathPaintEngine::updateState(const QPaintEngineState& state)
 {
-	// Nop
+	if (state.state() & DirtyTransform)
+		transform = state.transform();
 }
-
