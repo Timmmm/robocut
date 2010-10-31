@@ -102,12 +102,13 @@ Error UsbReceive(libusb_device_handle* handle, string& s, int timeout = 0)
 //		unsigned char *data, uint16_t length, unsigned int timeout);
 //}
 
-Error Cut(QList<QPolygonF> cuts, int media, int speed, int pressure, bool trackenhancing,
+Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int media, int speed, int pressure, bool trackenhancing,
 		  bool regmark, bool regsearch, double regwidth, double reglength)
 {
-	cout << "Cutting. media: " << media << " speed: " << speed << " pressure: " << pressure
-			<< " trackenhancing: " << trackenhancing << " regmark: " <<  regmark
-			<< " regsearch:" <<  regsearch <<" regwidth:" <<  regwidth << " reglength: " << reglength << endl;
+	cout << "Cutting. mediawidth: " << mediawidth << " mediaheight: " << mediaheight
+		 << "media: " << media << " speed: " << speed << " pressure: " << pressure
+		 << " trackenhancing: " << trackenhancing << " regmark: " <<  regmark
+		 << " regsearch:" <<  regsearch <<" regwidth:" <<  regwidth << " reglength: " << reglength << endl;
 
 	if (media < 100 || media > 300)
 		media = 300;
@@ -297,8 +298,8 @@ Error Cut(QList<QPolygonF> cuts, int media, int speed, int pressure, bool tracke
 		// Page size: height,width in 20ths of a mm minus a margin. This is for A4. TODO: Find maximum and use that.
 		stringstream page;
 
-		int width = 20 * 210;
-		int height = 20 * 297;
+		int width = lroundl(mediawidth * 20.0);
+		int height = lroundl(mediaheight * 20.0);
 
 		int margintop = 500;
 		int marginright = 320;
@@ -330,7 +331,7 @@ Error Cut(QList<QPolygonF> cuts, int media, int speed, int pressure, bool tracke
 			e = UsbSend(handle, "FQ5\x03"); // only with registration ???
 			if (!e) goto error; 
 
-			e = UsbReceive(handle, resp, 10000); // Allow 10s. Seems reasonable.
+			e = UsbReceive(handle, resp, 20000); // Allow 20s for reply...
 			if (!e) goto error;
 			if (resp != "    1")
 			{

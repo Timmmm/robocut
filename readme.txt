@@ -11,7 +11,7 @@ It may work with the newer CC330-20 model if the USB IDs are changed, but I donâ
 AUTHORS
 ^^^^^^^
 
-Tim Hutt
+Tim Hutt, Marcus Schulz
 
 INSTALLATION
 ^^^^^^^^^^^^

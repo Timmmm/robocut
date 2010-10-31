@@ -93,6 +93,9 @@
    </property>
   </action>
   <action name="actionCut">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Cut</string>
    </property>
@@ -112,6 +115,9 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Animate</string>
    </property>
@@ -120,6 +126,9 @@
    </property>
   </action>
   <action name="actionReset">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Reset</string>
    </property>
@@ -128,6 +137,9 @@
    </property>
   </action>
   <action name="actionZoom_In">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Zoom In</string>
    </property>
@@ -136,6 +148,9 @@
    </property>
   </action>
   <action name="actionZoom_Out">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Zoom Out</string>
    </property>

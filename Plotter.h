@@ -14,6 +14,11 @@ using namespace std;
 // speed: Cutting speed: 1-10 inclusive.
 // pressure: Cutting pressure: 1-33 inclusive.
 // trackenhancing: Supposed to feed/unfeed the media a few times to create tracks.
-Error Cut(QList<QPolygonF> cuts, int media = 300, int speed = 10, int pressure = 10,
-		  bool trackenhancing = false, bool regmark = false, bool regsearch = false,
-		  double regwidth = 0.0, double reglength = 0.0);
+// regmark: Whether to use registration marks for calibration.
+// regsearch: ?
+// regwidth/height: Distance between the registration marks.
+//
+// TODO: Apparently you can change the number of registration marks?
+Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int media, int speed, int pressure,
+		  bool trackenhancing, bool regmark, bool regsearch,
+		  double regwidth, double reglength);

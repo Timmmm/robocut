@@ -74,13 +74,13 @@ void MainWindow::on_actionOpen_triggered()
 
 	qDebug() << "SVG default size: " << rend.defaultSize() << endl;
 	qDebug() << "SVG view box: " << rend.viewBoxF() << endl;
-	double width = 210.0;
-	double height = 297.0;
-	//double width = 215.9; // 210.0; changed from a4 to letter
-	//double height = 279.4; //297.0;
+
+	// Get size from SVG. TODO: Sanity check.
+	mediaSize = rend.defaultSize() * 25.4 / 90.0;
+
 	double ppm = 90.0/25.4; // Pixels per mm.
 
-	PathPaintDevice pg(width, height, ppm);
+	PathPaintDevice pg(mediaSize.width(), mediaSize.height(), ppm);
 	QPainter p(&pg);
 
 	rend.render(&p);
@@ -91,7 +91,7 @@ void MainWindow::on_actionOpen_triggered()
 	scene->setBackgroundBrush(QBrush(Qt::lightGray));
 
 	// The page.
-	scene->addRect(0.0, 0.0, width, height, QPen(), QBrush(Qt::white));
+	scene->addRect(0.0, 0.0, mediaSize.width(), mediaSize.height(), QPen(), QBrush(Qt::white));
 
 	QPen pen;
 	pen.setWidthF(0.5);
@@ -114,6 +114,9 @@ void MainWindow::on_actionOpen_triggered()
 
 	if (pg.clipped())
 		QMessageBox::warning(this, "Paths clipped", "<b>BIG FAT WARNING!</b><br><br>Some paths lay outside the 210&times;297&thinsp;mm A4 area. These have been squeezed back onto the page in a most ugly fashion, so cutting will almost certainly not do what you want.");
+
+	// Change window title and enable menu items.
+	setFileLoaded(filename);
 }
 
 void MainWindow::on_actionAbout_triggered()
@@ -137,7 +140,10 @@ void MainWindow::on_actionCut_triggered()
 	// Create a new dialog and run the actual cutting in a different thread.
 
 	CuttingDialog* cuttingDlg = new CuttingDialog(this);
-	cuttingDlg->startCut(paths, cutDialog->media(), cutDialog->speed(), cutDialog->pressure(), cutDialog->trackEnhancing(), cutDialog->regMark(), cutDialog->regSearch(), cutDialog->regWidth(), cutDialog->regHeight());
+	cuttingDlg->startCut(paths, mediaSize.width(), mediaSize.height(), cutDialog->media(), cutDialog->speed(),
+	                     cutDialog->pressure(), cutDialog->trackEnhancing(),
+	                     cutDialog->regMark(), cutDialog->regSearch(),
+	                     cutDialog->regWidth(), cutDialog->regHeight());
 	cuttingDlg->show();
 }
 
@@ -238,9 +244,25 @@ void MainWindow::animate()
 			{
 				cutMarkerPath = 0;
 
-				// Also stop the animation... maybe?
-				//ui->actionAnimate->setChecked(false);
+				// Also stop the animation...
+				ui->actionAnimate->setChecked(false);
+
 			}
 		}
 	}
+}
+void MainWindow::setFileLoaded(QString filename)
+{
+	bool e = !filename.isEmpty();
+	if (e)
+		setWindowTitle("Robocut - " + filename);
+	else
+		setWindowTitle("Robocut");
+
+	ui->actionAnimate->setEnabled(e);
+	ui->actionReset->setEnabled(e);
+	ui->actionZoom_In->setEnabled(e);
+	ui->actionZoom_Out->setEnabled(e);
+	ui->actionCut->setEnabled(e);
+
 }

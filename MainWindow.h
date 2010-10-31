@@ -46,6 +46,8 @@ private:
 	int cutMarkerLine; // Current line in path
 	double cutMarkerDistance; // Current distance along edge.
 
+	QSizeF mediaSize;
+
 private slots:
 	void on_actionZoom_Out_triggered();
 	void on_actionZoom_In_triggered();
@@ -59,6 +61,10 @@ private slots:
 
 	// Advance the cutting animation frame.
 	void animate();
+
+private:
+	// Use empty string to indicate no file is loaded.
+	void setFileLoaded(QString filename);
 };
 
 #endif // MAINWINDOW_H

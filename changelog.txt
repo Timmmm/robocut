@@ -1,3 +1,10 @@
+Master
+
+* Some brief documentation
+* Initial registration mark support
+* Load page size from file
+* Small UI improvements
+
 Version 0.2 - a3b13ad - Oct 24th 2010
 
 * Initial working version.

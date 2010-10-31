@@ -16,8 +16,11 @@ CuttingThread::CuttingThread(QObject *parent) :
 }
 
 
-void CuttingThread::setParams(QList<QPolygonF> cuts, int media, int speed, int pressure, bool trackenhancing, bool regmark, bool regsearch, float regwidth, float reglength)
+void CuttingThread::setParams(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int media,
+                              int speed, int pressure, bool trackenhancing,
+                              bool regmark, bool regsearch, float regwidth, float reglength)
 {
+	// TODO: Move all this into a structure.
 	_cuts = cuts;
 	_media = media;
 	_speed = speed;
@@ -27,12 +30,15 @@ void CuttingThread::setParams(QList<QPolygonF> cuts, int media, int speed, int p
 	_regsearch = regsearch;
 	_regwidth = regwidth;
 	_reglength = reglength;
+	_mediawidth = mediawidth;
+	_mediaheight = mediaheight;
 }
 
 
 void CuttingThread::run()
 {
-	Error e = Cut(_cuts, _media, _speed, _pressure, _trackenhancing, _regmark, _regsearch, _regwidth, _reglength);
+	Error e = Cut(_cuts, _mediawidth, _mediaheight, _media, _speed, _pressure, _trackenhancing,
+	              _regmark, _regsearch, _regwidth, _reglength);
 	if (e)
 		emit success();
 	else
