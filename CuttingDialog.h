@@ -20,7 +20,7 @@ public:
 
 	// Start the cutting thread. Call this only once, before the dialog is shown.
 	// It creates the thread, passes it the cutting details, and runs it.
-	void startCut(QList<QPolygonF> cuts, int media, int speed, int pressure, bool trackenhancing);
+	void startCut(QList<QPolygonF> cuts, int media, int speed, int pressure, bool trackenhancing, bool regmark, bool regsearch, double regwidth, double reglength);
 
 protected:
 	void changeEvent(QEvent *e);

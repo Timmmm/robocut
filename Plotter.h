@@ -13,5 +13,7 @@ using namespace std;
 //        The value is not fully checked for sanity.
 // speed: Cutting speed: 1-10 inclusive.
 // pressure: Cutting pressure: 1-33 inclusive.
-// trackenhancing: I honestly have no idea.
-Error Cut(QList<QPolygonF> cuts, int media = 300, int speed = 10, int pressure = 10, bool trackenhancing = false);
+// trackenhancing: Supposed to feed/unfeed the media a few times to create tracks.
+Error Cut(QList<QPolygonF> cuts, int media = 300, int speed = 10, int pressure = 10,
+		  bool trackenhancing = false, bool regmark = false, bool regsearch = false,
+		  double regwidth = 0.0, double reglength = 0.0);

@@ -22,8 +22,15 @@ public:
 	int speed() const;
 	// The cutting pressure (1-33).
 	int pressure() const;
-	// Whatever track enhancing is...
+	// Track enhancing.
 	bool trackEnhancing() const;
+
+	// Whether to search
+	bool regMark() const;
+	bool regSearch() const; 
+	// Positions of the registration marks.
+	double regWidth() const;
+	double regHeight() const;
 
 protected:
 	void changeEvent(QEvent *e);

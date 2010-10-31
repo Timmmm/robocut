@@ -20,7 +20,7 @@ public:
 	explicit CuttingThread(QObject *parent = 0);
 
 	// Set the parameters to use for the cut.
-	void setParams(QList<QPolygonF> cuts, int media, int speed, int pressure, bool trackenhancing);
+	void setParams(QList<QPolygonF> cuts, int media, int speed, int pressure, bool trackenhancing, bool regmark, bool regsearch, float regwidth, float reglength);
 
 signals:
 	// Emitted if the cutting was (as far as we can tell) successful.
@@ -40,4 +40,8 @@ private:
 	int _speed;
 	int _pressure;
 	bool _trackenhancing;
+	bool _regmark; 
+	bool _regsearch; 
+	double _regwidth;
+	double _reglength;
 };

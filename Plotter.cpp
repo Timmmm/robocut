@@ -7,6 +7,7 @@ const int PRODUCT_ID_CC200_20 = 0x110a;
 const int PRODUCT_ID_SILHOUETTE_SD = 0x111d; // Possibly the same as CC330-20.
 
 #include <iostream>
+#include <cmath>
 
 
 string UsbError(int e)
@@ -93,10 +94,21 @@ Error UsbReceive(libusb_device_handle* handle, string& s, int timeout = 0)
 	return Success;
 }
 
+// Send a control message
+//Error UsbControl(libusb_device_handle* handle, ...)
+//{
+//	libusb_control_transfer(handle,
+//		uint8_t request_type, uint8_t request, uint16_t value, uint16_t index,
+//		unsigned char *data, uint16_t length, unsigned int timeout);
+//}
 
-
-Error Cut(QList<QPolygonF> cuts, int media, int speed, int pressure, bool trackenhancing)
+Error Cut(QList<QPolygonF> cuts, int media, int speed, int pressure, bool trackenhancing,
+		  bool regmark, bool regsearch, double regwidth, double reglength)
 {
+	cout << "Cutting. media: " << media << " speed: " << speed << " pressure: " << pressure
+			<< " trackenhancing: " << trackenhancing << " regmark: " <<  regmark
+			<< " regsearch:" <<  regsearch <<" regwidth:" <<  regwidth << " reglength: " << reglength << endl;
+
 	if (media < 100 || media > 300)
 		media = 300;
 	if (speed < 1)
@@ -295,9 +307,44 @@ Error Cut(QList<QPolygonF> cuts, int media, int speed, int pressure, bool tracke
 		if (!e) goto error;
 		e = UsbSend(handle, "FM1\x03"); // ?
 		if (!e) goto error;
-		e = UsbSend(handle, "TB50,1\x03"); // ?
-		if (!e) goto error;
+		
+		if (regmark)
+		{
+			stringstream regmarkstr;
+			string searchregchar = "23,";
+			int regw = lroundl(regwidth * 20.0);
+			int regl = lroundl(reglength * 20.0);
+			e = UsbSend(handle, "TB50,381\x03"); //only with registration (it was TB50,1) ???
+			if (!e) goto error;
+			
+			if (regsearch)
+				searchregchar ="123,";
+			
+			regmarkstr <<  "TB99\x03TB55,1\x03TB" + searchregchar + ItoS(regw) + "," + ItoS(regl) + "\x03";
+			
+			cout << "Registration mark string: " << regmarkstr.str() << endl;
+			
+			e = UsbSend(handle, regmarkstr.str()); //registration mark test /1-2: 180.0mm / 1-3: 230.0mm (origin 15mmx20mm)
+			if (!e) goto error;
+			
+			e = UsbSend(handle, "FQ5\x03"); // only with registration ???
+			if (!e) goto error; 
 
+			e = UsbReceive(handle, resp, 10000); // Allow 10s. Seems reasonable.
+			if (!e) goto error;
+			if (resp != "    1")
+			{
+				e = Error("Couldn't find registration marks.");
+				goto error;
+			}
+		}
+		else
+		{
+			e = UsbSend(handle, "TB50,1\x03"); // ???
+			if (!e) goto error;
+		}
+ 
+		if (!e) goto error;
 		// I think this is the feed command. Sometimes it is 5588 - maybe a maximum?
 		e = UsbSend(handle, "FO" + ItoS(height - margintop) + "\x03");
 		if (!e) goto error;

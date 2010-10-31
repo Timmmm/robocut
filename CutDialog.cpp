@@ -54,6 +54,27 @@ bool CutDialog::trackEnhancing() const
 {
 	return ui->trackEnhancingCheckbox->isChecked();
 }
+
+bool CutDialog::regMark() const
+{
+	return ui->regMarksGroup->isChecked();
+}
+
+bool CutDialog::regSearch() const
+{
+	return ui->regSearchCheckbox->isChecked();
+}
+
+double CutDialog::regWidth() const
+{
+	return ui->regWidthSpinner->value();
+}
+
+double CutDialog::regHeight() const
+{
+	return ui->regHeightSpinner->value();
+}
+
 void CutDialog::onMediaChanged(int idx)
 {
 

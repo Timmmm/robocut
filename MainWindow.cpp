@@ -72,8 +72,12 @@ void MainWindow::on_actionOpen_triggered()
 		return;
 	}
 
+	qDebug() << "SVG default size: " << rend.defaultSize() << endl;
+	qDebug() << "SVG view box: " << rend.viewBoxF() << endl;
 	double width = 210.0;
 	double height = 297.0;
+	//double width = 215.9; // 210.0; changed from a4 to letter
+	//double height = 279.4; //297.0;
 	double ppm = 90.0/25.4; // Pixels per mm.
 
 	PathPaintDevice pg(width, height, ppm);
@@ -133,7 +137,7 @@ void MainWindow::on_actionCut_triggered()
 	// Create a new dialog and run the actual cutting in a different thread.
 
 	CuttingDialog* cuttingDlg = new CuttingDialog(this);
-	cuttingDlg->startCut(paths, cutDialog->media(), cutDialog->speed(), cutDialog->pressure(), cutDialog->trackEnhancing());
+	cuttingDlg->startCut(paths, cutDialog->media(), cutDialog->speed(), cutDialog->pressure(), cutDialog->trackEnhancing(), cutDialog->regMark(), cutDialog->regSearch(), cutDialog->regWidth(), cutDialog->regHeight());
 	cuttingDlg->show();
 }
 

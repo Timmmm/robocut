@@ -6,315 +6,420 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>365</width>
-    <height>166</height>
+    <width>445</width>
+    <height>322</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Cut</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
-    <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Media:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QComboBox" name="mediaCombo">
-       <item>
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="title">
+      <string>Robocut</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label">
         <property name="text">
-         <string>Card without Craft Paper Backing</string>
+         <string>Media:</string>
         </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/images/cap-yellow.png</normaloff>:/images/cap-yellow.png</iconset>
-        </property>
-       </item>
-       <item>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="mediaCombo">
+        <item>
+         <property name="text">
+          <string>Card without Craft Paper Backing</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/images/cap-yellow.png</normaloff>:/images/cap-yellow.png</iconset>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Card with Craft Paper Backing</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/images/cap-yellow.png</normaloff>:/images/cap-yellow.png</iconset>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Vinyl Sticker</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Film Labels</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Thick Media</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/images/cap-yellow.png</normaloff>:/images/cap-yellow.png</iconset>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Thin Media</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Pen</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/images/cap-pen.png</normaloff>:/images/cap-pen.png</iconset>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Bond Paper 13-28 lbs</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Bristol Paper 57-67 lbs</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/images/cap-yellow.png</normaloff>:/images/cap-yellow.png</iconset>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Cardstock 40-60 lbs</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/images/cap-yellow.png</normaloff>:/images/cap-yellow.png</iconset>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Cover 40-60 lbs</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/images/cap-yellow.png</normaloff>:/images/cap-yellow.png</iconset>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Film, Double Matte Translucent</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Film, Vinyl With Adhesive Back</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Film, Window With Kling Adhesive</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Index 90 lbs</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/images/cap-red.png</normaloff>:/images/cap-red.png</iconset>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Inkjet Photo Paper 28-44 lbs</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/images/cap-yellow.png</normaloff>:/images/cap-yellow.png</iconset>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Inkjet Photo Paper 45-75 lbs</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/images/cap-red.png</normaloff>:/images/cap-red.png</iconset>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Magnetic Sheet</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/images/cap-red.png</normaloff>:/images/cap-red.png</iconset>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Offset 24-60 lbs</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Print Paper Light Weight</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Print Paper Medium Weight</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/images/cap-yellow.png</normaloff>:/images/cap-yellow.png</iconset>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Sticker Sheet</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Tag 100 lbs</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/images/cap-red.png</normaloff>:/images/cap-red.png</iconset>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Text Paper 24-70 lbs</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Vellum Bristol 57-67 lbs</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/images/cap-yellow.png</normaloff>:/images/cap-yellow.png</iconset>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Writing Paper 24-70 lbs</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_2">
         <property name="text">
-         <string>Card with Craft Paper Backing</string>
+         <string>Speed:</string>
         </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/images/cap-yellow.png</normaloff>:/images/cap-yellow.png</iconset>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QSlider" name="speedSlider">
+        <property name="minimum">
+         <number>1</number>
         </property>
-       </item>
-       <item>
+        <property name="maximum">
+         <number>10</number>
+        </property>
+        <property name="pageStep">
+         <number>2</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_3">
         <property name="text">
-         <string>Vinyl Sticker</string>
+         <string>Pressure:</string>
         </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QSlider" name="pressureSlider">
+        <property name="minimum">
+         <number>1</number>
         </property>
-       </item>
-       <item>
+        <property name="maximum">
+         <number>33</number>
+        </property>
+        <property name="pageStep">
+         <number>2</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_7">
         <property name="text">
-         <string>Film Labels</string>
+         <string/>
         </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
-        </property>
-       </item>
-       <item>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QCheckBox" name="trackEnhancingCheckbox">
         <property name="text">
-         <string>Thick Media</string>
+         <string>Track Enhancing</string>
         </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/images/cap-yellow.png</normaloff>:/images/cap-yellow.png</iconset>
-        </property>
-       </item>
-       <item>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="regMarksGroup">
+     <property name="title">
+      <string>Registration Marks (Experimental!)</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QCheckBox" name="regSearchCheckbox">
         <property name="text">
-         <string>Thin Media</string>
+         <string>Search Registration Marks</string>
         </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
+        <property name="checked">
+         <bool>true</bool>
         </property>
-       </item>
-       <item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_4">
         <property name="text">
-         <string>Pen</string>
+         <string>Dimensions (width × height):</string>
         </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/images/cap-pen.png</normaloff>:/images/cap-pen.png</iconset>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Bond Paper 13-28 lbs</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Bristol Paper 57-67 lbs</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/images/cap-yellow.png</normaloff>:/images/cap-yellow.png</iconset>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Cardstock 40-60 lbs</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/images/cap-yellow.png</normaloff>:/images/cap-yellow.png</iconset>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Cover 40-60 lbs</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/images/cap-yellow.png</normaloff>:/images/cap-yellow.png</iconset>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Film, Double Matte Translucent</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Film, Vinyl With Adhesive Back</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Film, Window With Kling Adhesive</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Index 90 lbs</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/images/cap-red.png</normaloff>:/images/cap-red.png</iconset>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Inkjet Photo Paper 28-44 lbs</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/images/cap-yellow.png</normaloff>:/images/cap-yellow.png</iconset>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Inkjet Photo Paper 45-75 lbs</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/images/cap-red.png</normaloff>:/images/cap-red.png</iconset>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Magnetic Sheet</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/images/cap-red.png</normaloff>:/images/cap-red.png</iconset>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Offset 24-60 lbs</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Print Paper Light Weight</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Print Paper Medium Weight</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/images/cap-yellow.png</normaloff>:/images/cap-yellow.png</iconset>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Sticker Sheet</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Tag 100 lbs</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/images/cap-red.png</normaloff>:/images/cap-red.png</iconset>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Text Paper 24-70 lbs</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Vellum Bristol 57-67 lbs</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/images/cap-yellow.png</normaloff>:/images/cap-yellow.png</iconset>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Writing Paper 24-70 lbs</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
-        </property>
-       </item>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>Speed:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QSlider" name="speedSlider">
-       <property name="minimum">
-        <number>1</number>
-       </property>
-       <property name="maximum">
-        <number>10</number>
-       </property>
-       <property name="pageStep">
-        <number>2</number>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>Pressure:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QSlider" name="pressureSlider">
-       <property name="minimum">
-        <number>1</number>
-       </property>
-       <property name="maximum">
-        <number>33</number>
-       </property>
-       <property name="pageStep">
-        <number>2</number>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="QCheckBox" name="trackEnhancingCheckbox">
-       <property name="text">
-        <string>Track Enhancing</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QDoubleSpinBox" name="regWidthSpinner">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>188</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="suffix">
+           <string> mm</string>
+          </property>
+          <property name="maximum">
+           <double>300.000000000000000</double>
+          </property>
+          <property name="value">
+           <double>180.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>×</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QDoubleSpinBox" name="regHeightSpinner">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>188</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="suffix">
+           <string> mm</string>
+          </property>
+          <property name="maximum">
+           <double>1000.000000000000000</double>
+          </property>
+          <property name="value">
+           <double>230.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
    </item>
    <item>
     <spacer name="verticalSpacer">
@@ -324,7 +429,7 @@
      <property name="sizeHint" stdset="0">
       <size>
        <width>20</width>
-       <height>45</height>
+       <height>0</height>
       </size>
      </property>
     </spacer>
