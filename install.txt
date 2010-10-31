@@ -1,0 +1,31 @@
+INSTALLATION
+^^^^^^^^^^^^
+
+sudo apt-get install libqt4-dev libusb-1.0-0-dev git-core
+
+# Go to home directory (or wherever you want to install it)
+cd ~
+# Get the latest source code (if you don't already have it)
+git clone git://gitorious.org/robocut/robocut.git
+
+# Go into the source code directory.
+cd robocut
+
+# Build the project.
+qmake
+make
+
+# At this point the executable is built, and you can just link to it if you like, or you can install it
+# system-wide like this:
+sudo cp Robocut /usr/local/bin
+
+
+
+# Then create a link in your menu to /usr/local/bin/Robocut  (not capital R)
+
+
+# Finally remember to make sure you are in the lp group:
+
+adduser <you> lp
+
+# You will probably have to log out and log in again after that.

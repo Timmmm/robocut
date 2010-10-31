@@ -31,3 +31,8 @@ QT += svg
 
 RESOURCES += \
     resources.qrc
+
+OTHER_FILES += \
+    readme.txt \
+    install.txt \
+    changelog.txt

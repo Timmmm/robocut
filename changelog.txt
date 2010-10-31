@@ -1,0 +1,3 @@
+Version 0.2 - a3b13ad - Oct 24th 2010
+
+* Initial working version.
