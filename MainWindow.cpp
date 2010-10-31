@@ -76,9 +76,13 @@ void MainWindow::on_actionOpen_triggered()
 	qDebug() << "SVG view box: " << rend.viewBoxF() << endl;
 
 	// Get size from SVG. TODO: Sanity check.
-	mediaSize = rend.defaultSize() * 25.4 / 90.0;
+	// Also TODO: This won't handle offset viewboxes... need to get the offset and subtract it from
+	// all the objects.
+	mediaSize = rend.viewBoxF().size() * 25.4 / 90.0;
 
 	double ppm = 90.0/25.4; // Pixels per mm.
+
+	qDebug() << "Page size (mm): " << mediaSize << endl;
 
 	PathPaintDevice pg(mediaSize.width(), mediaSize.height(), ppm);
 	QPainter p(&pg);
