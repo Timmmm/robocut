@@ -117,7 +117,7 @@ void MainWindow::loadFile()
 	rend.render(&p);
 
 	paths = pg.paths();
-	qSort(paths.begin(), paths.end(), MyLessThan);
+	if(sortFlag == true)qSort(paths.begin(), paths.end(), MyLessThan);
 	scene->clear();
 	scene->setBackgroundBrush(QBrush(Qt::lightGray));
 
