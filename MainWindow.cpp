@@ -17,6 +17,10 @@
 #include <QShortcut>
 #include <cmath>
 
+#include <QEvent>
+#include <iostream>
+#include <QWheelEvent>
+
 using namespace std;
 
 const double InitialZoom = 2.0;
@@ -30,6 +34,8 @@ MainWindow::MainWindow(QWidget *parent)
 	ui->graphicsView->setScene(scene);
 
 	ui->graphicsView->scale(InitialZoom, InitialZoom);
+
+	ui->graphicsView->viewport()->installEventFilter(this);
 
 	cutDialog = NULL;
 
@@ -269,4 +275,19 @@ void MainWindow::setFileLoaded(QString filename)
 	ui->actionZoom_Out->setEnabled(e);
 	ui->actionCut->setEnabled(e);
 
+}
+
+bool MainWindow::eventFilter(QObject *o, QEvent *e)
+{
+	if (o == ui->graphicsView->viewport())
+	{
+		if (e->type() == QEvent::Wheel)
+		{
+			QWheelEvent *w = dynamic_cast<QWheelEvent*>(e);
+			if(w->delta() <= 0) on_actionZoom_In_triggered();
+			else on_actionZoom_Out_triggered();
+			return true;
+		}
+	}
+	return false;
 }

@@ -65,6 +65,7 @@ private slots:
 private:
 	// Use empty string to indicate no file is loaded.
 	void setFileLoaded(QString filename);
+	bool eventFilter(QObject *o, QEvent *e);
 };
 
 #endif // MAINWINDOW_H
