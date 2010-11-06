@@ -55,6 +55,15 @@ MainWindow::~MainWindow()
 	delete ui;
 }
 
+static bool MyLessThan(const QPolygonF &p1, const QPolygonF &p2)
+{
+	qreal testx1 = p1[0].x();
+	qreal testx2 = p2[0].x();
+	qreal testy1 = p1[0].y();
+	qreal testy2 = p2[0].y();
+	if(testx1 == testx2) return testy1 < testy2;
+	else return testx1 < testx2;
+}
 
 void MainWindow::on_actionOpen_triggered()
 {
@@ -96,7 +105,7 @@ void MainWindow::on_actionOpen_triggered()
 	rend.render(&p);
 
 	paths = pg.paths();
-
+	qSort(paths.begin(), paths.end(), MyLessThan);
 	scene->clear();
 	scene->setBackgroundBrush(QBrush(Qt::lightGray));
 
@@ -105,10 +114,40 @@ void MainWindow::on_actionOpen_triggered()
 
 	QPen pen;
 	pen.setWidthF(0.5);
-	for (int i = 0; i < paths.size(); ++i)
+	for (int i = 0, ii = 50, iii=0; i < paths.size(); ++i,ii+=10)
 	{
-		pen.setColor(QColor(rand() % 155, rand() % 155, rand() % 155));
+		switch (iii)
+		{
+		case 0:
+			pen.setColor(QColor(ii, ii, ii));
+				break;
+		case 1:
+			pen.setColor(QColor(ii, 0, 0));
+				break;
+		case 2:
+			pen.setColor(QColor(0, ii, 0));
+				break;
+		case 3:
+			pen.setColor(QColor(0, 0, ii));
+				break;
+		case 4:
+			pen.setColor(QColor(ii, ii, 0));
+				break;
+		case 5:
+			pen.setColor(QColor(ii, 0, ii));
+				break;
+		case 6:
+			pen.setColor(QColor(0, ii, ii));
+				break;
+		}
+
 		scene->addPolygon(paths[i], pen);
+		if(ii >= 200)
+		{
+			ii = 50;
+			iii++;
+			if(iii >=7)iii=0;
+		}
 	}
 
 	// Handle the animation. I.e. stop it.
