@@ -16,6 +16,7 @@
 
 #include <QShortcut>
 #include <cmath>
+#include <QFile>
 
 #include <QEvent>
 #include <iostream>
@@ -48,6 +49,10 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(zoom_in, SIGNAL(activated()), SLOT(on_actionZoom_In_triggered()));
 	QShortcut* zoom_out = new QShortcut(QKeySequence("Z"), this);
 	connect(zoom_out, SIGNAL(activated()), SLOT(on_actionZoom_Out_triggered()));
+	//default options if not specified on command line
+	sortFlag=0;
+	cutFlag=0;
+	fileValue=NULL;
 }
 
 MainWindow::~MainWindow()
@@ -70,13 +75,20 @@ void MainWindow::on_actionOpen_triggered()
 	if (lastOpenDir.isEmpty())
 		lastOpenDir = QDir::homePath();
 
-	QString filename = QFileDialog::getOpenFileName(this,
+	filename = QFileDialog::getOpenFileName(this,
 			tr("Open File"), lastOpenDir, tr("SVG Files (*.svg)"));
 	if (filename.isEmpty())
 		return;
 
 	lastOpenDir = QFileInfo(filename).absoluteDir().path();
+	loadFile();
+}
 
+void MainWindow::loadFile()
+{
+	if (filename.isEmpty())
+		return;
+		
 	qDebug() << "Reading file: " << filename;
 
 	QSvgRenderer rend;
@@ -330,3 +342,11 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
 	}
 	return false;
 }
+
+void MainWindow::optDone()
+{
+	filename = QString(fileValue);
+	if(QFile::exists(filename)) loadFile();
+	if(cutFlag == true) on_actionCut_triggered();
+}
+

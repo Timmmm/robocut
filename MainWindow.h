@@ -47,6 +47,13 @@ private:
 	double cutMarkerDistance; // Current distance along edge.
 
 	QSizeF mediaSize;
+	
+	QString filename;
+
+public:
+	int sortFlag;
+	int cutFlag;
+	char *fileValue;
 
 private slots:
 	void on_actionZoom_Out_triggered();
@@ -66,6 +73,9 @@ private:
 	// Use empty string to indicate no file is loaded.
 	void setFileLoaded(QString filename);
 	bool eventFilter(QObject *o, QEvent *e);
+	void loadFile();
+public:
+	void optDone();
 };
 
 #endif // MAINWINDOW_H
