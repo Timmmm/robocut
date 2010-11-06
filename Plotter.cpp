@@ -332,9 +332,28 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 			if (!e) goto error; 
 
 			e = UsbReceive(handle, resp, 20000); // Allow 20s for reply...
-			if (!e) goto error;
-			if (resp != "    1")
+						if (!e) goto error;
+			if (resp != "    0,    0\x03")
 			{
+				cout << resp << endl;
+				e = Error("Couldn't find registration marks.");
+				goto error;
+			}
+// Looks like if the reg marks work it gets 3 messages back (if it fails it times out because it only gets the first message)
+			e = UsbReceive(handle, resp, 20000); // Allow 20s for reply...
+			if (!e) goto error;
+			if (resp != "    0\x03")
+			{
+				cout << resp << endl;
+				e = Error("Couldn't find registration marks.");
+				goto error;
+			}
+
+			e = UsbReceive(handle, resp, 20000); // Allow 20s for reply...
+			if (!e) goto error;
+			if (resp != "    1\x03")
+			{
+				cout << resp << endl;
 				e = Error("Couldn't find registration marks.");
 				goto error;
 			}
@@ -362,6 +381,15 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 			double x = cuts[i][0].x()*20.0;
 			double y = cuts[i][0].y()*20.0;
 
+			double xorigin = 15.0; // hard code regmark origin x, it would be nice to code that into the SVG, XML should be able to handle this.
+			double yorigin = 10.0; // hard code regmark origin y
+
+			if (regmark)
+			{
+				x = x - (xorigin*20.0);
+				y = y + (yorigin*20.0);
+			}
+
 			// TODO: Also do this in the UI and warn the user about it.
 			if (x < 0.0) x = 0.0;
 			if (x > width) x = width;
@@ -374,6 +402,12 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 			{
 				x = cuts[i][j].x()*20.0;
 				y = cuts[i][j].y()*20.0;
+
+				if (regmark)
+				{
+					x = x - (xorigin*20.0);
+					y = y + (yorigin*20.0);
+				}
 
 				if (x < 0.0) x = 0.0;
 				if (x > width) x = width;
