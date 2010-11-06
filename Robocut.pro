@@ -3,6 +3,12 @@
 # -------------------------------------------------
 TARGET = Robocut
 TEMPLATE = app
+INSTALLS += icon \
+	    target
+target.path = /usr/bin
+icon.files += ./images/robocut.xpm
+icon.path = /usr/share/pixmaps/
+                         
 SOURCES += main.cpp \
     MainWindow.cpp \
     Plotter.cpp \
@@ -32,7 +38,16 @@ QT += svg
 RESOURCES += \
     resources.qrc
 
-OTHER_FILES += \
+QMAKE_COPY += \
     readme.txt \
     install.txt \
-    changelog.txt
+    changelog.txt \
+    images/cap-blue.png \
+    images/cap-pen.png \
+    images/cap-red.png \
+    images/cap-yellow.png \
+    images/icon.png \
+    images/robocut.xpm
+
+QMAKE_INSTALL_FILE += \
+    images/robocut.xpm

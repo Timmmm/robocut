@@ -1,0 +1,4 @@
+?package(robocut):needs="X11" section="Applications/Graphics"\
+  icon="/usr/share/pixmaps/robocut.xpm"\
+  title="Robocut"\
+  command="/usr/bin/Robocut"
