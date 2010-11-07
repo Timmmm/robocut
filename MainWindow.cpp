@@ -66,8 +66,8 @@ static bool MyLessThan(const QPolygonF &p1, const QPolygonF &p2)
 	qreal testx2 = p2[0].x();
 	qreal testy1 = p1[0].y();
 	qreal testy2 = p2[0].y();
-	if(testx1 == testx2) return testy1 < testy2;
-	else return testx1 < testx2;
+	if(testy1 == testy2) return testx1 < testx2;
+	else return testy1 < testy2;
 }
 
 void MainWindow::on_actionOpen_triggered()
