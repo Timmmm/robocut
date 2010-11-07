@@ -331,7 +331,7 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 			e = UsbSend(handle, "FQ5\x03"); // only with registration ???
 			if (!e) goto error; 
 
-			e = UsbReceive(handle, resp, 20000); // Allow 20s for reply...
+			e = UsbReceive(handle, resp, 40000); // Allow 20s for reply...
 						if (!e) goto error;
 			if (resp != "    0,    0\x03")
 			{
@@ -340,7 +340,7 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 				goto error;
 			}
 // Looks like if the reg marks work it gets 3 messages back (if it fails it times out because it only gets the first message)
-			e = UsbReceive(handle, resp, 20000); // Allow 20s for reply...
+			e = UsbReceive(handle, resp, 40000); // Allow 20s for reply...
 			if (!e) goto error;
 			if (resp != "    0\x03")
 			{
@@ -349,7 +349,7 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 				goto error;
 			}
 
-			e = UsbReceive(handle, resp, 20000); // Allow 20s for reply...
+			e = UsbReceive(handle, resp, 40000); // Allow 20s for reply...
 			if (!e) goto error;
 			if (resp != "    1\x03")
 			{
