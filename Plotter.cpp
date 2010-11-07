@@ -432,7 +432,7 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 				}
 				
 				if (draw) page << ",D" << x << "," << height-y;
-				else page << ",M" << x << "," << height-y; // outside the range just move
+				else page << ",M" << x << "," << height-y; // if outside the range just move
 			}
 		}
 
