@@ -347,6 +347,6 @@ void MainWindow::optDone()
 {
 	filename = QString(fileValue);
 	if(QFile::exists(filename)) loadFile();
-	if(cutFlag == true) on_actionCut_triggered();
+	if(cutFlag == true&&QFile::exists(filename)) on_actionCut_triggered();
 }
 
