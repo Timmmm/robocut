@@ -375,12 +375,30 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 				x = cuts[i][j].x()*20.0;
 				y = cuts[i][j].y()*20.0;
 
-				if (x < 0.0) x = 0.0;
-				if (x > width) x = width;
-
-				if (y < 0.0) y = 0.0;
-				if (y > height) y = height;
-				page << ",D" << x << "," << height-y;
+				bool draw = true;
+				if (x <= 0.0) 
+				{
+					x = 0.0;
+					draw = false;
+				}
+				if (x >= width)
+				{
+					x = width;
+					draw = false;
+				}
+				if (y <= 0.0)
+				{ 
+					y = 0.0;
+					draw = false;
+				}
+				if (y >= height) 
+				{
+					y = height;
+					draw = false;
+				}
+				
+				if (draw) page << ",D" << x << "," << height-y;
+				else page << ",M" << x << "," << height-y; // if outside the range just move
 			}
 		}
 
