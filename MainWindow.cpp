@@ -70,6 +70,46 @@ static bool MyLessThan(const QPolygonF &p1, const QPolygonF &p2)
 	else return testy1 < testy2;
 }
 
+static qreal getDistance(const QPolygonF &p1, const QPolygonF &p2)
+{
+	qreal testx1 = p1.last().x();
+	qreal testy1 = p1.last().y();
+	qreal testx2 = p2.first().x();
+	qreal testy2 = p2.first().y();
+	qreal a = 0.0;
+	qreal b = 0.0;
+	double c = 0.0;
+	
+	if(testx1 >= testx2) a = testx1 - testx2;
+	else a = testx2 - testx1;
+	if(testy1 >= testy2) b = testy1 - testy2;
+	else b = testy2 - testy1;
+	c = sqrt((double)(a*a+b*b));
+	return (qreal) c;
+}
+
+static QList<QPolygonF> MyFakeTSP(const QList<QPolygonF> inpaths)
+{
+	QList<QPolygonF> outpaths;
+	outpaths = QList<QPolygonF>(inpaths);
+	for (int i = 0; i < (outpaths.size()-1); ++i)
+	{
+		qreal dist=10000.0;
+		int bestindex=i;
+		for (int j = (i+1); j < outpaths.size(); ++j)
+		{
+			if (getDistance(outpaths[i],outpaths[j]) < dist) 
+			{
+				dist = getDistance(outpaths[i],outpaths[j]);
+				bestindex = j;
+			}
+		}
+		if (dist != 0) outpaths.swap((i+1),bestindex);
+	}
+	
+	return outpaths;
+}
+
 void MainWindow::on_actionOpen_triggered()
 {
 	if (lastOpenDir.isEmpty())
@@ -117,7 +157,11 @@ void MainWindow::loadFile()
 	rend.render(&p);
 
 	paths = pg.paths();
-	if(sortFlag == true)qSort(paths.begin(), paths.end(), MyLessThan);
+	if(sortFlag == true)
+	{
+		qSort(paths.begin(), paths.end(), MyLessThan);
+		paths = MyFakeTSP(paths);
+	}
 	scene->clear();
 	scene->setBackgroundBrush(QBrush(Qt::lightGray));
 
