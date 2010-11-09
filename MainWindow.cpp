@@ -4,6 +4,8 @@
 #include "PathPaintPage.h"
 #include "Plotter.h"
 
+#include "ProgramOptions.h"
+
 #include "CuttingDialog.h"
 #include <QPainter>
 #include <QDebug>
@@ -282,9 +284,13 @@ void MainWindow::setFileLoaded(QString filename)
 
 }
 
-void MainWindow::optDone()
+void MainWindow::GetOpt(int argc, char *argv[])
 {
-	filename = QString(fileValue);
+	ProgramOptions po;
+	po.setVersion("Robocut V1.0.2");
+	po.GetOpt(argc, argv);
+	
+	filename = po.getFileName();
 	if(QFile::exists(filename)) loadFile();
-	if(cutFlag == true) on_actionCut_triggered();
+	if(po.getStartCut() == true) on_actionCut_triggered();
 }

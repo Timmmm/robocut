@@ -1,4 +1,7 @@
 #include "ProgramOptions.h"
+#include <getopt.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <iostream>
 using namespace std;
 
@@ -7,6 +10,11 @@ using namespace std;
 
 ProgramOptions::ProgramOptions ( ) {
 initAttributes();
+}
+
+ProgramOptions::ProgramOptions (int argc, char *argv[] ) {
+initAttributes();
+GetOpt(argc, argv);
 }
 
 ProgramOptions::~ProgramOptions ( ) { }
@@ -338,13 +346,33 @@ bool ProgramOptions::getTrackEnhancing ( ) {
  */
 int ProgramOptions::GetOpt (int argc, char *argv[] )
 {
-	int index;
-	int c;
+	static int version_flag= 0, help_flag = 0;
+	int index, option_index = 0;
+	int c = 0;
+	const char shortopts[] = "scf:";
+	static struct option longopts[] =
+	{
+	/* These options set a flag. */
+	{"help",     no_argument,       &help_flag, 1},
+	{"version",  no_argument,       &version_flag, 1},
+	/* These options don't set a flag.
+		We distinguish them by their indices. */
+	{"sort",     no_argument,       0, 's'},
+	{"cut",      no_argument,       0, 'c'},
+	{"filename", required_argument, 0, 'f'},
+	{0, 0, 0, 0}
+	};
+	
 	opterr = 0;
-		while ((c = getopt (argc, argv, "scf:")) != -1)
+		while ((c = getopt_long(argc, argv, shortopts, longopts, &option_index)) != -1)
 		{
 			switch (c)
 			{
+			case 0:
+			/* If this option set a flag, do nothing else now. */
+				if (longopts[option_index].flag != 0) break;
+				cout << longopts[option_index].name << endl;
+				break;
 			case 's':
 				sortPath = true;
 				break;
@@ -358,16 +386,26 @@ int ProgramOptions::GetOpt (int argc, char *argv[] )
 			 if (optopt == 'f')
 				cerr << "Option -"<< optopt <<" requires an argument." << endl;
 			else if (isprint (optopt))
-				cerr << "Unknown option `-"<< optopt <<"'." << endl;
+				cerr << "Unknown option `-"<< (char)optopt <<"'." << endl;
 			else
-				cerr << "Unknown option character `\\x"<< optopt <<"'." << endl;
-				return 1;
+				cerr << "Unknown option character ASCII code "<< optopt <<"." << endl;
+				exit(0);
 			default:
-				return 2;
+				abort();
 			}
 		}
 		for (index = optind; index < argc; index++)
 		cout << "Non-option argument " << argv[index] <<"'." << endl;
+		if(help_flag)
+		{
+			showHelp();
+			exit(0);
+		}
+		if(version_flag)
+		{
+			showVersion();
+			exit(0);
+		}
 	return 0;
 }
 
@@ -384,7 +422,9 @@ void ProgramOptions::showHelp ( )
 	cout << "  --help                  Show summary of options\n";
 	cout << "  --version               Show version information and copyright details\n\n";
 	cout << "Application Options:\n";
-	cout << "  --font <font>           Font to use, default is utopia, to see a list use `xlsfonts' command\n";
+	cout << "  -s  --sort              Sort the objects in the SVG before plotting.\n";
+	cout << "  -c  --cut               Shows the cutting dialogue.\n";
+	cout << "  -f  --filename          Svg file to load.\n";
 	cout << "Report bugs to https://bugs.launchpad.net/robocut/+filebug.\n";
 }
 

@@ -15,6 +15,7 @@ public:
 	 * Empty Constructor
 	 */
 	ProgramOptions ( );
+	ProgramOptions (int argc, char *argv[] );
 
 	/**
 	 * Empty Destructor

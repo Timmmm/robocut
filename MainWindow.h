@@ -74,7 +74,7 @@ private:
 	void setFileLoaded(QString filename);
 	void loadFile();
 public:
-	void optDone();
+	void GetOpt(int argc, char *argv[]);
 };
 
 #endif // MAINWINDOW_H
