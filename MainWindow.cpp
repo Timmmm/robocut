@@ -51,6 +51,7 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(zoom_out, SIGNAL(activated()), SLOT(on_actionZoom_Out_triggered()));
 	//default options if not specified on command line
 	sortFlag=0;
+	tspFlag=0;
 	cutFlag=0;
 	fileValue=NULL;
 }
@@ -90,8 +91,31 @@ static qreal getDistance(const QPolygonF &p1, const QPolygonF &p2)
 
 static QList<QPolygonF> MyFakeTSP(const QList<QPolygonF> inpaths)
 {
-	QList<QPolygonF> outpaths;
+	qreal bestdist = 0, tempdist = 0, zerodist=10000;
+	bool inp = false, outp = false, outp2 = false;
+	QPolygonF zero = QPolygonF(QRectF(0.0,279.9,0.0,0.0)); // able to change the start point
+	int zerostuff=0;
+	for (int i = 0; i < inpaths.size(); ++i)
+	{
+		tempdist = getDistance(zero,inpaths[i]);
+		if (tempdist < zerodist)
+		{
+			zerodist = tempdist;
+			zerostuff = i;
+		}
+	}
+	// test the input
+	for (int i = 0; i < (inpaths.size()-1); ++i)
+	{
+		getDistance(zero,inpaths[(i)]);
+		bestdist = bestdist + getDistance(inpaths[i],inpaths[(i+1)]);
+		inp = true;
+	}
+	cout<<"inpath: "<< bestdist << endl;
+	QList<QPolygonF> outpaths, outpaths2, outpaths3;
 	outpaths = QList<QPolygonF>(inpaths);
+	outpaths.move(zerostuff,0);
+	// find the shortest path
 	for (int i = 0; i < (outpaths.size()-1); ++i)
 	{
 		qreal dist=10000.0;
@@ -106,8 +130,54 @@ static QList<QPolygonF> MyFakeTSP(const QList<QPolygonF> inpaths)
 		}
 		if (dist != 0) outpaths.swap((i+1),bestindex);
 	}
+	tempdist = 0;
+	for (int i = 0; i < (outpaths.size()-1); ++i)
+	{
+		tempdist = tempdist + getDistance(outpaths[i],outpaths[(i+1)]);
+	}
+	if (tempdist < bestdist) 
+	{
+		bestdist = tempdist;
+		outp = true;
+	}
+	cout<<"outpath: "<< tempdist << endl;
 	
-	return outpaths;
+	// finds better start and end
+	outpaths2 = QList<QPolygonF>(outpaths);
+	for (int id1 = 0; id1 < outpaths2.size(); ++id1)
+	{	
+		outpaths2.move(id1,0);
+		for (int i = 0; i < (outpaths2.size()-1); ++i)
+		{
+			qreal dist=10000.0;
+			int bestindex=i;
+			for (int j = (i+1); j < outpaths2.size(); ++j)
+			{
+				if (getDistance(outpaths2[i],outpaths2[j]) < dist) 
+				{
+					dist = getDistance(outpaths2[i],outpaths2[j]);
+					bestindex = j;
+				}
+			}
+			if (dist != 0) outpaths2.swap((i+1),bestindex);
+		}
+		tempdist = 0;
+		for (int i = 0; i < (outpaths2.size()-1); ++i)
+		{
+			tempdist = tempdist + getDistance(outpaths2[i],outpaths2[(i+1)]);
+		}
+		if (tempdist < bestdist) 
+		{
+			bestdist = tempdist;
+			outp2 = true;
+			outpaths3 = QList<QPolygonF>(outpaths2);
+		}
+		cout<<"outpath2_"<< id1 <<"_"<<":"<< tempdist << endl << "\033[1A";
+	}
+cout<< endl<<"best: "<< bestdist << endl;
+	//if (outp2) return outpaths3;
+	if (outp) return outpaths;
+	return inpaths;
 }
 
 void MainWindow::on_actionOpen_triggered()
@@ -157,11 +227,8 @@ void MainWindow::loadFile()
 	rend.render(&p);
 
 	paths = pg.paths();
-	if(sortFlag == true)
-	{
-		qSort(paths.begin(), paths.end(), MyLessThan);
-		paths = MyFakeTSP(paths);
-	}
+	if(sortFlag == true) qSort(paths.begin(), paths.end(), MyLessThan);
+	if(tspFlag == true) paths = MyFakeTSP(paths);
 	scene->clear();
 	scene->setBackgroundBrush(QBrush(Qt::lightGray));
 
@@ -210,6 +277,7 @@ void MainWindow::loadFile()
 	// The old one was deleted when we cleared the scene.
 	cutMarker = scene->addEllipse(-1.0, -1.0, 2.0, 2.0, QPen(Qt::black), QBrush(Qt::red));
 	cutMarker->hide();
+	
 	ui->actionAnimate->setChecked(false);
 
 	// Reset the viewport.
@@ -261,7 +329,7 @@ void MainWindow::on_actionAnimate_toggled(bool animate)
 {
 	if (animate)
 	{
-		animationTimer->start(50);
+		animationTimer->start(25);
 		if (cutMarker)
 		{
 			cutMarker->setPos(0, 0);
@@ -318,7 +386,7 @@ void MainWindow::animate()
 	{
 		// We are moving between paths, and not cutting.
 		b = paths[(cutMarkerPath+1) % paths.size()][0];
-		cutMarker->setOpacity(0.3);
+		cutMarker->setOpacity(0.2);
 	}
 	else
 	{

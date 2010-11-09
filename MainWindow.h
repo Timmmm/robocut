@@ -52,6 +52,7 @@ private:
 
 public:
 	int sortFlag;
+	int tspFlag;
 	int cutFlag;
 	char *fileValue;
 

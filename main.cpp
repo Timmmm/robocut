@@ -29,12 +29,15 @@ int main(int argc, char *argv[])
 		int c;
 		
 		opterr = 0;
-		while ((c = getopt (argc, argv, "scf:")) != -1)
+		while ((c = getopt (argc, argv, "stcf:")) != -1)
 		{
 			switch (c)
 			{
 			case 's':
 				w.sortFlag = 1;
+				break;
+			case 't':
+				w.tspFlag = 1;
 				break;
 			case 'c':
 				w.cutFlag = 1;
