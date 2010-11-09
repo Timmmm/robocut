@@ -19,6 +19,13 @@ GetOpt(argc, argv);
 
 ProgramOptions::~ProgramOptions ( ) { }
 
+ProgramOptions& ProgramOptions::Instance()
+{
+	static ProgramOptions instance;
+	return instance;
+}
+
+
 //  
 // Methods
 //  
@@ -353,13 +360,13 @@ int ProgramOptions::GetOpt (int argc, char *argv[] )
 	static struct option longopts[] =
 	{
 	/* These options set a flag. */
-	{"help",     no_argument,       &help_flag, 1},
-	{"version",  no_argument,       &version_flag, 1},
+	{"help", no_argument, &help_flag, 1},
+	{"version", no_argument, &version_flag, 1},
 	/* These options don't set a flag.
 		We distinguish them by their indices. */
-	{"sort",     no_argument,       0, 's'},
-	{"cut",      no_argument,       0, 'c'},
-	{"filename", required_argument, 0, 'f'},
+	{"sort-path", no_argument, 0, 's'},
+	{"start-cut", no_argument, 0, 'c'},
+	{"file-name", required_argument, 0, 'f'}, //4
 	{0, 0, 0, 0}
 	};
 	
@@ -419,12 +426,12 @@ void ProgramOptions::showHelp ( )
 	cout << "Usage:\n";
 	cout << "  Robocut [OPTIONS...] [File]\n\n";
 	cout << "Help Options:\n";
-	cout << "  --help                  Show summary of options\n";
+	cout << "  " <<longopts[option_index].name << "                  Show summary of options\n";
 	cout << "  --version               Show version information and copyright details\n\n";
 	cout << "Application Options:\n";
-	cout << "  -s  --sort              Sort the objects in the SVG before plotting.\n";
-	cout << "  -c  --cut               Shows the cutting dialogue.\n";
-	cout << "  -f  --filename          Svg file to load.\n";
+	cout << "  -s, --sort-path              Sort the objects in the SVG before plotting.\n";
+	cout << "  -c, --cut               Shows the cutting dialogue.\n";
+	cout << "  -f, --filename          Svg file to load.\n";
 	cout << "Report bugs to https://bugs.launchpad.net/robocut/+filebug.\n";
 }
 

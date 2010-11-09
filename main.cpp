@@ -1,6 +1,8 @@
 #include <QtGui/QApplication>
 #include "MainWindow.h"
 
+#include "ProgramOptions.h"
+
 #include <libusb-1.0/libusb.h>
 #include <iostream>
 
@@ -8,6 +10,8 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
+	ProgramOptions::Instance().setVersion("Robocut V1.0.2");
+	ProgramOptions::Instance().GetOpt(argc, argv);
 	int err = libusb_init(NULL);
 	if (err != LIBUSB_SUCCESS)
 	{
@@ -21,7 +25,6 @@ int main(int argc, char *argv[])
 	{
 		QApplication a(argc, argv);
 		MainWindow w;
-		w.GetOpt(argc, argv);
 		w.show(); 
 		ret = a.exec();
 	}

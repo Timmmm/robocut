@@ -5,8 +5,8 @@
 #include <QString>
 class ProgramOptions
 {
-public:
 
+private:
 	// Constructors/Destructors
 	//  
 
@@ -16,12 +16,17 @@ public:
 	 */
 	ProgramOptions ( );
 	ProgramOptions (int argc, char *argv[] );
+	ProgramOptions(const ProgramOptions &);             // intentionally undefined
+	ProgramOptions & operator=(const ProgramOptions &); // intentionally undefined
 
 	/**
 	 * Empty Destructor
 	 */
 	virtual ~ProgramOptions ( );
-
+public:
+	// Singleton
+	//  
+	static ProgramOptions& Instance();
 
 
 	/**

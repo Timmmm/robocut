@@ -73,8 +73,6 @@ private:
 	// Use empty string to indicate no file is loaded.
 	void setFileLoaded(QString filename);
 	void loadFile();
-public:
-	void GetOpt(int argc, char *argv[]);
 };
 
 #endif // MAINWINDOW_H
