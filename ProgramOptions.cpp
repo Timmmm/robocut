@@ -1,4 +1,5 @@
 #include "ProgramOptions.h"
+#include <cmath>
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,197 +18,247 @@ ProgramOptions& ProgramOptions::Instance()
 }
 
 
-void ProgramOptions::setSortPath ( int new_var ) {
+void ProgramOptions::setSortPath ( int new_var ) 
+{
 	sortPath = new_var;
 }
 
-int ProgramOptions::getSortPath ( ) {
+int ProgramOptions::getSortPath ( ) 
+{
 	return sortPath;
 }
 
-void ProgramOptions::setStartCut ( int new_var ) {
+void ProgramOptions::setStartCut ( int new_var ) 
+{
 	startCut = new_var;
 }
 
-int ProgramOptions::getStartCut ( ) {
+int ProgramOptions::getStartCut ( ) 
+{
 	return startCut;
 }
 
-void ProgramOptions::setFileName ( QString new_var ) {
+void ProgramOptions::setFileName ( QString new_var ) 
+{
 	fileName = new_var;
 }
 
-QString ProgramOptions::getFileName ( ) {
+QString ProgramOptions::getFileName ( ) 
+{
 	return fileName;
 }
 
-void ProgramOptions::setTspSortPath ( int new_var ) {
+void ProgramOptions::setTspSortPath ( int new_var ) 
+{
 	tspSortPath = new_var;
 }
 
-int ProgramOptions::getTspSortPath ( ) {
+int ProgramOptions::getTspSortPath ( ) 
+{
 	return tspSortPath;
 }
 
-void ProgramOptions::setMedia ( int new_var ) {
+void ProgramOptions::setMedia ( int new_var ) 
+{
 	media = new_var;
 }
 
-int ProgramOptions::getMedia ( ) {
+int ProgramOptions::getMedia ( ) 
+{
 	return media;
 }
 
-void ProgramOptions::setSpeed ( int new_var ) {
+void ProgramOptions::setSpeed ( int new_var ) 
+{
 	speed = new_var;
 }
 
-int ProgramOptions::getSpeed ( ) {
+int ProgramOptions::getSpeed ( ) 
+{
 	return speed;
 }
 
-void ProgramOptions::setPressure ( int new_var ) {
+void ProgramOptions::setPressure ( int new_var ) 
+{
 	pressure = new_var;
 }
 
-int ProgramOptions::getPressure ( ) {
+int ProgramOptions::getPressure ( ) 
+{
 	return pressure;
 }
 
-void ProgramOptions::setRegMarkAuto ( int new_var ) {
+void ProgramOptions::setRegMarkAuto ( int new_var ) 
+{
 	regMarkAuto = new_var;
 }
 
-int ProgramOptions::getRegMarkAuto ( ) {
+int ProgramOptions::getRegMarkAuto ( ) 
+{
 	return regMarkAuto;
 }
 
-void ProgramOptions::setRegMark ( int new_var ) {
+void ProgramOptions::setRegMark ( int new_var ) 
+{
 	regMark = new_var;
 }
 
-int ProgramOptions::getRegMark ( ) {
+int ProgramOptions::getRegMark ( ) 
+{
 	return regMark;
 }
 
-void ProgramOptions::setRegDimensionWidth ( double new_var ) {
+void ProgramOptions::setRegDimensionWidth ( int new_var ) 
+{
 	regDimensionWidth = new_var;
 }
 
-double ProgramOptions::getRegDimensionWidth ( ) {
-	return regDimensionWidth;
+int ProgramOptions::getRegDimensionWidth ( ) 
+{
+	return lroundl(regDimensionWidth);
 }
 
-void ProgramOptions::setRegDimensionHeight ( double new_var ) {
+void ProgramOptions::setRegDimensionHeight ( int new_var ) 
+{
 	regDimensionHeight = new_var;
 }
 
-double ProgramOptions::getRegDimensionHeight ( ) {
-	return regDimensionHeight;
+int ProgramOptions::getRegDimensionHeight ( ) 
+{
+	return lroundl(regDimensionHeight);
 }
 
-void ProgramOptions::setRegOriginWidth ( double new_var ) {
+void ProgramOptions::setRegOriginWidth ( int new_var ) 
+{
 	regOriginWidth = new_var;
 }
 
-double ProgramOptions::getRegOriginWidth ( ) {
-	return regOriginWidth;
+int ProgramOptions::getRegOriginWidth ( ) 
+{
+	return lroundl(regOriginWidth);
 }
 
-void ProgramOptions::setRegOriginHeight ( double new_var ) {
+void ProgramOptions::setRegOriginHeight ( int new_var ) 
+{
 	regOriginHeight = new_var;
 }
 
-double ProgramOptions::getRegOriginHeight ( ) {
-	return regOriginHeight;
+int ProgramOptions::getRegOriginHeight ( ) 
+{
+	return lroundl(regOriginHeight);
 }
 
-void ProgramOptions::setRegDimensionWidthMM ( double new_var ) {
+void ProgramOptions::setRegDimensionWidthMM ( double new_var ) 
+{
 	regDimensionWidth = new_var*20;
 }
 
-double ProgramOptions::getRegDimensionWidthMM ( ) {
+double ProgramOptions::getRegDimensionWidthMM ( ) 
+{
 	return regDimensionWidth/20;
 }
 
-void ProgramOptions::setRegDimensionHeightMM ( double new_var ) {
+void ProgramOptions::setRegDimensionHeightMM ( double new_var ) 
+{
 	regDimensionHeight = new_var*20;
 }
 
-double ProgramOptions::getRegDimensionHeightMM ( ) {
+double ProgramOptions::getRegDimensionHeightMM ( ) 
+{
 	return regDimensionHeight/20;
 }
 
-void ProgramOptions::setRegOriginWidthMM ( double new_var ) {
+void ProgramOptions::setRegOriginWidthMM ( double new_var ) 
+{
 	regOriginWidth = new_var*20;
 }
 
-double ProgramOptions::getRegOriginWidthMM ( ) {
+double ProgramOptions::getRegOriginWidthMM ( ) 
+{
 	return regOriginWidth/20;
 }
 
-void ProgramOptions::setRegOriginHeightMM ( double new_var ) {
+void ProgramOptions::setRegOriginHeightMM ( double new_var ) 
+{
 	regOriginHeight = new_var*20;
 }
 
-double ProgramOptions::getRegOriginHeightMM ( ) {
+double ProgramOptions::getRegOriginHeightMM ( ) 
+{
 	return regOriginHeight/20;
 }
 
-void ProgramOptions::setVersion ( QString new_var ) {
+void ProgramOptions::setVersion ( QString new_var ) 
+{
 	version = new_var;
 }
 
-QString ProgramOptions::getVersion ( ) {
+QString ProgramOptions::getVersion ( ) 
+{
 	return version;
 }
 
-void ProgramOptions::setVendorUSB_ID ( int new_var ) {
+void ProgramOptions::setVendorUSB_ID ( int new_var ) 
+{
 	vendorUSB_ID = new_var;
 }
 
-int ProgramOptions::getVendorUSB_ID ( ) {
+int ProgramOptions::getVendorUSB_ID ( ) 
+{
 	return vendorUSB_ID;
 }
 
-void ProgramOptions::setProductUSB_ID ( int new_var ) {
+void ProgramOptions::setProductUSB_ID ( int new_var ) 
+{
 	productUSB_ID = new_var;
 }
 
-int ProgramOptions::getProductUSB_ID ( ) {
+int ProgramOptions::getProductUSB_ID ( ) 
+{
 	return productUSB_ID;
 }
 
-void ProgramOptions::setMarginTop ( double new_var ) {
+void ProgramOptions::setMarginTop ( int new_var ) 
+{
 	marginTop = new_var;
 }
-double ProgramOptions::getMarginTop ( ) {
-	return marginTop;
+int ProgramOptions::getMarginTop ( ) 
+{
+	return lroundl(marginTop);
 }
-void ProgramOptions::setMarginRight ( double new_var ) {
+void ProgramOptions::setMarginRight ( int new_var ) 
+{
 	marginRight = new_var;
 }
-double ProgramOptions::getMarginRight ( ) {
-	return marginRight;
+int ProgramOptions::getMarginRight ( ) 
+{
+	return lroundl(marginRight);
 }
 
-void ProgramOptions::setMarginTopMM ( double new_var ) {
+void ProgramOptions::setMarginTopMM ( double new_var ) 
+{
 	marginTop = new_var*20;
 }
-double ProgramOptions::getMarginTopMM ( ) {
+double ProgramOptions::getMarginTopMM ( ) 
+{
 	return marginTop/20;
 }
-void ProgramOptions::setMarginRightMM ( double new_var ) {
+void ProgramOptions::setMarginRightMM ( double new_var ) 
+{
 	marginRight = new_var*20;
 }
-double ProgramOptions::getMarginRightMM ( ) {
+double ProgramOptions::getMarginRightMM ( ) 
+{
 	return marginRight/20;
 }
 
-void ProgramOptions::setTrackEnhancing ( int new_var ) {
+void ProgramOptions::setTrackEnhancing ( int new_var ) 
+{
 	trackEnhancing = new_var;
 }
 
-int ProgramOptions::getTrackEnhancing ( ) {
+int ProgramOptions::getTrackEnhancing ( ) 
+{
 	return trackEnhancing;
 } 
 
@@ -407,19 +458,19 @@ void ProgramOptions::initAttributes ( ) {
 	startCut = false;
 	fileName = "";
 	tspSortPath = false;
-	media = 0;
-	speed = 33;
-	pressure = 10;
+	media = 102;
+	speed = 10;
+	pressure = 33;
 	regMarkAuto = false;
 	regMark = false;
-	regDimensionWidth = 180.0;
-	regDimensionHeight = 240.0;
-	regOriginWidth = 15.0;
-	regOriginHeight = 10.0;
+	setRegDimensionWidthMM(180.0);
+	setRegDimensionHeightMM(240.0);
+	setRegOriginWidthMM(15.0);
+	setRegOriginHeightMM(10.0);
 	vendorUSB_ID = 0x0b4d;
 	productUSB_ID = 0x111d;
-	marginTop = 500;
-	marginRight = 320;
+	setMarginTop(500);
+	setMarginRight(320);
 	trackEnhancing = false;
 }
 
