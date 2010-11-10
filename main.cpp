@@ -24,8 +24,7 @@ int main(int argc, char *argv[])
 	// Code block to ensure usb devices are closed. Maybe.
 	{
 		QApplication a(argc, argv);
-		MainWindow w;
-		w.show(); 
+		MainWindow w; 
 		ret = a.exec();
 	}
 

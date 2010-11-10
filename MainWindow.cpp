@@ -49,6 +49,7 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(zoom_out, SIGNAL(activated()), SLOT(on_actionZoom_Out_triggered()));
 
 	//default options if not specified on command line
+	this->show();
 	filename = ProgramOptions::Instance().getFileName();
 	if(QFile::exists(filename)) loadFile();
 	if(ProgramOptions::Instance().getStartCut() == true) on_actionCut_triggered();

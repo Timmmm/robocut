@@ -5,20 +5,11 @@
 #include <iostream>
 using namespace std;
 
-// Constructors/Destructors
-//  
-
-ProgramOptions::ProgramOptions ( ) {
+ProgramOptions::ProgramOptions ( ) 
+{
 initAttributes();
 }
-
-ProgramOptions::ProgramOptions (int argc, char *argv[] ) {
-initAttributes();
-GetOpt(argc, argv);
-}
-
 ProgramOptions::~ProgramOptions ( ) { }
-
 ProgramOptions& ProgramOptions::Instance()
 {
 	static ProgramOptions instance;
@@ -26,348 +17,229 @@ ProgramOptions& ProgramOptions::Instance()
 }
 
 
-//  
-// Methods
-//  
-
-
-// Accessor methods
-//  
-
-
-// Private attribute accessor methods
-//  
-
-
-/**
- * Set the value of sortPath
- * @param new_var the new value of sortPath
- */
-void ProgramOptions::setSortPath ( bool new_var ) {
+void ProgramOptions::setSortPath ( int new_var ) {
 	sortPath = new_var;
 }
 
-/**
- * Get the value of sortPath
- * @return the value of sortPath
- */
-bool ProgramOptions::getSortPath ( ) {
+int ProgramOptions::getSortPath ( ) {
 	return sortPath;
 }
 
-/**
- * Set the value of startCut
- * @param new_var the new value of startCut
- */
-void ProgramOptions::setStartCut ( bool new_var ) {
+void ProgramOptions::setStartCut ( int new_var ) {
 	startCut = new_var;
 }
 
-/**
- * Get the value of startCut
- * @return the value of startCut
- */
-bool ProgramOptions::getStartCut ( ) {
+int ProgramOptions::getStartCut ( ) {
 	return startCut;
 }
 
-/**
- * Set the value of fileName
- * @param new_var the new value of fileName
- */
 void ProgramOptions::setFileName ( QString new_var ) {
 	fileName = new_var;
 }
 
-/**
- * Get the value of fileName
- * @return the value of fileName
- */
 QString ProgramOptions::getFileName ( ) {
 	return fileName;
 }
 
-/**
- * Set the value of tspSortPath
- * @param new_var the new value of tspSortPath
- */
-void ProgramOptions::setTspSortPath ( bool new_var ) {
+void ProgramOptions::setTspSortPath ( int new_var ) {
 	tspSortPath = new_var;
 }
 
-/**
- * Get the value of tspSortPath
- * @return the value of tspSortPath
- */
-bool ProgramOptions::getTspSortPath ( ) {
+int ProgramOptions::getTspSortPath ( ) {
 	return tspSortPath;
 }
 
-/**
- * Set the value of media
- * @param new_var the new value of media
- */
 void ProgramOptions::setMedia ( int new_var ) {
 	media = new_var;
 }
 
-/**
- * Get the value of media
- * @return the value of media
- */
 int ProgramOptions::getMedia ( ) {
 	return media;
 }
 
-/**
- * Set the value of speed
- * @param new_var the new value of speed
- */
 void ProgramOptions::setSpeed ( int new_var ) {
 	speed = new_var;
 }
 
-/**
- * Get the value of speed
- * @return the value of speed
- */
 int ProgramOptions::getSpeed ( ) {
 	return speed;
 }
 
-/**
- * Set the value of pressure
- * @param new_var the new value of pressure
- */
 void ProgramOptions::setPressure ( int new_var ) {
 	pressure = new_var;
 }
 
-/**
- * Get the value of pressure
- * @return the value of pressure
- */
 int ProgramOptions::getPressure ( ) {
 	return pressure;
 }
 
-/**
- * Set the value of regMarkAuto
- * @param new_var the new value of regMarkAuto
- */
-void ProgramOptions::setRegMarkAuto ( bool new_var ) {
+void ProgramOptions::setRegMarkAuto ( int new_var ) {
 	regMarkAuto = new_var;
 }
 
-/**
- * Get the value of regMarkAuto
- * @return the value of regMarkAuto
- */
-bool ProgramOptions::getRegMarkAuto ( ) {
+int ProgramOptions::getRegMarkAuto ( ) {
 	return regMarkAuto;
 }
 
-/**
- * Set the value of regMark
- * @param new_var the new value of regMark
- */
-void ProgramOptions::setRegMark ( bool new_var ) {
+void ProgramOptions::setRegMark ( int new_var ) {
 	regMark = new_var;
 }
 
-/**
- * Get the value of regMark
- * @return the value of regMark
- */
-bool ProgramOptions::getRegMark ( ) {
+int ProgramOptions::getRegMark ( ) {
 	return regMark;
 }
 
-/**
- * Set the value of regDimensionWidth
- * @param new_var the new value of regDimensionWidth
- */
 void ProgramOptions::setRegDimensionWidth ( double new_var ) {
 	regDimensionWidth = new_var;
 }
 
-/**
- * Get the value of regDimensionWidth
- * @return the value of regDimensionWidth
- */
 double ProgramOptions::getRegDimensionWidth ( ) {
 	return regDimensionWidth;
 }
 
-/**
- * Set the value of regDimensionHeight
- * @param new_var the new value of regDimensionHeight
- */
 void ProgramOptions::setRegDimensionHeight ( double new_var ) {
 	regDimensionHeight = new_var;
 }
 
-/**
- * Get the value of regDimensionHeight
- * @return the value of regDimensionHeight
- */
 double ProgramOptions::getRegDimensionHeight ( ) {
 	return regDimensionHeight;
 }
 
-/**
- * Set the value of regOriginWidth
- * @param new_var the new value of regOriginWidth
- */
 void ProgramOptions::setRegOriginWidth ( double new_var ) {
 	regOriginWidth = new_var;
 }
 
-/**
- * Get the value of regOriginWidth
- * @return the value of regOriginWidth
- */
 double ProgramOptions::getRegOriginWidth ( ) {
 	return regOriginWidth;
 }
 
-/**
- * Set the value of regOriginHeight
- * @param new_var the new value of regOriginHeight
- */
 void ProgramOptions::setRegOriginHeight ( double new_var ) {
 	regOriginHeight = new_var;
 }
 
-/**
- * Get the value of regOriginHeight
- * @return the value of regOriginHeight
- */
 double ProgramOptions::getRegOriginHeight ( ) {
 	return regOriginHeight;
 }
 
-/**
- * Set the value of version
- * @param new_var the new value of version
- */
+void ProgramOptions::setRegDimensionWidthMM ( double new_var ) {
+	regDimensionWidth = new_var*20;
+}
+
+double ProgramOptions::getRegDimensionWidthMM ( ) {
+	return regDimensionWidth/20;
+}
+
+void ProgramOptions::setRegDimensionHeightMM ( double new_var ) {
+	regDimensionHeight = new_var*20;
+}
+
+double ProgramOptions::getRegDimensionHeightMM ( ) {
+	return regDimensionHeight/20;
+}
+
+void ProgramOptions::setRegOriginWidthMM ( double new_var ) {
+	regOriginWidth = new_var*20;
+}
+
+double ProgramOptions::getRegOriginWidthMM ( ) {
+	return regOriginWidth/20;
+}
+
+void ProgramOptions::setRegOriginHeightMM ( double new_var ) {
+	regOriginHeight = new_var*20;
+}
+
+double ProgramOptions::getRegOriginHeightMM ( ) {
+	return regOriginHeight/20;
+}
+
 void ProgramOptions::setVersion ( QString new_var ) {
 	version = new_var;
 }
 
-/**
- * Get the value of version
- * @return the value of version
- */
 QString ProgramOptions::getVersion ( ) {
 	return version;
 }
 
-/**
- * Set the value of vendorUSB_ID
- * @param new_var the new value of vendorUSB_ID
- */
 void ProgramOptions::setVendorUSB_ID ( int new_var ) {
 	vendorUSB_ID = new_var;
 }
 
-/**
- * Get the value of vendorUSB_ID
- * @return the value of vendorUSB_ID
- */
 int ProgramOptions::getVendorUSB_ID ( ) {
 	return vendorUSB_ID;
 }
 
-/**
- * Set the value of productUSB_ID
- * @param new_var the new value of productUSB_ID
- */
 void ProgramOptions::setProductUSB_ID ( int new_var ) {
 	productUSB_ID = new_var;
 }
 
-/**
- * Get the value of productUSB_ID
- * @return the value of productUSB_ID
- */
 int ProgramOptions::getProductUSB_ID ( ) {
 	return productUSB_ID;
 }
 
-/**
- * Set the value of marginTop
- * @param new_var the new value of marginTop
- */
-void ProgramOptions::setMarginTop ( int new_var ) {
+void ProgramOptions::setMarginTop ( double new_var ) {
 	marginTop = new_var;
 }
-
-/**
- * Get the value of marginTop
- * @return the value of marginTop
- */
-int ProgramOptions::getMarginTop ( ) {
+double ProgramOptions::getMarginTop ( ) {
 	return marginTop;
 }
-
-/**
- * Set the value of marginRight
- * @param new_var the new value of marginRight
- */
-void ProgramOptions::setMarginRight ( int new_var ) {
+void ProgramOptions::setMarginRight ( double new_var ) {
 	marginRight = new_var;
 }
-
-/**
- * Get the value of marginRight
- * @return the value of marginRight
- */
-int ProgramOptions::getMarginRight ( ) {
+double ProgramOptions::getMarginRight ( ) {
 	return marginRight;
 }
 
-/**
- * Set the value of trackEnhancing
- * @param new_var the new value of trackEnhancing
- */
-void ProgramOptions::setTrackEnhancing ( bool new_var ) {
+void ProgramOptions::setMarginTopMM ( double new_var ) {
+	marginTop = new_var*20;
+}
+double ProgramOptions::getMarginTopMM ( ) {
+	return marginTop/20;
+}
+void ProgramOptions::setMarginRightMM ( double new_var ) {
+	marginRight = new_var*20;
+}
+double ProgramOptions::getMarginRightMM ( ) {
+	return marginRight/20;
+}
+
+void ProgramOptions::setTrackEnhancing ( int new_var ) {
 	trackEnhancing = new_var;
 }
 
-/**
- * Get the value of trackEnhancing
- * @return the value of trackEnhancing
- */
-bool ProgramOptions::getTrackEnhancing ( ) {
+int ProgramOptions::getTrackEnhancing ( ) {
 	return trackEnhancing;
-}
+} 
 
-// Other methods
-//  
-
-
-/**
- * @param  argc
- * @param  argv
- */
 int ProgramOptions::GetOpt (int argc, char *argv[] )
 {
-	static int version_flag= 0, help_flag = 0;
+	static int version_flag = 0, help_flag = 0, show_flag = 0;
 	int index, option_index = 0;
 	int c = 0;
-	const char shortopts[] = "scf:";
+	const char shortopts[] = "stg:p:ra:b:c:d:";
 	static struct option longopts[] =
 	{
-	/* These options set a flag. */
-	{"help", no_argument, &help_flag, 1},
-	{"version", no_argument, &version_flag, 1},
-	/* These options don't set a flag.
-		We distinguish them by their indices. */
-	{"sort-path", no_argument, 0, 's'},
-	{"start-cut", no_argument, 0, 'c'},
-	{"file-name", required_argument, 0, 'f'}, //4
-	{0, 0, 0, 0}
+		{"help",                 no_argument,       &help_flag, 1},
+		{"version",              no_argument,       &version_flag, 1},
+		{"show",                 no_argument,       &show_flag, 1},
+		{"sort-path",            no_argument,       0, 's'},
+		{"tsp-sort",             no_argument,       0, 't'},
+		{"cut",                  no_argument,       0, 'l'},
+		{"media",                required_argument, 0, 'm'},
+		{"speed",                required_argument, 0, 'g'},
+		{"pressure",             required_argument, 0, 'p'},
+		{"track-enhancing",      no_argument,       0, 'n'},
+		{"margin-top",           required_argument, 0, 'o'},
+		{"margin-right",         required_argument, 0, 'q'},
+		{"reg-mark-auto",        no_argument,       0, 'r'},
+		{"reg-mark",             no_argument,       0, 'h'},
+		{"reg-dimension-width",  required_argument, 0, 'a'},
+		{"reg-dimension-height", required_argument, 0, 'b'},
+		{"reg-origin-width",     required_argument, 0, 'c'},
+		{"reg-origin-height",    required_argument, 0, 'd'},
+		{"usb-vendor-id",        required_argument, 0, 'e'},
+		{"usb-product-id",       required_argument, 0, 'f'},
+		{0, 0, 0, 0}
 	};
 	
 	opterr = 0;
@@ -378,16 +250,58 @@ int ProgramOptions::GetOpt (int argc, char *argv[] )
 			case 0:
 			/* If this option set a flag, do nothing else now. */
 				if (longopts[option_index].flag != 0) break;
-				cout << longopts[option_index].name << endl;
+				//cout << longopts[option_index].name << endl;
 				break;
 			case 's':
-				sortPath = true;
+				setSortPath(true);
+				break;
+			case 't':
+				setTspSortPath(true);
+				break;
+			case 'l':
+				setStartCut(true);
+				break;
+			case 'm':
+				setMedia(atoi(optarg));
+				break;
+			case 'g':
+				setSpeed(atoi(optarg));
+				break;
+			case 'p':
+				setPressure(atoi(optarg));
+				break;
+			case 'n':
+				setTrackEnhancing(true);
+				break;
+			case 'o':
+				setMarginTopMM(atof(optarg));
+				break;
+			case 'q':
+				setMarginRightMM(atof(optarg));
+				break;
+			case 'r':
+				setRegMarkAuto(true);
+				break;
+			case 'h':
+				setRegMark(true);
+				break;
+			case 'a':
+				setRegDimensionWidthMM(atof(optarg));
+				break;
+			case 'b':
+				setRegDimensionHeightMM(atof(optarg));
 				break;
 			case 'c':
-				startCut = true;
+				setRegOriginWidthMM(atof(optarg));
+				break;
+			case 'd':
+				setRegOriginHeightMM(atof(optarg));
+				break;
+			case 'e':
+				setVendorUSB_ID(atoi(optarg));
 				break;
 			case 'f':
-				fileName = optarg;
+				setProductUSB_ID(atoi(optarg));
 				break;
 			case '?':
 			 if (optopt == 'f')
@@ -402,7 +316,16 @@ int ProgramOptions::GetOpt (int argc, char *argv[] )
 			}
 		}
 		for (index = optind; index < argc; index++)
-		cout << "Non-option argument " << argv[index] <<"'." << endl;
+		{
+			//cout << "Non-option argument " << argv[index] <<"'." << endl;
+			fileName = argv[optind]; // take the first non arg as file
+			continue;
+		}
+		if(show_flag)
+		{
+			showShow();
+			exit(0);
+		}
 		if(help_flag)
 		{
 			showHelp();
@@ -416,9 +339,6 @@ int ProgramOptions::GetOpt (int argc, char *argv[] )
 	return 0;
 }
 
-
-/**
- */
 void ProgramOptions::showHelp ( )
 {
 	cout << "The `Robocut' program plots or cuts SVG files on a Craft Robo or Silhouette SD\n";
@@ -426,18 +346,30 @@ void ProgramOptions::showHelp ( )
 	cout << "Usage:\n";
 	cout << "  Robocut [OPTIONS...] [File]\n\n";
 	cout << "Help Options:\n";
-	cout << "  " <<longopts[option_index].name << "                  Show summary of options\n";
-	cout << "  --version               Show version information and copyright details\n\n";
+	cout << "  --help                     Show summary of options.\n";
+	cout << "  --version                  Show version information and copyright details.\n";
+	cout << "  --show                     Show all the parameters entered, do nothing.\n\n";
 	cout << "Application Options:\n";
-	cout << "  -s, --sort-path              Sort the objects in the SVG before plotting.\n";
-	cout << "  -c, --cut               Shows the cutting dialogue.\n";
-	cout << "  -f, --filename          Svg file to load.\n";
+	cout << "  -s, --sort-path            Sort the objects fast in the SVG before plotting.\n";
+	cout << "  -t, --tsp-sort             Sort the objects more accurate in the SVG before\n                               plotting.\n";
+	cout << "  --cut                      Shows the cutting dialogue.\n";
+	cout << "  --media                    Select the media.\n";
+	cout << "  -g, --speed                The speed between 1 and 33.\n";
+	cout << "  -p, --pressure             The pressure between 1 and 10.\n";
+	cout << "  --track-enhancing          Move three times back and forward to create a \n                               track.\n";
+	cout << "  --margin-top               Define the margin on top\n";
+	cout << "  --margin-right             Define the margin on.\n";
+	cout << "  -r, --reg-mark-auto        Use registration marks and find the marks \n                               automatically\n";
+	cout << "  --reg-mark                 Use registration marks but set the knife manually \n                               on top the round mark.\n";
+	cout << "  -a, --reg-dimension-width  Specify the length in mm between the the two \n                               horizontal marks.\n";
+	cout << "  -b, --reg-dimension-height Specify the length in mm between the the two \n                               vertical marks.\n";
+	cout << "  -c, --reg-origin-width     Specify the length in mm between the the edge of \n                               the paper and the first horizontal mark.\n";
+	cout << "  -d, --reg-origin-height    Specify the length in mm between the the edge of \n                               the paper and the first vertical mark.\n";
+	cout << "  --usb-vendor-id            Try this program with other usb hardware on \n                               your own risk.\n";
+	cout << "  --usb-product-id           May also work with other hardware, try \n                               usb-devices program to scan your computer.\n";
 	cout << "Report bugs to https://bugs.launchpad.net/robocut/+filebug.\n";
 }
 
-
-/**
- */
 void ProgramOptions::showVersion ( )
 {
 	cout << (version.toStdString());
@@ -445,6 +377,29 @@ void ProgramOptions::showVersion ( )
 	cout << "This is free software; see the source for copying conditions.  There is NO\n";
 	cout << "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n";
 	cout << "Written by Tim Hutt and Markus Schulz <schulz@alpharesearch.de>\n";
+}
+
+void ProgramOptions::showShow ( )
+{
+	cout << "Application Options:\n";
+	cout << "  -s, --sort-path            "<< getSortPath() << endl;
+	cout << "  -t, --tsp-sort             "<< getTspSortPath() << endl;
+	cout << "  --cut                      "<< getStartCut() << endl;
+	cout << "  --media                    "<< getMedia() << endl;
+	cout << "  -g, --speed                "<< getSpeed() << endl;
+	cout << "  -p, --pressure             "<< getPressure() << endl;
+	cout << "  --track-enhancing          "<< getTrackEnhancing() << endl;
+	cout << "  --margin-top               "<< getMarginTopMM() << " / " << getMarginTop() << endl;
+	cout << "  --margin-right             "<< getMarginRightMM() << " / " << getMarginRight() << endl;
+	cout << "  -r, --reg-mark-auto        "<< getRegMarkAuto() << endl;
+	cout << "  --reg-mark                 "<< getRegMark() << endl;
+	cout << "  -a, --reg-dimension-width  "<< getRegDimensionWidthMM() << " / " << getRegDimensionWidth() << endl;
+	cout << "  -b, --reg-dimension-height "<< getRegDimensionHeightMM() << " / " << getRegDimensionHeight() << endl;
+	cout << "  -c, --reg-origin-width     "<< getRegOriginWidthMM() << " / " << getRegOriginWidth() << endl;
+	cout << "  -d, --reg-origin-height    "<< getRegOriginHeightMM() << " / " << getRegOriginHeight() << endl;
+	cout << "  --usb-vendor-id            "<< getVendorUSB_ID() << endl;
+	cout << "  --usb-product-id           "<< getProductUSB_ID() << endl;
+	cout << "[File]                       "<< getFileName().toStdString() << endl;
 }
 
 void ProgramOptions::initAttributes ( ) {

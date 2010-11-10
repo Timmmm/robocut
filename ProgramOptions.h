@@ -7,60 +7,25 @@ class ProgramOptions
 {
 
 private:
-	// Constructors/Destructors
-	//  
-
-
-	/**
-	 * Empty Constructor
-	 */
 	ProgramOptions ( );
-	ProgramOptions (int argc, char *argv[] );
-	ProgramOptions(const ProgramOptions &);             // intentionally undefined
-	ProgramOptions & operator=(const ProgramOptions &); // intentionally undefined
-
-	/**
-	 * Empty Destructor
-	 */
+	ProgramOptions(const ProgramOptions &);
+	ProgramOptions & operator=(const ProgramOptions &);
 	virtual ~ProgramOptions ( );
+
 public:
 	// Singleton
-	//  
 	static ProgramOptions& Instance();
 
-
-	/**
-	 * @param  argc
-	 * @param  argv
-	 * @return the value
-	 */
-	int GetOpt (int argc, char *argv[] );
-
-protected:
-
-public:
-
-protected:
-
-public:
-
-protected:
-
-
 private:
-
-	// Private attributes
-	//  
-
-	bool sortPath;
-	bool startCut;
+	int sortPath;
+	int startCut;
 	QString fileName;
-	bool tspSortPath;
+	int tspSortPath;
 	int media;
 	int speed;
 	int pressure;
-	bool regMarkAuto;
-	bool regMark;
+	int regMarkAuto;
+	int regMark;
 	double regDimensionWidth;
 	double regDimensionHeight;
 	double regOriginWidth;
@@ -68,281 +33,70 @@ private:
 	QString version;
 	int vendorUSB_ID;
 	int productUSB_ID;
-	int marginTop;
-	int marginRight;
-	bool trackEnhancing;
-public:
-
-private:
+	double marginTop;
+	double marginRight;
+	int trackEnhancing;
 
 public:
-
-
-	// Private attribute accessor methods
-	//  
-
-
-	/**
-	 * Set the value of sortPath
-	 * @param new_var the new value of sortPath
-	 */
-	void setSortPath ( bool new_var );
-
-	/**
-	 * Get the value of sortPath
-	 * @return the value of sortPath
-	 */
-	bool getSortPath ( );
-
-
-	/**
-	 * Set the value of startCut
-	 * @param new_var the new value of startCut
-	 */
-	void setStartCut ( bool new_var );
-
-	/**
-	 * Get the value of startCut
-	 * @return the value of startCut
-	 */
-	bool getStartCut ( );
-
-
-	/**
-	 * Set the value of fileName
-	 * @param new_var the new value of fileName
-	 */
+	void setSortPath ( int new_var );
+	int getSortPath ( );
+	void setStartCut ( int new_var );
+	int getStartCut ( );
 	void setFileName ( QString new_var );
-
-	/**
-	 * Get the value of fileName
-	 * @return the value of fileName
-	 */
 	QString getFileName ( );
-
-
-	/**
-	 * Set the value of tspSortPath
-	 * @param new_var the new value of tspSortPath
-	 */
-	void setTspSortPath ( bool new_var );
-
-	/**
-	 * Get the value of tspSortPath
-	 * @return the value of tspSortPath
-	 */
-	bool getTspSortPath ( );
-
-
-	/**
-	 * Set the value of media
-	 * @param new_var the new value of media
-	 */
+	void setTspSortPath ( int new_var );
+	int getTspSortPath ( );
 	void setMedia ( int new_var );
-
-	/**
-	 * Get the value of media
-	 * @return the value of media
-	 */
 	int getMedia ( );
-
-
-	/**
-	 * Set the value of speed
-	 * @param new_var the new value of speed
-	 */
 	void setSpeed ( int new_var );
-
-	/**
-	 * Get the value of speed
-	 * @return the value of speed
-	 */
 	int getSpeed ( );
-
-
-	/**
-	 * Set the value of pressure
-	 * @param new_var the new value of pressure
-	 */
 	void setPressure ( int new_var );
-
-	/**
-	 * Get the value of pressure
-	 * @return the value of pressure
-	 */
 	int getPressure ( );
-
-
-	/**
-	 * Set the value of regMarkAuto
-	 * @param new_var the new value of regMarkAuto
-	 */
-	void setRegMarkAuto ( bool new_var );
-
-	/**
-	 * Get the value of regMarkAuto
-	 * @return the value of regMarkAuto
-	 */
-	bool getRegMarkAuto ( );
-
-
-	/**
-	 * Set the value of regMark
-	 * @param new_var the new value of regMark
-	 */
-	void setRegMark ( bool new_var );
-
-	/**
-	 * Get the value of regMark
-	 * @return the value of regMark
-	 */
-	bool getRegMark ( );
-
-
-	/**
-	 * Set the value of regDimensionWidth
-	 * @param new_var the new value of regDimensionWidth
-	 */
+	void setRegMarkAuto ( int new_var );
+	int getRegMarkAuto ( );
+	void setRegMark ( int new_var );
+	int getRegMark ( );
 	void setRegDimensionWidth ( double new_var );
-
-	/**
-	 * Get the value of regDimensionWidth
-	 * @return the value of regDimensionWidth
-	 */
 	double getRegDimensionWidth ( );
-
-
-	/**
-	 * Set the value of regDimensionHeight
-	 * @param new_var the new value of regDimensionHeight
-	 */
 	void setRegDimensionHeight ( double new_var );
-
-	/**
-	 * Get the value of regDimensionHeight
-	 * @return the value of regDimensionHeight
-	 */
 	double getRegDimensionHeight ( );
-
-
-	/**
-	 * Set the value of regOriginWidth
-	 * @param new_var the new value of regOriginWidth
-	 */
 	void setRegOriginWidth ( double new_var );
-
-	/**
-	 * Get the value of regOriginWidth
-	 * @return the value of regOriginWidth
-	 */
 	double getRegOriginWidth ( );
-
-
-	/**
-	 * Set the value of regOriginHeight
-	 * @param new_var the new value of regOriginHeight
-	 */
 	void setRegOriginHeight ( double new_var );
-
-	/**
-	 * Get the value of regOriginHeight
-	 * @return the value of regOriginHeight
-	 */
 	double getRegOriginHeight ( );
-
-
-	/**
-	 * Set the value of version
-	 * @param new_var the new value of version
-	 */
+	void setRegDimensionWidthMM ( double new_var );
+	double getRegDimensionWidthMM ( );
+	void setRegDimensionHeightMM ( double new_var );
+	double getRegDimensionHeightMM ( );
+	void setRegOriginWidthMM ( double new_var );
+	double getRegOriginWidthMM ( );
+	void setRegOriginHeightMM ( double new_var );
+	double getRegOriginHeightMM ( );
 	void setVersion ( QString new_var );
-
-	/**
-	 * Get the value of version
-	 * @return the value of version
-	 */
 	QString getVersion ( );
-
-
-	/**
-	 * Set the value of vendorUSB_ID
-	 * @param new_var the new value of vendorUSB_ID
-	 */
 	void setVendorUSB_ID ( int new_var );
-
-	/**
-	 * Get the value of vendorUSB_ID
-	 * @return the value of vendorUSB_ID
-	 */
 	int getVendorUSB_ID ( );
-
-
-	/**
-	 * Set the value of productUSB_ID
-	 * @param new_var the new value of productUSB_ID
-	 */
 	void setProductUSB_ID ( int new_var );
-
-	/**
-	 * Get the value of productUSB_ID
-	 * @return the value of productUSB_ID
-	 */
 	int getProductUSB_ID ( );
-
-
-	/**
-	 * Set the value of marginTop
-	 * @param new_var the new value of marginTop
-	 */
-	void setMarginTop ( int new_var );
-
-	/**
-	 * Get the value of marginTop
-	 * @return the value of marginTop
-	 */
-	int getMarginTop ( );
-
-
-	/**
-	 * Set the value of marginRight
-	 * @param new_var the new value of marginRight
-	 */
-	void setMarginRight ( int new_var );
-
-	/**
-	 * Get the value of marginRight
-	 * @return the value of marginRight
-	 */
-	int getMarginRight ( );
-
-
-	/**
-	 * Set the value of trackEnhancing
-	 * @param new_var the new value of trackEnhancing
-	 */
-	void setTrackEnhancing ( bool new_var );
-
-	/**
-	 * Get the value of trackEnhancing
-	 * @return the value of trackEnhancing
-	 */
-	bool getTrackEnhancing ( );
+	void setMarginTop ( double new_var );
+	double getMarginTop ( );
+	void setMarginRight ( double new_var );
+	double getMarginRight ( );
+	void setMarginTopMM ( double new_var );
+	double getMarginTopMM ( );
+	void setMarginRightMM ( double new_var );
+	double getMarginRightMM ( );
+	void setTrackEnhancing ( int new_var );
+	int getTrackEnhancing ( );
 
 private:
-
-
-
-	/**
-	 */
 	void showHelp ( );
-
-
-	/**
-	 */
 	void showVersion ( );
-
+	void showShow ( );
 	void initAttributes ( ) ;
-
+	
+public:
+	int GetOpt (int argc, char *argv[] );
 };
 
 #endif // PROGRAMOPTIONS_H
