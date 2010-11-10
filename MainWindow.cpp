@@ -461,10 +461,3 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
 	return false;
 }
 
-void MainWindow::optDone()
-{
-	filename = QString(fileValue);
-	if(QFile::exists(filename)) loadFile();
-	if(cutFlag == true&&QFile::exists(filename)) on_actionCut_triggered();
-}
-
