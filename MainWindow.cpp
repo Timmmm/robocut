@@ -4,6 +4,8 @@
 #include "PathPaintPage.h"
 #include "Plotter.h"
 
+#include "ProgramOptions.h"
+
 #include "CuttingDialog.h"
 #include <QPainter>
 #include <QDebug>
@@ -49,11 +51,14 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(zoom_in, SIGNAL(activated()), SLOT(on_actionZoom_In_triggered()));
 	QShortcut* zoom_out = new QShortcut(QKeySequence("Z"), this);
 	connect(zoom_out, SIGNAL(activated()), SLOT(on_actionZoom_Out_triggered()));
+
 	//default options if not specified on command line
-	sortFlag=0;
-	tspFlag=0;
-	cutFlag=0;
-	fileValue=NULL;
+	this->show();
+	filename = ProgramOptions::Instance().getFileName();
+	if(QFile::exists(filename)) loadFile();
+	if(ProgramOptions::Instance().getStartCut() == true) on_actionCut_triggered();
+	sortFlag = ProgramOptions::Instance().getSortPath();
+	cout << ProgramOptions::Instance().getVersion().toStdString() << endl;
 }
 
 MainWindow::~MainWindow()
@@ -294,7 +299,8 @@ void MainWindow::loadFile()
 
 void MainWindow::on_actionAbout_triggered()
 {
-	QMessageBox::information(this, "About", "<b>Robocut 0.2</b><br><br>By Tim Hutt, &copy; 2010<br/><br/>This software allows you to read a vector image in <a href=\"http://en.wikipedia.org/wiki/Scalable_Vector_Graphics\">SVG format</a>, and send it to a <a href=\"http://www.graphteccorp.com/craftrobo/\">Graphtec Craft Robo 2</a> (or possibly 3) for cutting. It is designed to work with SVGs produced by the excellent free vector graphics editor <a href=\"http://www.inkscape.org/\">Inkscape</a>. It may work with other software but this has not been tested.<br/><br/>See <a href=\"http://concentriclivers.com/\">the online manual for instructions</a>.");
+	QString message = "<b>" + ProgramOptions::Instance().getVersion() + "</b><br><br>By Tim Hutt, &copy; 2010<br/><br/>This software allows you to read a vector image in <a href=\"http://en.wikipedia.org/wiki/Scalable_Vector_Graphics\">SVG format</a>, and send it to a <a href=\"http://www.graphteccorp.com/craftrobo/\">Graphtec Craft Robo 2</a> (or possibly 3) for cutting. It is designed to work with SVGs produced by the excellent free vector graphics editor <a href=\"http://www.inkscape.org/\">Inkscape</a>. It may work with other software but this has not been tested.<br/><br/>See <a href=\"http://concentriclivers.com/\">the online manual for instructions</a>.";
+	QMessageBox::information(this, "About", message);
 }
 
 void MainWindow::on_actionExit_triggered()

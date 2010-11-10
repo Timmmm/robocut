@@ -75,8 +75,6 @@ private:
 	void setFileLoaded(QString filename);
 	bool eventFilter(QObject *o, QEvent *e);
 	void loadFile();
-public:
-	void optDone();
 };
 
 #endif // MAINWINDOW_H

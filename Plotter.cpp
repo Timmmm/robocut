@@ -1,10 +1,11 @@
 #include "Plotter.h"
+#include "ProgramOptions.h"
 
 #include <libusb-1.0/libusb.h>
 
-const int VENDOR_ID_GRAPHTEC = 0x0b4d;
+const int VENDOR_ID_GRAPHTEC = ProgramOptions::Instance().getVendorUSB_ID(); //0x0b4d;
 const int PRODUCT_ID_CC200_20 = 0x110a;
-const int PRODUCT_ID_SILHOUETTE_SD = 0x111d; // Possibly the same as CC330-20.
+const int PRODUCT_ID_SILHOUETTE_SD = ProgramOptions::Instance().getProductUSB_ID(); //0x111d; // Possibly the same as CC330-20.
 
 #include <iostream>
 #include <cmath>
@@ -301,8 +302,8 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 		int width = lroundl(mediawidth * 20.0);
 		int height = lroundl(mediaheight * 20.0);
 
-		int margintop = 500;
-		int marginright = 320;
+		int margintop = ProgramOptions::Instance().getMarginTop();
+		int marginright = ProgramOptions::Instance().getMarginRight();
 
 		e = UsbSend(handle, "FU" + ItoS(height - margintop) + "," + ItoS(width - marginright) + "\x03");
 		if (!e) goto error;
