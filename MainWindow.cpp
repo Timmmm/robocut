@@ -5,6 +5,8 @@
 #include "Plotter.h"
 
 #include "CuttingDialog.h"
+#include "PathSorter.h"
+
 #include <QPainter>
 #include <QDebug>
 
@@ -49,16 +51,6 @@ MainWindow::~MainWindow()
 	delete ui;
 }
 
-static bool MyLessThan(const QPolygonF &p1, const QPolygonF &p2)
-{
-	qreal testx1 = p1[0].x();
-	qreal testx2 = p2[0].x();
-	qreal testy1 = p1[0].y();
-	qreal testy2 = p2[0].y();
-	if(testy1 == testy2) return testx1 < testx2;
-	else return testy1 < testy2;
-}
-
 void MainWindow::on_actionOpen_triggered()
 {
 	if (lastOpenDir.isEmpty())
@@ -98,8 +90,10 @@ void MainWindow::on_actionOpen_triggered()
 
 	rend.render(&p);
 
-	paths = pg.paths();
-	qSort(paths.begin(), paths.end(), MyLessThan);
+	PathSorter pathsort(pg.paths(), mediaSize.height());
+	//paths = pathsort.UnSort();
+	//paths = pathsort.Sort();
+	paths = pathsort.TspSort();
 	scene->clear();
 	scene->setBackgroundBrush(QBrush(Qt::lightGray));
 
