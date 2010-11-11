@@ -7,6 +7,8 @@
 #include "ProgramOptions.h"
 
 #include "CuttingDialog.h"
+#include "PathSorter.h"
+
 #include <QPainter>
 #include <QDebug>
 
@@ -66,125 +68,6 @@ MainWindow::~MainWindow()
 	delete ui;
 }
 
-static bool MyLessThan(const QPolygonF &p1, const QPolygonF &p2)
-{
-	qreal testx1 = p1[0].x();
-	qreal testx2 = p2[0].x();
-	qreal testy1 = p1[0].y();
-	qreal testy2 = p2[0].y();
-	if(testy1 == testy2) return testx1 < testx2;
-	else return testy1 < testy2;
-}
-
-static qreal getDistance(const QPolygonF &p1, const QPolygonF &p2)
-{
-	qreal testx1 = p1.last().x();
-	qreal testy1 = p1.last().y();
-	qreal testx2 = p2.first().x();
-	qreal testy2 = p2.first().y();
-	qreal a = 0.0;
-	qreal b = 0.0;
-	double c = 0.0;
-	
-	if(testx1 >= testx2) a = testx1 - testx2;
-	else a = testx2 - testx1;
-	if(testy1 >= testy2) b = testy1 - testy2;
-	else b = testy2 - testy1;
-	c = sqrt((double)(a*a+b*b));
-	return (qreal) c;
-}
-
-static QList<QPolygonF> MyFakeTSP(const QList<QPolygonF> inpaths)
-{
-	qreal bestdist = 0, tempdist = 0, zerodist=10000;
-	bool inp = false, outp = false, outp2 = false;
-	QPolygonF zero = QPolygonF(QRectF(0.0,279.9,0.0,0.0)); // able to change the start point
-	int zerostuff=0;
-	for (int i = 0; i < inpaths.size(); ++i)
-	{
-		tempdist = getDistance(zero,inpaths[i]);
-		if (tempdist < zerodist)
-		{
-			zerodist = tempdist;
-			zerostuff = i;
-		}
-	}
-	// test the input
-	for (int i = 0; i < (inpaths.size()-1); ++i)
-	{
-		getDistance(zero,inpaths[(i)]);
-		bestdist = bestdist + getDistance(inpaths[i],inpaths[(i+1)]);
-		inp = true;
-	}
-	cout<<"inpath: "<< bestdist << endl;
-	QList<QPolygonF> outpaths, outpaths2, outpaths3;
-	outpaths = QList<QPolygonF>(inpaths);
-	outpaths.move(zerostuff,0);
-	// find the shortest path
-	for (int i = 0; i < (outpaths.size()-1); ++i)
-	{
-		qreal dist=10000.0;
-		int bestindex=i;
-		for (int j = (i+1); j < outpaths.size(); ++j)
-		{
-			if (getDistance(outpaths[i],outpaths[j]) < dist) 
-			{
-				dist = getDistance(outpaths[i],outpaths[j]);
-				bestindex = j;
-			}
-		}
-		if (dist != 0) outpaths.swap((i+1),bestindex);
-	}
-	tempdist = 0;
-	for (int i = 0; i < (outpaths.size()-1); ++i)
-	{
-		tempdist = tempdist + getDistance(outpaths[i],outpaths[(i+1)]);
-	}
-	if (tempdist < bestdist) 
-	{
-		bestdist = tempdist;
-		outp = true;
-	}
-	cout<<"outpath: "<< tempdist << endl;
-	
-	// finds better start and end
-	outpaths2 = QList<QPolygonF>(outpaths);
-	for (int id1 = 0; id1 < outpaths2.size(); ++id1)
-	{	
-		outpaths2.move(id1,0);
-		for (int i = 0; i < (outpaths2.size()-1); ++i)
-		{
-			qreal dist=10000.0;
-			int bestindex=i;
-			for (int j = (i+1); j < outpaths2.size(); ++j)
-			{
-				if (getDistance(outpaths2[i],outpaths2[j]) < dist) 
-				{
-					dist = getDistance(outpaths2[i],outpaths2[j]);
-					bestindex = j;
-				}
-			}
-			if (dist != 0) outpaths2.swap((i+1),bestindex);
-		}
-		tempdist = 0;
-		for (int i = 0; i < (outpaths2.size()-1); ++i)
-		{
-			tempdist = tempdist + getDistance(outpaths2[i],outpaths2[(i+1)]);
-		}
-		if (tempdist < bestdist) 
-		{
-			bestdist = tempdist;
-			outp2 = true;
-			outpaths3 = QList<QPolygonF>(outpaths2);
-		}
-		cout<<"outpath2_"<< id1 <<"_"<<":"<< tempdist << endl << "\033[1A";
-	}
-cout<< endl<<"best: "<< bestdist << endl;
-	//if (outp2) return outpaths3;
-	if (outp) return outpaths;
-	return inpaths;
-}
-
 void MainWindow::on_actionOpen_triggered()
 {
 	if (lastOpenDir.isEmpty())
@@ -231,9 +114,13 @@ void MainWindow::loadFile()
 
 	rend.render(&p);
 
-	paths = pg.paths();
-	if(sortFlag == true) qSort(paths.begin(), paths.end(), MyLessThan);
-	if(tspFlag == true) paths = MyFakeTSP(paths);
+	PathSorter pathsort(pg.paths(), mediaSize.height());
+	paths = pathsort.UnSort();
+	//paths = pathsort.Sort();
+	//paths = pathsort.TspSort();
+	//paths = pathsort.GroupTSP();
+	paths = pathsort.GroupTSP(3);
+	paths = pathsort.BbSort(paths);
 	scene->clear();
 	scene->setBackgroundBrush(QBrush(Qt::lightGray));
 
@@ -335,7 +222,7 @@ void MainWindow::on_actionAnimate_toggled(bool animate)
 {
 	if (animate)
 	{
-		animationTimer->start(25);
+		animationTimer->start(30);
 		if (cutMarker)
 		{
 			cutMarker->setPos(0, 0);

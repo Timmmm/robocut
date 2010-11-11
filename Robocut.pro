@@ -12,6 +12,7 @@ SOURCES += main.cpp \
     CuttingDialog.cpp \
     CuttingThread.cpp \
     PathPaintPage.cpp \
+    PathSorter.cpp \
     ProgramOptions.cpp
 HEADERS += MainWindow.h \
     Plotter.h \
@@ -22,6 +23,7 @@ HEADERS += MainWindow.h \
     CuttingDialog.h \
     CuttingThread.h \
     PathPaintPage.h \
+    PathSorter.h \
     ProgramOptions.h
 FORMS += MainWindow.ui \
     CutDialog.ui \
