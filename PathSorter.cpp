@@ -58,28 +58,39 @@ QList<QPolygonF> PathSorter::TspSort (const QList<QPolygonF> inpaths)
 QList<QPolygonF> PathSorter::BbSort (const QList<QPolygonF> inpaths)
 {
 	QList<QPolygonF> outpaths = QList<QPolygonF>(inpaths);
-	qSort(outpaths.begin(), outpaths.end(), MyLessThan);
-	
-	
-	return inpaths;
+	for (int i = 0; i < (outpaths.size()-1); i++)
+	{
+		
+		for (int j = (i+1); j < outpaths.size(); j++)
+		{
+		if (outpaths[i].boundingRect().intersects(outpaths[j].boundingRect()))
+			{
+				if (outpaths[i].boundingRect().width() > outpaths[j].boundingRect().width() || outpaths[i].boundingRect().height() > outpaths[j].boundingRect().height()) 
+				{
+					outpaths.swap(i,j);
+				}
+			}
+		}
+	}
+	cout<<"BbSort outpaths: "<< getTotalDistance(outpaths) << endl;
+	return outpaths;
 }
 
-QList<QPolygonF> PathSorter::GroupTSP(const QList<QPolygonF> inpaths1)
+QList<QPolygonF> PathSorter::GroupTSP(const QList<QPolygonF> inpaths1, int groups)
 {
 	QList<QPolygonF> inpaths = Sort(inpaths1);
 	QList<QList< QPolygonF> > listlistpath;
 	QList<QPolygonF> temppaths;
 	
-	int inps = inpaths.size(), group = 0;
-	int inpsparts = inps / 3;
+	int inps = inpaths.size();
+	int inpsparts = inps / groups;
 	
 	for (int i = 0; i < inps; i++)
 	{
 		if(i>=inpsparts)
 		{
 			listlistpath.append(temppaths);
-			inpsparts += inps / 3;
-			group++;
+			inpsparts += inps / groups;
 			temppaths = QList<QPolygonF>() ;
 		}
 		temppaths.append(inpaths[i]);

@@ -17,8 +17,8 @@ public:
 	QList<QPolygonF> UnSort () {return UnSort(pathToSort);};
 	QList<QPolygonF> TspSort (const QList<QPolygonF> inpaths);
 	QList<QPolygonF> TspSort () {return TspSort(pathToSort);};
-	QList<QPolygonF> GroupTSP(const QList<QPolygonF> inpaths1);
-	QList<QPolygonF> GroupTSP() {return GroupTSP(pathToSort);};
+	QList<QPolygonF> GroupTSP(const QList<QPolygonF> inpaths1, int groups = 3);
+	QList<QPolygonF> GroupTSP(int groups = 3) {return GroupTSP(pathToSort, groups);};
 	QList<QPolygonF> BbSort (const QList<QPolygonF> inpaths);
 	QList<QPolygonF> BbSort () {return BbSort(pathToSort);};
 	void setMediaHeight(qreal mediaheight);

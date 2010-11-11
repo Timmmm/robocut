@@ -93,9 +93,10 @@ void MainWindow::on_actionOpen_triggered()
 	PathSorter pathsort(pg.paths(), mediaSize.height());
 	paths = pathsort.UnSort();
 	//paths = pathsort.Sort();
-	paths = pathsort.TspSort();
+	//paths = pathsort.TspSort();
 	//paths = pathsort.GroupTSP();
-	paths = pathsort.GroupTSP();
+	paths = pathsort.GroupTSP(3);
+	paths = pathsort.BbSort(paths);
 	scene->clear();
 	scene->setBackgroundBrush(QBrush(Qt::lightGray));
 
@@ -195,7 +196,7 @@ void MainWindow::on_actionAnimate_toggled(bool animate)
 {
 	if (animate)
 	{
-		animationTimer->start(15);
+		animationTimer->start(30);
 		if (cutMarker)
 		{
 			cutMarker->setPos(0, 0);
