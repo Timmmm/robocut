@@ -38,3 +38,5 @@ OTHER_FILES += \
     readme.txt \
     install.txt \
     changelog.txt
+
+CONFIG += qt debug

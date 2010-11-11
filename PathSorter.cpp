@@ -25,6 +25,7 @@ void PathSorter::setMediaHeight(qreal mediaheight)
 
 QList<QPolygonF> PathSorter::UnSort (const QList<QPolygonF> inpaths)
 {
+	cout<<" UnSort inpath: "<< getTotalDistance(inpaths) << endl;
 	QList<QPolygonF> outpaths = QList<QPolygonF>(inpaths);
 	return outpaths;
 }
@@ -41,7 +42,6 @@ bool PathSorter::MyLessThan(const QPolygonF &p1, const QPolygonF &p2)
 
 QList<QPolygonF> PathSorter::Sort (const QList<QPolygonF> inpaths)
 {
-	cout<<" Sort inpath: "<< getTotalDistance(inpaths) << endl;
 	QList<QPolygonF> outpaths = QList<QPolygonF>(inpaths);
 	qSort(outpaths.begin(), outpaths.end(), MyLessThan);
 	cout<<"Sort outpaths: "<< getTotalDistance(outpaths) << endl;
@@ -51,7 +51,7 @@ QList<QPolygonF> PathSorter::Sort (const QList<QPolygonF> inpaths)
 QList<QPolygonF> PathSorter::TspSort (const QList<QPolygonF> inpaths)
 {
 	QList<QPolygonF> outpaths = QList<QPolygonF>(inpaths);
-	qSort(outpaths.begin(), outpaths.end(), MyLessThan);
+	cout<<"TSPSort outpaths: "<< getTotalDistance(outpaths) << endl;
 	return MyFakeTSP(outpaths);
 }
 
@@ -64,21 +64,28 @@ QList<QPolygonF> PathSorter::BbSort (const QList<QPolygonF> inpaths)
 	return inpaths;
 }
 
-QList<QPolygonF> PathSorter::GroupTSP(const QList<QPolygonF> inpaths)
+QList<QPolygonF> PathSorter::GroupTSP(const QList<QPolygonF> inpaths1)
 {
+	QList<QPolygonF> inpaths = Sort(inpaths1);
 	QList<QList< QPolygonF> > listlistpath;
+	QList<QPolygonF> temppaths;
+	
 	int inps = inpaths.size(), group = 0;
 	int inpsparts = inps / 3;
+	
 	for (int i = 0; i < inps; i++)
 	{
-		if(inpsparts<=i)
+		if(i>=inpsparts)
 		{
-			inpsparts =+ inps / 3;
+			listlistpath.append(temppaths);
+			inpsparts += inps / 3;
 			group++;
+			temppaths = QList<QPolygonF>() ;
 		}
-		listlistpath[group][i] =inpaths[i];
+		temppaths.append(inpaths[i]);
 	}
-	
+	listlistpath.append(temppaths);
+
 	for (int i = 0; i < listlistpath.size(); i++)
 	{
 		listlistpath[i] = TspSort(listlistpath[i]);
@@ -92,6 +99,8 @@ QList<QPolygonF> PathSorter::GroupTSP(const QList<QPolygonF> inpaths)
 			outpaths.append(listlistpath[i][j]);
 		}
 	}
+	
+	cout<<"GroupTSP outpaths: "<< getTotalDistance(outpaths) << endl;
 	return outpaths;
 }
 
@@ -128,13 +137,8 @@ qreal PathSorter::getTotalDistance(const QList<QPolygonF> inpaths, int maxdepth)
 
 QList<QPolygonF> PathSorter::MyFakeTSP(const QList<QPolygonF> inpaths)
 {
-	qreal bestdist = 0, tempdist = 0;
 	QPolygonF zero = QPolygonF(QRectF(0.0,mediaHeight,0.0,0.0)); // able to change the start point
-	
-	// test the input
-	bestdist = getTotalDistance(inpaths);
-	cout<<"inpath: "<< bestdist << endl;
-	
+
 	QList<QPolygonF> outpaths = QList<QPolygonF>(inpaths);
 
 	// find the shortest path
@@ -152,13 +156,5 @@ QList<QPolygonF> PathSorter::MyFakeTSP(const QList<QPolygonF> inpaths)
 		}
 		if (dist != 0) outpaths.swap((i+1),bestindex);
 	}
-	tempdist = getTotalDistance(outpaths);
-	cout<<"outpath: "<< tempdist << endl;
-	
-
-	if (tempdist < bestdist) 
-	{
-		return outpaths;
-	}
-	return inpaths;
+	return outpaths;
 }
