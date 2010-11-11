@@ -23,9 +23,9 @@ void PathSorter::setMediaHeight(qreal mediaheight)
 	mediaHeight = mediaheight;
 }
 
-QList<QPolygonF> PathSorter::UnSort ()
+QList<QPolygonF> PathSorter::UnSort (const QList<QPolygonF> inpaths)
 {
-	QList<QPolygonF> outpaths = QList<QPolygonF>(pathToSort);
+	QList<QPolygonF> outpaths = QList<QPolygonF>(inpaths);
 	return outpaths;
 }
 
@@ -39,19 +39,59 @@ bool PathSorter::MyLessThan(const QPolygonF &p1, const QPolygonF &p2)
 	else return testy1 > testy2;
 }
 
-QList<QPolygonF> PathSorter::Sort ()
+QList<QPolygonF> PathSorter::Sort (const QList<QPolygonF> inpaths)
 {
-	QList<QPolygonF> outpaths = QList<QPolygonF>(pathToSort);
+	cout<<" Sort inpath: "<< getTotalDistance(inpaths) << endl;
+	QList<QPolygonF> outpaths = QList<QPolygonF>(inpaths);
 	qSort(outpaths.begin(), outpaths.end(), MyLessThan);
+	cout<<"Sort outpaths: "<< getTotalDistance(outpaths) << endl;
 	return outpaths;
 }
 
-QList<QPolygonF> PathSorter::TspSort ()
+QList<QPolygonF> PathSorter::TspSort (const QList<QPolygonF> inpaths)
 {
-	QList<QPolygonF> outpaths = QList<QPolygonF>(pathToSort);
+	QList<QPolygonF> outpaths = QList<QPolygonF>(inpaths);
+	qSort(outpaths.begin(), outpaths.end(), MyLessThan);
+	return MyFakeTSP(outpaths);
+}
+
+QList<QPolygonF> PathSorter::BbSort (const QList<QPolygonF> inpaths)
+{
+	QList<QPolygonF> outpaths = QList<QPolygonF>(inpaths);
 	qSort(outpaths.begin(), outpaths.end(), MyLessThan);
 	
 	
+	return inpaths;
+}
+
+QList<QPolygonF> PathSorter::GroupTSP(const QList<QPolygonF> inpaths)
+{
+	QList<QList< QPolygonF> > listlistpath;
+	int inps = inpaths.size(), group = 0;
+	int inpsparts = inps / 3;
+	for (int i = 0; i < inps; i++)
+	{
+		if(inpsparts<=i)
+		{
+			inpsparts =+ inps / 3;
+			group++;
+		}
+		listlistpath[group][i] =inpaths[i];
+	}
+	
+	for (int i = 0; i < listlistpath.size(); i++)
+	{
+		listlistpath[i] = TspSort(listlistpath[i]);
+	}
+	
+	QList<QPolygonF> outpaths;
+	for (int i = 0; i < listlistpath.size(); i++)
+	{
+		for (int j = 0; j < listlistpath[i].size(); j++)
+		{
+			outpaths.append(listlistpath[i][j]);
+		}
+	}
 	return outpaths;
 }
 
@@ -88,25 +128,15 @@ qreal PathSorter::getTotalDistance(const QList<QPolygonF> inpaths, int maxdepth)
 
 QList<QPolygonF> PathSorter::MyFakeTSP(const QList<QPolygonF> inpaths)
 {
-	qreal bestdist = 0, tempdist = 0, zerodist=10000;
-	bool outp = false, outp2 = false;
+	qreal bestdist = 0, tempdist = 0;
 	QPolygonF zero = QPolygonF(QRectF(0.0,mediaHeight,0.0,0.0)); // able to change the start point
-	int zerostuff=0;
-	for (int i = 0; i < inpaths.size(); ++i)
-	{
-		tempdist = getDistance(zero,inpaths[i]);
-		if (tempdist < zerodist)
-		{
-			zerodist = tempdist;
-			zerostuff = i;
-		}
-	}
+	
 	// test the input
 	bestdist = getTotalDistance(inpaths);
 	cout<<"inpath: "<< bestdist << endl;
-	QList<QPolygonF> outpaths, outpaths2, outpaths3;
-	outpaths = QList<QPolygonF>(inpaths);
-	outpaths.move(zerostuff,0);
+	
+	QList<QPolygonF> outpaths = QList<QPolygonF>(inpaths);
+
 	// find the shortest path
 	for (int i = 0; i < (outpaths.size()-1); ++i)
 	{
@@ -122,44 +152,13 @@ QList<QPolygonF> PathSorter::MyFakeTSP(const QList<QPolygonF> inpaths)
 		}
 		if (dist != 0) outpaths.swap((i+1),bestindex);
 	}
-
 	tempdist = getTotalDistance(outpaths);
 	cout<<"outpath: "<< tempdist << endl;
 	
-	// finds better start and end
-	outpaths2 = QList<QPolygonF>(outpaths);
-	for (int id1 = 0; id1 < outpaths2.size(); ++id1)
-	{	
-		outpaths2.move(id1,0);
-		for (int i = 0; i < (outpaths2.size()-1); ++i)
-		{
-			qreal dist=10000.0;
-			int bestindex=i;
-			for (int j = (i+1); j < outpaths2.size(); ++j)
-			{
-				if (getDistance(outpaths2[i],outpaths2[j]) < dist) 
-				{
-					dist = getDistance(outpaths2[i],outpaths2[j]);
-					bestindex = j;
-				}
-			}
-			if (dist != 0) outpaths2.swap((i+1),bestindex);
-		}
-		tempdist = 0;
-		for (int i = 0; i < (outpaths2.size()-1); ++i)
-		{
-			tempdist = tempdist + getDistance(outpaths2[i],outpaths2[(i+1)]);
-		}
-		if (tempdist < bestdist) 
-		{
-			bestdist = tempdist;
-			outp2 = true;
-			outpaths3 = QList<QPolygonF>(outpaths2);
-		}
-		cout<<"outpath2_"<< id1 <<"_"<<":"<< tempdist << endl << "\033[1A";
+
+	if (tempdist < bestdist) 
+	{
+		return outpaths;
 	}
-cout<< endl<<"best: "<< bestdist << endl;
-	if (outp2) return outpaths3;
-	if (outp) return outpaths;
 	return inpaths;
 }
