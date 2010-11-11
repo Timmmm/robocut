@@ -100,7 +100,7 @@ void MainWindow::loadFile()
 	qDebug() << "SVG default size: " << rend.defaultSize() << endl;
 	qDebug() << "SVG view box: " << rend.viewBoxF() << endl;
 
-	// Get size from SVG. TODO: Sanity check.
+	// Geqt size from SVG. TODO: Sanity check.
 	// Also TODO: This won't handle offset viewboxes... need to get the offset and subtract it from
 	// all the objects.
 	mediaSize = rend.viewBoxF().size() * 25.4 / 90.0;
@@ -119,8 +119,9 @@ void MainWindow::loadFile()
 	//paths = pathsort.Sort();
 	//paths = pathsort.TspSort();
 	//paths = pathsort.GroupTSP();
-	paths = pathsort.GroupTSP(3);
-	paths = pathsort.BbSort(paths);
+	if(ProgramOptions::Instance().getSortPath() == true)paths = pathsort.GroupTSP(3);
+	else if(ProgramOptions::Instance().getTspSortPath() == true)paths = pathsort.BbSort(paths);
+	else paths = pathsort.UnSort();
 	scene->clear();
 	scene->setBackgroundBrush(QBrush(Qt::lightGray));
 

@@ -402,7 +402,7 @@ void ProgramOptions::showHelp ( )
 	cout << "  --show                     Show all the parameters entered, do nothing.\n\n";
 	cout << "Application Options:\n";
 	cout << "  -s, --sort-path            Sort the objects fast in the SVG before plotting.\n";
-	cout << "  -t, --tsp-sort             Sort the objects more accurate in the SVG before\n                               plotting.\n";
+	cout << "  -t, --tsp-sort             Sort the objects by bounding box, good for fonts.\n";
 	cout << "  --cut                      Shows the cutting dialogue.\n";
 	cout << "  --media                    Select the media.\n";
 	cout << "  -g, --speed                The speed between 1 and 33.\n";
