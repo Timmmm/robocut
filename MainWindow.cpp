@@ -119,7 +119,7 @@ void MainWindow::loadFile()
 	//paths = pathsort.Sort();
 	//paths = pathsort.TspSort();
 	//paths = pathsort.GroupTSP();
-	if(ProgramOptions::Instance().getSortPath() == true)paths = pathsort.GroupTSP(3);
+	if(ProgramOptions::Instance().getSortPath() == true)paths = pathsort.BestSort();
 	else if(ProgramOptions::Instance().getTspSortPath() == true)paths = pathsort.BbSort(paths);
 	else paths = pathsort.UnSort();
 	scene->clear();

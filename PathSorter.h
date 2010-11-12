@@ -15,8 +15,8 @@ public:
 	QList<QPolygonF> Sort () {return Sort(pathToSort);};
 	QList<QPolygonF> UnSort (const QList<QPolygonF> inpaths);
 	QList<QPolygonF> UnSort () {return UnSort(pathToSort);};
-	QList<QPolygonF> TspSort (const QList<QPolygonF> inpaths);
-	QList<QPolygonF> TspSort () {return TspSort(pathToSort);};
+	QList<QPolygonF> BestSort (const QList<QPolygonF> inpaths);
+	QList<QPolygonF> BestSort () {return BestSort(pathToSort);};
 	QList<QPolygonF> GroupTSP(const QList<QPolygonF> inpaths1, int groups = 3);
 	QList<QPolygonF> GroupTSP(int groups = 3) {return GroupTSP(pathToSort, groups);};
 	QList<QPolygonF> BbSort (const QList<QPolygonF> inpaths);
