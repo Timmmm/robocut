@@ -92,10 +92,7 @@ void MainWindow::on_actionOpen_triggered()
 
 	PathSorter pathsort(pg.paths(), mediaSize.height());
 	paths = pathsort.UnSort();
-	//paths = pathsort.Sort();
-	//paths = pathsort.TspSort();
-	//paths = pathsort.GroupTSP();
-	paths = pathsort.GroupTSP(3);
+	//paths = pathsort.BestSort();
 	paths = pathsort.BbSort(paths);
 	scene->clear();
 	scene->setBackgroundBrush(QBrush(Qt::lightGray));
