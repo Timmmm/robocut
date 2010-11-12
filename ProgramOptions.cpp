@@ -273,8 +273,8 @@ int ProgramOptions::GetOpt (int argc, char *argv[] )
 		{"help",                 no_argument,       &help_flag, 1},
 		{"version",              no_argument,       &version_flag, 1},
 		{"show",                 no_argument,       &show_flag, 1},
-		{"sort-path",            no_argument,       0, 's'},
-		{"tsp-sort",             no_argument,       0, 't'},
+		{"sort",                 no_argument,       0, 's'},
+		{"bb-sort",              no_argument,       0, 't'},
 		{"cut",                  no_argument,       0, 'l'},
 		{"media",                required_argument, 0, 'm'},
 		{"speed",                required_argument, 0, 'g'},
@@ -401,23 +401,23 @@ void ProgramOptions::showHelp ( )
 	cout << "  --version                  Show version information and copyright details.\n";
 	cout << "  --show                     Show all the parameters entered, do nothing.\n\n";
 	cout << "Application Options:\n";
-	cout << "  -s, --sort-path            Sort the objects fast in the SVG before plotting.\n";
-	cout << "  -t, --tsp-sort             Sort the objects by bounding box, good for fonts.\n";
+	cout << "  -s, --sort                 Sort the objects fast in the SVG before plotting.\n";
+	cout << "  -t, --bb-sort              Sort the objects by bounding box, good for fonts.\n";
 	cout << "  --cut                      Shows the cutting dialogue.\n";
 	cout << "  --media                    Select the media.\n";
 	cout << "  -g, --speed                The speed between 1 and 33.\n";
 	cout << "  -p, --pressure             The pressure between 1 and 10.\n";
-	cout << "  --track-enhancing          Move three times back and forward to create a \n                               track.\n";
+	cout << "  --track-enhancing          Move three times back and forward to create a \n                             track.\n";
 	cout << "  --margin-top               Define the margin on top\n";
 	cout << "  --margin-right             Define the margin on.\n";
-	cout << "  -r, --reg-mark-auto        Use registration marks and find the marks \n                               automatically\n";
-	cout << "  --reg-mark                 Use registration marks but set the knife manually \n                               on top the round mark.\n";
-	cout << "  -a, --reg-dimension-width  Specify the length in mm between the the two \n                               horizontal marks.\n";
-	cout << "  -b, --reg-dimension-height Specify the length in mm between the the two \n                               vertical marks.\n";
-	cout << "  -c, --reg-origin-width     Specify the length in mm between the the edge of \n                               the paper and the first horizontal mark.\n";
-	cout << "  -d, --reg-origin-height    Specify the length in mm between the the edge of \n                               the paper and the first vertical mark.\n";
-	cout << "  --usb-vendor-id            Try this program with other usb hardware on \n                               your own risk.\n";
-	cout << "  --usb-product-id           May also work with other hardware, try \n                               usb-devices program to scan your computer.\n";
+	cout << "  -r, --reg-mark-auto        Use registration marks and find the marks \n                             automatically\n";
+	cout << "  --reg-mark                 Use registration marks but set the knife manually \n                             on top the round mark.\n";
+	cout << "  -a, --reg-dimension-width  Specify the length in mm between the the two \n                             horizontal marks.\n";
+	cout << "  -b, --reg-dimension-height Specify the length in mm between the the two \n                             vertical marks.\n";
+	cout << "  -c, --reg-origin-width     Specify the length in mm between the the edge of \n                             the paper and the first horizontal mark.\n";
+	cout << "  -d, --reg-origin-height    Specify the length in mm between the the edge of \n                             the paper and the first vertical mark.\n";
+	cout << "  --usb-vendor-id            Try this program with other usb hardware on \n                             your own risk.\n";
+	cout << "  --usb-product-id           May also work with other hardware, try \n                             usb-devices program to scan your computer.\n";
 	cout << "Report bugs to https://bugs.launchpad.net/robocut/+filebug.\n";
 }
 
@@ -433,8 +433,8 @@ void ProgramOptions::showVersion ( )
 void ProgramOptions::showShow ( )
 {
 	cout << "Application Options:\n";
-	cout << "  -s, --sort-path            "<< getSortPath() << endl;
-	cout << "  -t, --tsp-sort             "<< getTspSortPath() << endl;
+	cout << "  -s, --sort                 "<< getSortPath() << endl;
+	cout << "  -t, --bb-sort              "<< getTspSortPath() << endl;
 	cout << "  --cut                      "<< getStartCut() << endl;
 	cout << "  --media                    "<< getMedia() << endl;
 	cout << "  -g, --speed                "<< getSpeed() << endl;
