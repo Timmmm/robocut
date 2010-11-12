@@ -112,7 +112,6 @@ QList<QPolygonF> PathSorter::BbSort (const QList<QPolygonF> inpaths)
 	QList<QPolygonF> outpaths = QList<QPolygonF>(inpaths);
 	for (int i = 0; i < (outpaths.size()-1); i++)
 	{
-		
 		for (int j = (i+1); j < outpaths.size(); j++)
 		{
 		if (outpaths[i].boundingRect().intersects(outpaths[j].boundingRect()))
@@ -120,6 +119,7 @@ QList<QPolygonF> PathSorter::BbSort (const QList<QPolygonF> inpaths)
 				if (outpaths[i].boundingRect().width() > outpaths[j].boundingRect().width() || outpaths[i].boundingRect().height() > outpaths[j].boundingRect().height()) 
 				{
 					outpaths.swap(i,j);
+					break;
 				}
 			}
 		}

@@ -120,8 +120,7 @@ void MainWindow::loadFile()
 	//paths = pathsort.TspSort();
 	//paths = pathsort.GroupTSP();
 	if(ProgramOptions::Instance().getSortPath() == true)paths = pathsort.BestSort();
-	else if(ProgramOptions::Instance().getTspSortPath() == true)paths = pathsort.BbSort(paths);
-	else paths = pathsort.UnSort();
+	if(ProgramOptions::Instance().getTspSortPath() == true)paths = pathsort.BbSort(paths);
 	scene->clear();
 	scene->setBackgroundBrush(QBrush(Qt::lightGray));
 
