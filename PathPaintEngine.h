@@ -27,5 +27,7 @@ public:
 private:
 	PathPaintDevice* dev;
 	QTransform transform;
+	QVector<qreal> dashPattern;
+	bool isCosmetic;
 };
 

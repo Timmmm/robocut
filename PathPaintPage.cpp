@@ -39,11 +39,12 @@ PathPaintDevice::~PathPaintDevice()
 		delete engine;
 }
 
-void PathPaintDevice::addPath(const QPolygonF& path)
+void PathPaintDevice::addPath(const QPolygonF& path, const QVector<qreal> dashpattern)
 {
 	if (pagePathSet.contains(path))
 		return;
-	pagePathSet.insert(path);
+	if(!dashpattern.empty()) qWarning("DASH\n");
+	//pagePathSet.insert(path);
 	pagePaths.append(path);
 
 	// Clip the path.

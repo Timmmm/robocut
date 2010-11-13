@@ -24,10 +24,24 @@ void PathPaintEngine::drawPath(const QPainterPath& path)
 {
 	if (!dev)
 		return;
-
-	QList<QPolygonF> polys = path.toSubpathPolygons();
-	for (int i = 0; i < polys.size(); ++i)
-		dev->addPath(transform.map(polys[i]));
+	if(!isCosmetic)
+	{
+		QList<QPolygonF> polys = path.toSubpathPolygons();
+		for (int i = 0; i < polys.size(); ++i)
+		{
+			if(dashPattern.empty()) dev->addPath(transform.map(polys[i]), dashPattern);
+			else
+			{
+				QPolygonF polytemp = transform.map(polys[i]);
+				QPolygonF newpoly;
+				for (int j = 0; j < polytemp.size(); ++j)
+				{					
+					newpoly.append(QPointF ( polytemp[j].x(), polytemp[j].y() ));
+				}
+				dev->addPath(newpoly, dashPattern);
+			}
+		}
+	}
 }
 
 void PathPaintEngine::drawPixmap(const QRectF& r, const QPixmap& pm, const QRectF& sr)
@@ -43,7 +57,7 @@ void PathPaintEngine::drawPolygon(const QPointF* points, int pointCount, Polygon
 	QPolygonF p;
 	for (int i = 0; i < pointCount; ++i)
 		p.append(points[i]);
-	dev->addPath(transform.map(p));
+	dev->addPath(transform.map(p), dashPattern);
 }
 
 bool PathPaintEngine::end()
@@ -61,4 +75,6 @@ void PathPaintEngine::updateState(const QPaintEngineState& state)
 {
 	if (state.state() & DirtyTransform)
 		transform = state.transform();
+	dashPattern = state.pen().dashPattern();
+	isCosmetic  = state.pen().isCosmetic(); 
 }
