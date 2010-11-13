@@ -392,34 +392,59 @@ int ProgramOptions::GetOpt (int argc, char *argv[] )
 
 void ProgramOptions::showHelp ( )
 {
-	cout << "The `Robocut' program plots or cuts SVG files on a Craft Robo or Silhouette SD\n";
-	cout << "or most likely any other customer grade Graphtec cutting plotter.\n\n";
-	cout << "Usage:\n";
-	cout << "  Robocut [OPTIONS...] [File]\n\n";
-	cout << "Help Options:\n";
-	cout << "  --help                     Show summary of options.\n";
-	cout << "  --version                  Show version information and copyright details.\n";
-	cout << "  --show                     Show all the parameters entered, do nothing.\n\n";
-	cout << "Application Options:\n";
-	cout << "  -s, --sort                 Sort the objects fast in the SVG before plotting.\n";
-	cout << "  -t, --bb-sort              Sort the objects by bounding box, good for fonts.\n";
-	cout << "  --cut                      Shows the cutting dialogue.\n";
-	cout << "  --media                    Select the media.\n";
-	cout << "  -g, --speed                The speed between 1 and 33.\n";
-	cout << "  -p, --pressure             The pressure between 1 and 10.\n";
-	cout << "  --track-enhancing          Move three times back and forward to create a \n                             track.\n";
-	cout << "  --margin-top               Define the margin on top\n";
-	cout << "  --margin-right             Define the margin on.\n";
-	cout << "  -r, --reg-mark-auto        Use registration marks and find the marks \n                             automatically\n";
-	cout << "  --reg-mark                 Use registration marks but set the knife manually \n                             on top the round mark.\n";
-	cout << "  -a, --reg-dimension-width  Specify the length in mm between the the two \n                             horizontal marks.\n";
-	cout << "  -b, --reg-dimension-height Specify the length in mm between the the two \n                             vertical marks.\n";
-	cout << "  -c, --reg-origin-width     Specify the length in mm between the the edge of \n                             the paper and the first horizontal mark.\n";
-	cout << "  -d, --reg-origin-height    Specify the length in mm between the the edge of \n                             the paper and the first vertical mark.\n";
-	cout << "  --usb-vendor-id            Try this program with other usb hardware on \n                             your own risk.\n";
-	cout << "  --usb-product-id           May also work with other hardware, try \n                             usb-devices program to scan your computer.\n";
-	cout << "Report bugs to https://bugs.launchpad.net/robocut/+filebug.\n";
+	//      "<------------------------------------------------------------------------------>"
+	cout << "The `Robocut' program plots or cuts SVG files on a Craft Robo or Silhouette SD" << endl;
+	cout << "or most likely any other customer grade Graphtec cutting plotter." << endl << endl;
+	cout << "Usage:" << endl;
+	cout << "  Robocut [OPTIONS...] [File]" << endl << endl;
+	//      "<------------------------------------------------------------------------------>"
+	cout << "Help Options:" << endl;
+	cout << "  --help                     Show summary of options." << endl;
+	cout << "  --version                  Show version information and copyright details." << endl;
+	cout << "  --show                     Show all the parameters entered and the defaults." << endl << endl;
+	//      "<------------------------------------------------------------------------------>"
+	cout << "Application Options:" << endl;
+	cout << "  -s, --sort                 Sort the objects from the SVG before plotting." << endl;
+	cout << "  -t, --bb-sort              Sort the objects by bounding box, good for letters." << endl;
+	cout << "                             This will cut out the inside first and than the" << endl;
+	cout << "                             outside." << endl;
+	cout << "  --cut                      Shows the cutting dialogue after start." << endl;
+	cout << "  --media INT                Select the media. Try:" << endl;
+	cout << "                             100, 101, 102, 106, 111, 112, 113, 120 to 138" << endl;
+	cout << "  -g, --speed INT            The speed between 1 and 33." << endl;
+	cout << "  -p, --pressure INT         The pressure between 1 and 10." << endl;
+	cout << "  --track-enhancing          Move three times back and forward to create a" << endl;
+	cout << "                             track." << endl;
+	cout << "  --margin-top DOUBLE        Define the margin on top in mm." << endl;
+	cout << "  --margin-right DOUBLE      Define the margin right in mm." << endl << endl;
+	//      "<------------------------------------------------------------------------------>"
+	cout << "Registration Mark Options:" << endl;
+	cout << "  -r, --reg-mark-auto        Use registration marks and find the marks" << endl;
+	cout << "                             automatically." << endl;
+	cout << "  --reg-mark                 Use registration marks but set the knife manually" << endl;
+	cout << "                             on top the round mark." << endl;
+	cout << "  -a, --reg-dimension-width DOUBLE" << endl;
+	cout << "                             Specify the length in mm between the the two" << endl;
+	cout << "                             horizontal marks." << endl;
+	cout << "  -b, --reg-dimension-height DOUBLE" << endl;
+	cout << "                             Specify the length in mm between the the two" << endl;
+	cout << "                             vertical marks." << endl;
+	cout << "  -c, --reg-origin-width DOUBLE" << endl;
+	cout << "                             Specify the length in mm between the the edge of" << endl;
+	cout << "                             the paper and the first horizontal mark." << endl;
+	cout << "  -d, --reg-origin-height DOUBLE" << endl;
+	cout << "                             Specify the length in mm between the the edge of" << endl;
+	cout << "                             the paper and the first vertical mark." << endl << endl;
+	//      "<------------------------------------------------------------------------------>"
+	cout << "Device Options:" << endl;
+	cout << "  --usb-vendor-id INT        Try this program with other usb hardware on" << endl;
+	cout << "                             your own risk. You need to convert hex to dec." << endl;
+	cout << "  --usb-product-id INT       May also work with other hardware, try" << endl;
+	cout << "                             usb-devices program to scan your computer." << endl;
+	cout << "Report bugs to https://bugs.launchpad.net/robocut/+filebug." << endl;
+	//      "<------------------------------------------------------------------------------>"
 }
+
 
 void ProgramOptions::showVersion ( )
 {
