@@ -29,5 +29,7 @@ private:
 	QTransform transform;
 	QVector<qreal> dashPattern;
 	bool isCosmetic;
+	qreal getDistance(const QPointF &p1, const QPointF &p2);
+	QPointF getPointAtLenght(const QPointF &p1, const QPointF &p2, qreal &l1);
 };
 

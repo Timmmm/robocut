@@ -21,7 +21,7 @@ public:
 	// Adds a path to the device.
 	// Also automatically ignores duplicate paths, which QSvgPainter creates (I guess for the fill and stroke).
 	// Paths are clipped (horribly) to the page. And if any are clipped, clipped() returns true.
-	void addPath(const QPolygonF& path, const QVector<qreal> dashpattern);
+	void addPath(const QPolygonF& path);
 
 	// Get a list of paths.
 	QList<QPolygonF> paths();
