@@ -21,6 +21,27 @@ bool PathPaintEngine::begin(QPaintDevice* pdev)
 	return true;
 }
 
+bool approximatelyEqual(qreal a, qreal b, qreal epsilon)
+{
+    return fabs(a - b) <= ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * epsilon);
+}
+
+bool essentiallyEqual(qreal a, qreal b, qreal epsilon)
+{
+    return fabs(a - b) <= ( (fabs(a) > fabs(b) ? fabs(b) : fabs(a)) * epsilon);
+}
+
+bool definitelyGreaterThan(qreal a, qreal b, qreal epsilon)
+{
+    return (a - b) > ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * epsilon);
+}
+
+bool definitelyLessThan(qreal a, qreal b, qreal epsilon)
+{
+    return (b - a) > ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * epsilon);
+}
+
+
 void PathPaintEngine::drawPath(const QPainterPath& path)
 {
 	if (!dev)
@@ -29,22 +50,51 @@ void PathPaintEngine::drawPath(const QPainterPath& path)
 	{
 		QList<QPolygonF> polys = path.toSubpathPolygons();
 		qreal actualdashsize;
-		if(!dashPattern.empty())actualdashsize = dashPattern[0];
+		QPolygonF newpoly;
+		QPointF origin; 
+		int  dashtoggle = 1, dashi=0;
+		if(!dashPattern.empty())actualdashsize = dashPattern[dashi];
 		for (int i = 0; i < polys.size(); ++i)
 		{
 			if(dashPattern.empty()) dev->addPath(transform.map(polys[i]));
 			else
 			{
-				
 				QPolygonF polytemp = transform.map(polys[i]);
-				QPolygonF newpoly;
-				newpoly.append(QPointF (polytemp[0].x(), polytemp[0].y()));
-				for (int j = 1; j < polytemp.size(); ++j)
-				{					
-					newpoly.append(getPointAtLenght(polytemp[j-1], polytemp[j], actualdashsize));
-				}
-				dev->addPath(newpoly);
-			}
+				for (int j = 1; j <= polytemp.size()-1; ++j)
+				{
+					origin = QPointF(polytemp[j-1]);
+					do
+					{
+						newpoly = QPolygonF();
+						newpoly.append(origin);
+						do
+						{
+							origin = QPointF(getPointAtLenght(QPointF(origin), polytemp[j], actualdashsize));
+							newpoly.append(origin);
+							if (essentiallyEqual(origin.x(), polytemp[j].x(), 0.001 ) && essentiallyEqual(origin.y(), polytemp[j].y(),0.001) && j+1 < polytemp.size()) 
+							{
+								int tempz = polytemp.size();
+								j++;
+							}
+						
+						}while(definitelyGreaterThan(actualdashsize,0.0,0.001)|| j == polytemp.size());
+						if(dashtoggle == 1)
+						{
+							dev->addPath(newpoly);
+						}
+						dashtoggle = dashtoggle * -1;
+						dashi++;
+						if(dashi >= dashPattern.size()) dashi=0;
+						actualdashsize = dashPattern[dashi];
+						qreal xtest = polytemp[j].x();
+						qreal ytest = polytemp[j].y();
+						qreal oxtest = origin.x();
+						qreal oytest = origin.y();
+						ytest = polytemp[j-1].y();
+						
+					}while(!essentiallyEqual(origin.x(), polytemp[j].x(), 0.001 ) || !essentiallyEqual(origin.y(), polytemp[j].y(),0.001));
+				} //end for
+			} // end else
 		}
 	}
 }
@@ -117,14 +167,13 @@ QPointF PathPaintEngine::getPointAtLenght(const QPointF &p1, const QPointF &p2, 
 		return p1;
 	}
 	l1 = 0;
-	qreal factor = (lenghtp1p2*lenghtp1p2)/(lenghtdash*lenghtdash);
+	qreal factor = lenghtp1p2/lenghtdash;
 	qreal a = testx1-testx2;
 	qreal b = testy1-testy2;
-	qreal aa = a*a;
-	qreal bb = b*b;
-	qreal as = aa*factor;
-	qreal bs = bb*factor;
-	return QPointF(sqrt(as),sqrt(bs));
+	qreal aa = a/factor;
+	qreal bb = b/factor;
+	QPointF ret = QPointF(testx1-aa,testy1-bb);
+	return ret;
 	
 }
 
