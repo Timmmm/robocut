@@ -43,7 +43,7 @@ void PathPaintDevice::addPath(const QPolygonF& path)
 {
 	if (pagePathSet.contains(path))
 		return;
-	//pagePathSet.insert(path);
+	pagePathSet.insert(path);
 	pagePaths.append(path);
 
 	// Clip the path.
