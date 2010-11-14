@@ -273,7 +273,7 @@ int ProgramOptions::GetOpt (int argc, char *argv[] )
 		{"help",                 no_argument,       &help_flag, 1},
 		{"version",              no_argument,       &version_flag, 1},
 		{"show",                 no_argument,       &show_flag, 1},
-		{"sort",                 no_argument,       0, 's'},
+		{"no-sort",              no_argument,    0, 's'},
 		{"bb-sort",              no_argument,       0, 't'},
 		{"cut",                  no_argument,       0, 'l'},
 		{"media",                required_argument, 0, 'm'},
@@ -304,7 +304,7 @@ int ProgramOptions::GetOpt (int argc, char *argv[] )
 				//cout << longopts[option_index].name << endl;
 				break;
 			case 's':
-				setSortPath(true);
+				setSortPath(false);
 				break;
 			case 't':
 				setTspSortPath(true);
@@ -404,7 +404,7 @@ void ProgramOptions::showHelp ( )
 	cout << "  --show                     Show all the parameters entered and the defaults." << endl << endl;
 	//      "<------------------------------------------------------------------------------>"
 	cout << "Application Options:" << endl;
-	cout << "  -s, --sort                 Sort the objects from the SVG before plotting." << endl;
+	cout << "  -s, --no-sort              Stop sort the objects from the SVG before plotting." << endl;
 	cout << "  -t, --bb-sort              Sort the objects by bounding box, good for letters." << endl;
 	cout << "                             This will cut out the inside first and than the" << endl;
 	cout << "                             outside." << endl;
@@ -458,7 +458,7 @@ void ProgramOptions::showVersion ( )
 void ProgramOptions::showShow ( )
 {
 	cout << "Application Options:\n";
-	cout << "  -s, --sort                 "<< getSortPath() << endl;
+	cout << "  -s, --no-sort              "<< getSortPath() << endl;
 	cout << "  -t, --bb-sort              "<< getTspSortPath() << endl;
 	cout << "  --cut                      "<< getStartCut() << endl;
 	cout << "  --media                    "<< getMedia() << endl;
@@ -479,10 +479,10 @@ void ProgramOptions::showShow ( )
 }
 
 void ProgramOptions::initAttributes ( ) {
-	sortPath = false;
+	sortPath = true;
+	tspSortPath = false; // used for BB
 	startCut = false;
 	fileName = "";
-	tspSortPath = false;
 	media = 102;
 	speed = 10;
 	pressure = 33;
