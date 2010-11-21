@@ -273,7 +273,7 @@ int ProgramOptions::GetOpt (int argc, char *argv[] )
 		{"help",                 no_argument,       &help_flag, 1},
 		{"version",              no_argument,       &version_flag, 1},
 		{"show",                 no_argument,       &show_flag, 1},
-		{"no-sort",              no_argument,    0, 's'},
+		{"no-sort",              no_argument,       0, 's'},
 		{"bb-sort",              no_argument,       0, 't'},
 		{"cut",                  no_argument,       0, 'l'},
 		{"media",                required_argument, 0, 'm'},
