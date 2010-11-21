@@ -2,7 +2,14 @@
 # Project created by QtCreator 2010-10-03T18:21:30
 # -------------------------------------------------
 TARGET = Robocut
+VERSION = 1.0.2
 TEMPLATE = app
+INSTALLS += icon \
+	    target
+target.path = /usr/bin
+icon.files += ./images/robocut.xpm
+icon.path = /usr/share/pixmaps/
+                         
 SOURCES += main.cpp \
     MainWindow.cpp \
     Plotter.cpp \
@@ -36,9 +43,18 @@ QT += svg
 RESOURCES += \
     resources.qrc
 
-OTHER_FILES += \
+QMAKE_COPY += \
     readme.txt \
     install.txt \
-    changelog.txt
+    changelog.txt \
+    images/cap-blue.png \
+    images/cap-pen.png \
+    images/cap-red.png \
+    images/cap-yellow.png \
+    images/icon.png \
+    images/robocut.xpm \
+    examples/letter_reg-marks.svg
+    
 
-CONFIG += qt debug
+QMAKE_INSTALL_FILE += \
+    images/robocut.xpm
