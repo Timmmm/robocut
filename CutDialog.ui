@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>445</width>
-    <height>322</height>
+    <width>482</width>
+    <height>340</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,7 +27,7 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
+      <item row="0" column="1" colspan="2">
        <widget class="QComboBox" name="mediaCombo">
         <item>
          <property name="text">
@@ -325,6 +325,26 @@
         </property>
        </widget>
       </item>
+      <item row="1" column="2">
+       <widget class="QSpinBox" name="speedSpinBox">
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>10</number>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QSpinBox" name="pressureSpinBox">
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>33</number>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
@@ -495,6 +515,70 @@
     <hint type="destinationlabel">
      <x>44</x>
      <y>105</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>speedSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>speedSpinBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>246</x>
+     <y>81</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>434</x>
+     <y>81</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>speedSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>speedSlider</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>434</x>
+     <y>81</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>246</x>
+     <y>81</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pressureSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>pressureSpinBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>246</x>
+     <y>116</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>434</x>
+     <y>116</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pressureSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>pressureSlider</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>434</x>
+     <y>116</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>246</x>
+     <y>116</y>
     </hint>
    </hints>
   </connection>
