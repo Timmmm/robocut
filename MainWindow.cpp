@@ -119,7 +119,7 @@ void MainWindow::loadFile()
 	//paths = pathsort.Sort();
 	//paths = pathsort.TspSort();
 	//paths = pathsort.GroupTSP();
-	if(ProgramOptions::Instance().getSortPath() == true)paths = pathsort.BestSort();
+	if(!ProgramOptions::Instance().getSortPath() == true)paths = pathsort.BestSort();
 	if(ProgramOptions::Instance().getTspSortPath() == true)paths = pathsort.BbSort(paths);
 	scene->clear();
 	scene->setBackgroundBrush(QBrush(Qt::lightGray));
@@ -186,7 +186,7 @@ void MainWindow::loadFile()
 
 void MainWindow::on_actionAbout_triggered()
 {
-	QString message = "<b>" + ProgramOptions::Instance().getVersion() + "</b><br><br>By Tim Hutt, &copy; 2010<br/><br/>This software allows you to read a vector image in <a href=\"http://en.wikipedia.org/wiki/Scalable_Vector_Graphics\">SVG format</a>, and send it to a <a href=\"http://www.graphteccorp.com/craftrobo/\">Graphtec Craft Robo 2</a> (or possibly 3) for cutting. It is designed to work with SVGs produced by the excellent free vector graphics editor <a href=\"http://www.inkscape.org/\">Inkscape</a>. It may work with other software but this has not been tested.<br/><br/>See <a href=\"http://concentriclivers.com/\">the online manual for instructions</a>.";
+	QString message = "<b>" + ProgramOptions::Instance().getVersion() + "</b><br><br>By Tim Hutt, &copy; 2010<br/><br>By Markus Schulz, &copy; 2010<br/><br/>This software allows you to read a vector image in <a href=\"http://en.wikipedia.org/wiki/Scalable_Vector_Graphics\">SVG format</a>, and send it to a <a href=\"http://www.graphteccorp.com/craftrobo/\">Graphtec Craft Robo 2</a> (or possibly 3) for cutting. It is designed to work with SVGs produced by the excellent free vector graphics editor <a href=\"http://www.inkscape.org/\">Inkscape</a>. It may work with other software but this has not been tested.<br/><br/>See <a href=\"http://concentriclivers.com/\">the online manual for instructions</a>.";
 	QMessageBox::information(this, "About", message);
 }
 

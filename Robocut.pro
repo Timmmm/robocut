@@ -2,7 +2,7 @@
 # Project created by QtCreator 2010-10-03T18:21:30
 # -------------------------------------------------
 TARGET = Robocut
-VERSION = 1.0.2
+VERSION = 1.0.3
 TEMPLATE = app
 INSTALLS += icon \
 	    target
@@ -54,7 +54,3 @@ QMAKE_COPY += \
     images/icon.png \
     images/robocut.xpm \
     examples/letter_reg-marks.svg
-    
-
-QMAKE_INSTALL_FILE += \
-    images/robocut.xpm

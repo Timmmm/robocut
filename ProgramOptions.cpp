@@ -60,6 +60,8 @@ int ProgramOptions::getTspSortPath ( )
 
 void ProgramOptions::setMedia ( int new_var ) 
 {
+	if (new_var<0) new_var = 0;
+	if (new_var>25) new_var = 25;
 	media = new_var;
 }
 
@@ -304,7 +306,7 @@ int ProgramOptions::GetOpt (int argc, char *argv[] )
 				//cout << longopts[option_index].name << endl;
 				break;
 			case 's':
-				setSortPath(false);
+				setSortPath(true);
 				break;
 			case 't':
 				setTspSortPath(true);
@@ -409,8 +411,7 @@ void ProgramOptions::showHelp ( )
 	cout << "                             This will cut out the inside first and than the" << endl;
 	cout << "                             outside." << endl;
 	cout << "  --cut                      Shows the cutting dialogue after start." << endl;
-	cout << "  --media INT                Select the media. Try:" << endl;
-	cout << "                             100, 101, 102, 106, 111, 112, 113, 120 to 138" << endl;
+	cout << "  --media INT                Select the media. See drop down box." << endl;
 	cout << "  -g, --speed INT            The speed between 1 and 33." << endl;
 	cout << "  -p, --pressure INT         The pressure between 1 and 10." << endl;
 	cout << "  --track-enhancing          Move three times back and forward to create a" << endl;
@@ -448,7 +449,7 @@ void ProgramOptions::showHelp ( )
 
 void ProgramOptions::showVersion ( )
 {
-	cout << (version.toStdString());
+	cout << (version.toStdString()); // see main.cpp
 	cout << "\n\nCopyright (C) 2010\n";
 	cout << "This is free software; see the source for copying conditions.  There is NO\n";
 	cout << "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n";
@@ -479,11 +480,11 @@ void ProgramOptions::showShow ( )
 }
 
 void ProgramOptions::initAttributes ( ) {
-	sortPath = true;
-	tspSortPath = false; // used for BB
+	sortPath = false;
+	tspSortPath = false; // used for BBox
 	startCut = false;
 	fileName = "";
-	media = 102;
+	media = 2;
 	speed = 10;
 	pressure = 33;
 	regMarkAuto = false;

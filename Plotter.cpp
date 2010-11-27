@@ -382,8 +382,8 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 			double x = cuts[i][0].x()*20.0;
 			double y = cuts[i][0].y()*20.0;
 
-			double xorigin = 15.0; // hard code regmark origin x, it would be nice to code that into the SVG, XML should be able to handle this.
-			double yorigin = 10.0; // hard code regmark origin y
+			double xorigin = ProgramOptions::Instance().getRegOriginWidthMM();
+			double yorigin = ProgramOptions::Instance().getRegOriginHeightMM();
 
 			if (regmark)
 			{

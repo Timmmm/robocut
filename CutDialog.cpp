@@ -1,31 +1,45 @@
 #include "CutDialog.h"
 #include "ui_CutDialog.h"
+#include "ProgramOptions.h"
 
 CutDialog::CutDialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::CutDialog)
+	QDialog(parent),
+	ui(new Ui::CutDialog)
 {
-    ui->setupUi(this);
-
-	// Default = Vinyl Sticker.
-	ui->mediaCombo->setCurrentIndex(2);
+	ui->setupUi(this);
+	ui->mediaCombo->setCurrentIndex(ProgramOptions::Instance().getMedia());
+	ui->speedSlider->setValue(ProgramOptions::Instance().getSpeed());
+	ui->pressureSlider->setValue(ProgramOptions::Instance().getPressure());
+	ui->trackEnhancingCheckbox->setChecked(ProgramOptions::Instance().getTrackEnhancing());
+	if(ProgramOptions::Instance().getRegMark())
+	{
+		ui->regMarksGroup->setChecked(true);
+		ui->regSearchCheckbox->setChecked(false);
+	}
+	if(ProgramOptions::Instance().getRegMarkAuto())
+	{
+		ui->regMarksGroup->setChecked(true);
+		ui->regSearchCheckbox->setChecked(true);
+	}
+	ui->regWidthSpinner->setValue(ProgramOptions::Instance().getRegDimensionWidthMM());
+	ui->regHeightSpinner->setValue(ProgramOptions::Instance().getRegDimensionHeightMM());
 }
 
 CutDialog::~CutDialog()
 {
-    delete ui;
+	delete ui;
 }
 
 void CutDialog::changeEvent(QEvent *e)
 {
-    QDialog::changeEvent(e);
-    switch (e->type()) {
-    case QEvent::LanguageChange:
-        ui->retranslateUi(this);
-        break;
-    default:
-        break;
-    }
+	QDialog::changeEvent(e);
+	switch (e->type()) {
+	case QEvent::LanguageChange:
+		ui->retranslateUi(this);
+		break;
+	default:
+		break;
+	}
 }
 
 int CutDialog::media() const

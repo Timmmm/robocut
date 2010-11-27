@@ -1,3 +1,16 @@
+robocut (1.0.3-0ubuntu1) maverick; urgency=low
+
+  * manpage
+  * command line interface
+  * mouse wheel  zoom
+  * change the draw command to move command if the cut is on the outer edge, kind of clipping (but not in preview)
+  * dash pattern from path
+  * sort the different paths to cut faster
+  * bounding box option to cut inside path first (good for letters)
+  * registration mark support
+
+ -- Markus Schulz <schulz@alpharesearch.de>  Sat, 27 Nov 2010 15:09:13 -0500
+
 robocut (1.0.2-0ubuntu1) maverick; urgency=low
 
   * Initial Release.

@@ -1,5 +1,5 @@
 rm Robocut*.tar.gz
-rm -r ./dist/
+rm -r ./ddist/
 rm -r ./.tmp/
 #./autogen.sh
 #./configure
@@ -7,18 +7,19 @@ rm -r ./.tmp/
 make distclean
 qmake
 make -j
+help2man -N ./Robocut > ./debian/Robocut.1
 make dist
-mkdir dist
-cp Robocut*.tar.gz ./dist/
-cd dist
+mkdir ddist
+cp Robocut*.tar.gz ./ddist/
+cd ddist
 tar -xvzf Robocut*.tar.gz 
 rename -v 's/\.tar\.gz$/\.orig\.tar\.gz/' *.tar.gz
 rename -v 's/Robocut/robocut_/' *.tar.gz
 cd Robocut*
 mkdir debian
 cd ../..
-cp -r ./debian/* ./dist/Robocut*/debian
-cd dist
+cp -r ./debian/* ./ddist/Robocut*/debian
+cd ddist
 cd Robocut*
 # lucid maverick unstable
 dch -i
