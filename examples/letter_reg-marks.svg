@@ -24,15 +24,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.979899"
-     inkscape:cx="344.10532"
-     inkscape:cy="148.87435"
+     inkscape:cx="298.06423"
+     inkscape:cy="169.0774"
      inkscape:document-units="mm"
      inkscape:current-layer="layer5"
-     showgrid="true"
+     showgrid="false"
      units="mm"
-     showguides="true"
+     showguides="false"
      inkscape:window-width="1920"
-     inkscape:window-height="1003"
+     inkscape:window-height="1001"
      inkscape:window-x="0"
      inkscape:window-y="24"
      inkscape:window-maximized="1"
@@ -118,7 +118,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -181,17 +181,18 @@
        inkscape:connector-curvature="0"
        transform="translate(-0.34375,62.718738)" />
     <path
-       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 106.29921,883.70079 0,35.43307"
-       id="path4792"
-       inkscape:connector-curvature="0"
-       transform="translate(-0.34375,62.718738)" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 88.582677,901.41732 35.433073,0"
-       id="path4794"
-       inkscape:connector-curvature="0"
-       transform="translate(-0.34375,62.718738)" />
+       sodipodi:type="arc"
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       id="path3222"
+       sodipodi:cx="97.440948"
+       sodipodi:cy="874.84253"
+       sodipodi:rx="8.8582678"
+       sodipodi:ry="8.8582678"
+       d="m 93.771486,882.90503 a 8.8582678,8.8582678 0 1 1 0.119851,0.0535"
+       sodipodi:start="1.9979057"
+       sodipodi:end="8.2662751"
+       sodipodi:open="true"
+       transform="matrix(0.7570818,0,0,0.75708471,43.235358,291.4589)" />
   </g>
   <g
      inkscape:groupmode="layer"
