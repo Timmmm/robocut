@@ -2,7 +2,7 @@
 # Project created by QtCreator 2010-10-03T18:21:30
 # -------------------------------------------------
 TARGET = Robocut
-VERSION = 1.0.3
+VERSION = 1.0.4
 TEMPLATE = app
 INSTALLS += icon \
 	    target
@@ -46,7 +46,7 @@ RESOURCES += \
 QMAKE_COPY += \
     readme.txt \
     install.txt \
-    changelog.txt \
+    changelog \
     images/cap-blue.png \
     images/cap-pen.png \
     images/cap-red.png \
