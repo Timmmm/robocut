@@ -24,8 +24,8 @@ cd Robocut*
 # lucid maverick unstable
 dch -i
 #DIST=maverick ARCH=i386 pdebuild
-dpkg-buildpackage
-#debuild -S
+#dpkg-buildpackage
+debuild -S
 #debuild
 cd ..
 lintian -Ivi *.changes

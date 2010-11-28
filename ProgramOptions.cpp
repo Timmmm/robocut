@@ -506,7 +506,7 @@ void ProgramOptions::initAttributes ( ) {
 	fileName = "";
 	media = 2;
 	speed = 10;
-	pressure = 33;
+	pressure = 10;
 	regMarkAuto = false;
 	regMark = false;
 	setRegDimensionWidthMM(180.0);
