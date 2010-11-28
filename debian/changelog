@@ -1,3 +1,9 @@
+robocut (1.0.4-0ubuntu3) maverick; urgency=low
+
+  * add .desktop file for Ubuntu
+
+ -- Markus Schulz <schulz@alpharesearch.de>  Sun, 28 Nov 2010 00:42:00 -0500
+
 robocut (1.0.4-0ubuntu2) maverick; urgency=low
 
   * default needs to be 10 for pressure
