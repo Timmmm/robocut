@@ -1,0 +1,2 @@
+[ENVIRONMENT]
+QT SVG only supports the SVG 1.2 Tiny standard and this has a limited SVG support. For example multiline text is something that is no supported by Robocut, however you can export your text to a path or just create each line separate.

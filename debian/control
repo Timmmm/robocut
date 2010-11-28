@@ -9,7 +9,8 @@ Homepage: https://code.launchpad.net/robocut
 Package: robocut
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: is used with cutting plotters
- Robocut is the controller program to cut from SVG files.
- This is the controller program to cut from SVG f is the controller 
- program to cut from SVG is the controller program to cut from SVG.
+Description: Robocut - is used with Graphtec cutting plotters.
+ Robocut is a simple graphical program to allow you to cut graphics with a 
+ Graphtec Craft Robo 2 Vinyl Cutter model CC220-20 and Sihouette SD. It can
+ read SVG files produced by Inkscape, but it should also work with other 
+ SVG files.

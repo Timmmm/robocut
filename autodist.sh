@@ -7,7 +7,7 @@ rm -r ./.tmp/
 make distclean
 qmake
 make -j
-help2man -N ./Robocut > ./debian/Robocut.1
+help2man --name="is used with cutting plotters." -N ./Robocut -i ./manfile.txt -o ./debian/Robocut.1
 make dist
 mkdir ddist
 cp Robocut*.tar.gz ./ddist/
