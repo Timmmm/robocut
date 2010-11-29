@@ -23,7 +23,7 @@ cd ddist
 cd Robocut*
 # lucid maverick unstable
 dch -i
-#DIST=maverick ARCH=i386 pdebuild
+#DIST=sid ARCH=amd64 pdebuild
 #dpkg-buildpackage
 debuild -S
 #debuild

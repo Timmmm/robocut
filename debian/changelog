@@ -1,38 +1,5 @@
-robocut (1.0.4-0ubuntu3) maverick; urgency=low
+robocut (1.0.4-1) unstable; urgency=low
 
-  * add .desktop file for Ubuntu
+  * Initial release. (Closes: #XXXXXX)
 
- -- Markus Schulz <schulz@alpharesearch.de>  Sun, 28 Nov 2010 00:42:00 -0500
-
-robocut (1.0.4-0ubuntu2) maverick; urgency=low
-
-  * default needs to be 10 for pressure
-
- -- Markus Schulz <schulz@alpharesearch.de>  Sat, 27 Nov 2010 23:29:59 -0500
-
-robocut (1.0.4-0ubuntu1) maverick; urgency=low
-
-  * get menu working
-  * better sample reg file
-
- -- Markus Schulz <schulz@alpharesearch.de>  Sat, 27 Nov 2010 19:23:09 -0500
-
-robocut (1.0.3-0ubuntu1) maverick; urgency=low
-
-  * manpage
-  * command line interface
-  * mouse wheel  zoom
-  * change the draw command to move command if the cut is on the outer edge,
-  kind of clipping (but not in preview)
-  * dash pattern from path
-  * sort the different paths to cut faster
-  * bounding box option to cut inside path first (good for letters)
-  * registration mark support
-
- -- Markus Schulz <schulz@alpharesearch.de>  Sat, 27 Nov 2010 15:09:13 -0500
-
-robocut (1.0.2-0ubuntu1) maverick; urgency=low
-
-  * Initial Release.
-
- -- Markus Schulz <schulz@alpharesearch.de>  Sun, 24 Oct 2010 22:22:22 -0400
+ -- Markus Schulz <schulz@alpharesearch.de>  Sun, 28 Nov 2010 18:53:28 -0500
