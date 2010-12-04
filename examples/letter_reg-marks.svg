@@ -24,7 +24,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.979899"
-     inkscape:cx="298.06423"
+     inkscape:cx="205.63527"
      inkscape:cy="169.0774"
      inkscape:document-units="mm"
      inkscape:current-layer="layer5"
@@ -118,8 +118,24 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
+        <cc:license
+           rdf:resource="http://creativecommons.org/licenses/publicdomain/" />
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Markus Schulz</dc:title>
+          </cc:Agent>
+        </dc:creator>
       </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/licenses/publicdomain/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+      </cc:License>
     </rdf:RDF>
   </metadata>
   <g
@@ -188,7 +204,7 @@
        sodipodi:cy="874.84253"
        sodipodi:rx="8.8582678"
        sodipodi:ry="8.8582678"
-       d="m 93.771486,882.90503 a 8.8582678,8.8582678 0 1 1 0.119851,0.0535"
+       d="m 93.771486,882.90503 c -4.452798,-2.02659 -6.419629,-7.27917 -4.39304,-11.73196 2.026588,-4.4528 7.279168,-6.41963 11.731964,-4.39304 4.4528,2.02658 6.41963,7.27916 4.39304,11.73196 -2.00539,4.40622 -7.176667,6.38641 -11.612113,4.44652"
        sodipodi:start="1.9979057"
        sodipodi:end="8.2662751"
        sodipodi:open="true"

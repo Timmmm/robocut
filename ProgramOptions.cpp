@@ -418,7 +418,7 @@ void ProgramOptions::showHelp ( )
 	cout << "The `Robocut' program plots or cuts SVG files on a Craft Robo or Silhouette SD" << endl;
 	cout << "or most likely any other customer grade Graphtec cutting plotter." << endl << endl;
 	cout << "Usage:" << endl;
-	cout << "  Robocut [OPTIONS...] [File]" << endl << endl;
+	cout << "  robocut [OPTIONS...] [File]" << endl << endl;
 	//      "<------------------------------------------------------------------------------>"
 	cout << "Help Options:" << endl;
 	cout << "  --help                     Show summary of options." << endl;

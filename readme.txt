@@ -11,7 +11,7 @@ It may work with the newer CC330-20 model if the USB IDs are changed, but I donâ
 AUTHORS
 ^^^^^^^
 
-Tim Hutt, Marcus Schulz
+Tim Hutt, Markus Schulz
 
 INSTALLATION
 ^^^^^^^^^^^^
@@ -23,7 +23,7 @@ INSTRUCTIONS
 
 Basic instructions are:
 
-1. Create a new A4 portrait drawing in Inkscape.
+1. Create a new A4 portrait drawing in Inkscape. (For the registration mark feature you can use the supplied public domain letter_reg-marks.svg file)
 2. Make sure in the options, the default export DPI is 90.0
 3. Paste your stuff into the drawing.
 4. Export as Plain SVG.
