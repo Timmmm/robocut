@@ -1,1 +1,4 @@
+### example for for the registration marks 
 examples/letter_reg-marks.svg	/usr/share/robocut
+### Menus, icons
+debian/misc/robocut.desktop	/usr/share/applications
