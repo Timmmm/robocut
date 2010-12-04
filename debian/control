@@ -5,6 +5,8 @@ Maintainer: Markus Schulz <schulz@alpharesearch.de>
 Build-Depends: debhelper (>= 7), quilt, libqt4-dev, libusb-1.0-0-dev
 Standards-Version: 3.9.1
 Homepage: https://code.launchpad.net/robocut
+Vcs-Git: git://gitorious.org/~alpharesearch/robocut/alpharesearchs-robocut.git
+Vcs-Browser: http://gitorious.org/~alpharesearch/robocut/alpharesearchs-robocut
 
 Package: robocut
 Architecture: any
