@@ -1,10 +1,42 @@
+1.0.5 
+  * adding all the changes needed for Debian
+  * fixed watch file
+  * make binary lower case
+  * removed redundant copyright form the copyright file
+  * recreated all the images so we have the copyright
+  * added vcs information to control file
+  * merged mentor in to master
+  
+1.0.4
+
+  * add .desktop file for Ubuntu
+  * default needs to be 10 for pressure
+  * get menu working
+  * better sample reg file
+  
+1.0.3
+
+  * manpage
+  * command line interface
+  * mouse wheel  zoom
+  * change the draw command to move command if the cut is on the outer edge,
+  kind of clipping (but not in preview)
+  * dash pattern from path
+  * sort the different paths to cut faster
+  * bounding box option to cut inside path first (good for letters)
+  * registration mark support
+
+1.0.2
+
+  * Initial Release on Ubuntu.
+
 Master
 
-* Some brief documentation
-* Initial registration mark support
-* Load page size from file
-* Small UI improvements
+  * Some brief documentation
+  * Initial registration mark support
+  * Load page size from file
+  * Small UI improvements
 
 Version 0.2 - a3b13ad - Oct 24th 2010
 
-* Initial working version.
+  * Initial working version.
