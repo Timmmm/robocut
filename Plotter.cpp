@@ -334,6 +334,7 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 		if (regmark)
 		{
 			stringstream regmarkstr;
+			regmarkstr.precision(0);
 			string searchregchar = "23,";
 			int regw = lroundl(regwidth * 20.0);
 			int regl = lroundl(reglength * 20.0);
@@ -392,7 +393,7 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 		if (!e) goto error;
 
 		page.flags(ios::fixed);
-		page.precision(3);
+		page.precision(0);
 		page << "&100,100,100,\\0,0,Z" << ItoS(width) << "," << ItoS(height) << ",L0";
 
 		for (int i = 0; i < cuts.size(); ++i)
