@@ -7,4 +7,4 @@
 version=3
 
 #see Launchpad Bug #231797 
-https://launchpad.net/robocut/+download http://launchpad.net/robocut/systemtest/.*/Robocut(.*)\.tar\.gz
+https://launchpad.net/robocut/+download http://launchpad.net/robocut/systemtest/.*/robocut_(.*)\.tar\.gz
