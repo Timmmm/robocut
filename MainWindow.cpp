@@ -149,7 +149,7 @@ void MainWindow::loadFile()
 	scene->addRect(0.0, 0.0, mediaSize.width(), mediaSize.height(), QPen(), QBrush(Qt::white));
 
 	QPen pen;
-	pen.setWidthF(0.5);
+	pen.setWidthF(0.0);
 	for (int i = 0, ii = 50, iii=0; i < paths.size(); ++i,ii+=10)
 	{
 		switch (iii)
