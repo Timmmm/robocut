@@ -286,7 +286,7 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 	e = UsbSend(handle, "FC" + ItoS(media == 113 ? 0 : 18) + "\x03");
 	if (!e) goto error;
 
-	e = UsbSend(handle, "FY" + ItoS(trackenhancing ? 1 : 0) + "\x03");
+	e = UsbSend(handle, "FY" + ItoS(trackenhancing ? 0 : 1) + "\x03");
 	if (!e) goto error;
 
 	// Set to portrait. FN1 does landscape but it's easier just to rotate the image.

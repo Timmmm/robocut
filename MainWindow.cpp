@@ -176,8 +176,9 @@ void MainWindow::loadFile()
 			pen.setColor(QColor(0, ii, ii));
 				break;
 		}
-
-		scene->addPolygon(paths[i], pen);
+		QPainterPath path;
+		path.addPolygon(paths[i]);
+		scene->addPath(path, pen);
 		if(ii >= 200)
 		{
 			ii = 50;
