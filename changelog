@@ -1,3 +1,10 @@
+1.0.6
+  * Tim fixed drawing bug 
+  * changed from float to int for output to plotter, fixes crash of 2nd 
+  gen plotter model
+  * changed display pen size to 0 
+  * Tim fixed track enhancing option was inverted.
+
 1.0.5 
   * adding all the changes needed for Debian
   * fixed watch file
