@@ -24,9 +24,11 @@
 
 #include <libusb-1.0/libusb.h>
 
-const int VENDOR_ID_GRAPHTEC = ProgramOptions::Instance().getVendorUSB_ID(); //0x0b4d;
+      int VENDOR_ID = ProgramOptions::Instance().getVendorUSB_ID();
+const int VENDOR_ID_GRAPHTEC = 0x0b4d; 
+      int PRODUCT_ID = ProgramOptions::Instance().getProductUSB_ID();
 const int PRODUCT_ID_CC200_20 = 0x110a;
-const int PRODUCT_ID_SILHOUETTE_SD = ProgramOptions::Instance().getProductUSB_ID(); //0x111d; // Possibly the same as CC330-20.
+const int PRODUCT_ID_SILHOUETTE_SD = 0x111d; // Possibly the same as CC330-20.
 
 #include <iostream>
 #include <cmath>
@@ -127,7 +129,11 @@ Error UsbReceive(libusb_device_handle* handle, string& s, int timeout = 0)
 Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int media, int speed, int pressure, bool trackenhancing,
 		  bool regmark, bool regsearch, double regwidth, double reglength)
 {
-	cout << "Cutting. mediawidth: " << mediawidth << " mediaheight: " << mediaheight
+	VENDOR_ID = ProgramOptions::Instance().getVendorUSB_ID();
+	PRODUCT_ID = ProgramOptions::Instance().getProductUSB_ID();
+	
+	cout << "Cutting... VENDOR_ID : " << VENDOR_ID << " PRODUCT_ID: " << PRODUCT_ID
+		 << " mediawidth: " << mediawidth << " mediaheight: " << mediaheight
 		 << "media: " << media << " speed: " << speed << " pressure: " << pressure
 		 << " trackenhancing: " << trackenhancing << " regmark: " <<  regmark
 		 << " regsearch:" <<  regsearch <<" regwidth:" <<  regwidth << " reglength: " << reglength << endl;
@@ -157,8 +163,8 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 		libusb_device_descriptor desc;
 		libusb_get_device_descriptor(device, &desc);
 		// I don't want to be more specific than this really.
-		if (desc.idVendor == VENDOR_ID_GRAPHTEC &&
-				(desc.idProduct == PRODUCT_ID_CC200_20 || desc.idProduct == PRODUCT_ID_SILHOUETTE_SD))
+		if ((desc.idVendor == VENDOR_ID || desc.idVendor == VENDOR_ID_GRAPHTEC) &&
+				(desc.idProduct == PRODUCT_ID || desc.idProduct == PRODUCT_ID_CC200_20 || desc.idProduct == PRODUCT_ID_SILHOUETTE_SD))
 		{
 			// Just use the first one. Who has two?!
 			found = device;
