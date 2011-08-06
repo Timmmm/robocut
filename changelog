@@ -1,3 +1,6 @@
+1.0.7
+  * Add USB ID 111C as another default.
+
 1.0.6
   * Tim fixed drawing bug 
   * changed from float to int for output to plotter, fixes crash of 2nd 
