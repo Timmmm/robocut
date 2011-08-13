@@ -1,3 +1,6 @@
+1.0.8
+  * changes in Robocut.pro for qmake so no QT files are shipped (Debian requirement)
+
 1.0.7
   * Add USB ID 111C as another default.
 

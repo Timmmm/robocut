@@ -2,14 +2,15 @@
 # Project created by QtCreator 2010-10-03T18:21:30
 # -------------------------------------------------
 TARGET = robocut
-VERSION = _1.0.7
+VERSION = 1.0.8
 TEMPLATE = app
 INSTALLS += icon \
 	    target
 target.path = /usr/bin
 icon.files += ./images/robocut.xpm
 icon.path = /usr/share/pixmaps/
-                         
+QMAKE_EXTRA_TARGETS += release tarball
+                  
 SOURCES += main.cpp \
     MainWindow.cpp \
     Plotter.cpp \
@@ -42,18 +43,23 @@ QT += svg
 
 RESOURCES += \
     resources.qrc
+    
+release.depends = tarball
 
-QMAKE_COPY += \
-    readme.txt \
-    install.txt \
-    changelog \
-    images/cap-blue.png \
-    images/cap-pen.png \
-    images/cap-red.png \
-    images/cap-yellow.png \
-    images/icon.png \
-    images/robocut.xpm \
-    images/robocut.xcf \
-    images/cap.xcf \
-    images/pen.xcf \
-    examples/letter_reg-marks.svg
+tarball.target = $${TARGET}-$${VERSION}.tar.gz
+tarball.commands = \
+        $(DEL_FILE) -r $${TARGET}-$${VERSION} ; \
+        $(MKDIR) $${TARGET}-$${VERSION} ; \
+        $(COPY_DIR) * $${TARGET}-$${VERSION}/ ; \
+        $(DEL_FILE) $${TARGET}-$${VERSION}/*.pro.user \
+                $${TARGET}-$${VERSION}/$${TARGET}-$${VERSION}.tar.gz \
+                $(DEL_FILE) -r $${TARGET}-$${VERSION}/$${TARGET}-$${VERSION} \
+                $${TARGET}-$${VERSION}/autodist.sh ; \
+                $(DEL_FILE) -r $${TARGET}-$${VERSION}/$${TARGET}-$${VERSION} \
+                $${TARGET}-$${VERSION}/umbrello_stuff.xmi ; \
+                $(DEL_FILE) -r $${TARGET}-$${VERSION}/$${TARGET}-$${VERSION} \
+                $${TARGET}-$${VERSION}/robocut ; \
+                $(DEL_FILE) -r $${TARGET}-$${VERSION}/$${TARGET}-$${VERSION} \
+                $${TARGET}-$${VERSION}/Makefile ; \
+        tar -cz --exclude=.svn --exclude=*.tar.gz -f $$tarball.target $${TARGET}-$${VERSION} ; \
+        $(DEL_FILE) -r $${TARGET}-$${VERSION}
