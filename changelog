@@ -1,3 +1,6 @@
+1.0.9
+  * Add USB ID 111A for CC300-20 Craft Robo Lite as another default.
+
 1.0.8
   * changes in Robocut.pro for qmake so no QT files are shipped (Debian requirement)
 

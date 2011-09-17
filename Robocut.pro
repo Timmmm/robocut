@@ -2,7 +2,7 @@
 # Project created by QtCreator 2010-10-03T18:21:30
 # -------------------------------------------------
 TARGET = robocut
-VERSION = 1.0.8
+VERSION = 1.0.9
 TEMPLATE = app
 INSTALLS += icon \
 	    target
