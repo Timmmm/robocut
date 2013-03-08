@@ -31,6 +31,8 @@ const int PRODUCT_ID_CC200_20 = 0x110a;
 const int PRODUCT_ID_CC300_20 = 0x111a;
 const int PRODUCT_ID_SILHOUETTE_SD_1 = 0x111c;
 const int PRODUCT_ID_SILHOUETTE_SD_2 = 0x111d;
+const int PRODUCT_ID_SILHOUETTE_CAMEO =  0x1121;
+const int PRODUCT_ID_SILHOUETTE_PORTRAIT = 0x1123;
 
 #include <iostream>
 #include <cmath>
@@ -165,8 +167,16 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 		libusb_device_descriptor desc;
 		libusb_get_device_descriptor(device, &desc);
 		// I don't want to be more specific than this really.
-		if ((desc.idVendor == VENDOR_ID || desc.idVendor == VENDOR_ID_GRAPHTEC) &&
-				(desc.idProduct == PRODUCT_ID || desc.idProduct == PRODUCT_ID_CC200_20 || desc.idProduct == PRODUCT_ID_CC300_20 || desc.idProduct == PRODUCT_ID_SILHOUETTE_SD_1 || desc.idProduct == PRODUCT_ID_SILHOUETTE_SD_2))
+		if ((desc.idVendor == VENDOR_ID || desc.idVendor == VENDOR_ID_GRAPHTEC) && 
+		    (desc.idProduct == PRODUCT_ID ||
+		     desc.idProduct == PRODUCT_ID_CC200_20 ||
+		     desc.idProduct == PRODUCT_ID_CC300_20 ||
+		     desc.idProduct == PRODUCT_ID_SILHOUETTE_SD_1 ||
+		     desc.idProduct == PRODUCT_ID_SILHOUETTE_SD_2 ||
+		     desc.idProduct == PRODUCT_ID_SILHOUETTE_CAMEO ||
+		     desc.idProduct == PRODUCT_ID_SILHOUETTE_PORTRAIT
+		     )
+		    )
 		{
 			// Just use the first one. Who has two?!
 			found = device;
