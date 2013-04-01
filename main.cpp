@@ -31,7 +31,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-	ProgramOptions::Instance().setVersion("Robocut V1.0.10"); // would be nice if this could be imported from qmake
+	ProgramOptions::Instance().setVersion("Robocut V1.0.10_jw1"); // would be nice if this could be imported from qmake
 	ProgramOptions::Instance().GetOpt(argc, argv);
 	int err = libusb_init(NULL);
 	if (err != LIBUSB_SUCCESS)

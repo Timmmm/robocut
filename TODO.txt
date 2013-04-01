@@ -1,8 +1,7 @@
-				jw, Mon Apr  1 18:13:24 CEST 2013
+				jw, Mon Apr  1 19:56:38 CEST 2013
 Silhouette Cameo
-  - flip around coordinate system 180 deg.
-  - allow left justified paper (12inch - width)
   - paint 24mm blocked area in the GUI at the bottom of the paper.
+  - put the Identify() output in a GUI element (rather than stdout).
   - new sorting algorithm to limit backward movements
     to max 20mm, so that we can cut paper and cardboard 
     without a mat in many cases.

@@ -187,18 +187,8 @@ libusb_device_handle *UsbOpen(struct cutter_id *id)
 // finally do libusb_release_interface(handle, 0); libusb_close(handle);
 libusb_device_handle *UsbInit(struct cutter_id *id)
 {
-	struct cutter_id id_dummy;
-
 	// Now do stuff with the handle.
 	int r = 0;
-
-	if (!id)
-	{
-		id = &id_dummy;
-		id->msg = "?";
-		id->usb_vendor_id = 0;
-		id->usb_product_id = 0;
-	}
 
 	libusb_device_handle* handle = UsbOpen(id);
 	if (!handle) return NULL;
@@ -256,13 +246,9 @@ libusb_device_handle *UsbInit(struct cutter_id *id)
 
 struct cutter_id *Identify()
 {
-	static struct cutter_id id;
-
+	static struct cutter_id id = { "?", 0, 0 };
 	libusb_device_handle *handle;
 
-	id.msg = "?";
-	id.usb_vendor_id = 0;
-	id.usb_product_id = 0;
 	if (1)
 	  {
 	    handle = UsbOpen(&id);
@@ -279,6 +265,43 @@ struct cutter_id *Identify()
 }
 
 
+QList<QPolygonF> Transform_Silhouette_Cameo(QList<QPolygonF> cuts, double *mediawidth, double *mediaheight)
+{
+	const double devicewidth = 300;		// cameo is 12inch aka 300mm wide
+	double w;
+	double h = *mediaheight;
+	
+	cout << "Transform_Silhouette_Cameo " << *mediawidth << "," << *mediaheight << endl;
+	if (0) 
+	{
+		w = *mediawidth;
+		cout << "Paper right aligned" << endl;
+	}
+	else
+	{
+		w = devicewidth;
+		// adjust the used media area, so that the hardware does not clip.
+		*mediawidth = devicewidth;
+		cout << "Paper left aligned" << endl;
+	}
+	  
+
+	// flip it around 180 deg, and go backwards through the path list.
+	QList<QPolygonF> paths;
+  	for (int i = cuts.size()-1; i >= 0; i--)
+	{
+		QPolygonF poly;
+		for (int j = 0; j < cuts[i].size(); j++)
+		{
+			// QPolygonF is a QList<QPointF>
+			double x = cuts[i][j].x();
+			double y = cuts[i][j].y();
+			poly << QPointF(w-x, h-y);
+		}
+		paths << poly;
+	}
+  return paths;
+}
 
 Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int media, int speed, int pressure, bool trackenhancing,
 		  bool regmark, bool regsearch, double regwidth, double reglength)
@@ -303,7 +326,15 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 	if (pressure > 33)
 		pressure = 33;
 
-	libusb_device_handle* handle = UsbInit(NULL);
+	// how can VENDOR_ID / PRODUCT_ID report the correct values abve???
+	struct cutter_id id = { "?", 0, 0 };
+	libusb_device_handle* handle = UsbInit(&id);
+	if (id.usb_vendor_id == VENDOR_ID_GRAPHTEC &&
+	   id.usb_product_id == PRODUCT_ID_SILHOUETTE_CAMEO)
+	  {
+	    // should this also transform the regwidth regheigth or not?
+	    cuts = Transform_Silhouette_Cameo(cuts, &mediawidth, &mediaheight);
+	  }
 
 	// TODO: Use exceptions.
 
