@@ -103,6 +103,27 @@ void MainWindow::on_actionOpen_triggered()
 	loadFile();
 }
 
+void MainWindow::on_actionReload_triggered()
+{
+	if(QFile::exists(filename)) 
+	  loadFile();
+	else
+	  qDebug() << "Reload failed. File missing: " << filename;
+}
+
+void MainWindow::on_actionIdentify_triggered()
+{
+	// CAUTION: only call this when not cutting!
+        struct cutter_id *id = Identify();
+	cout << "Identify:";
+	if (id->usb_product_id)
+	  {
+	    cout << " usb=" << id->usb_vendor_id << "/" << id->usb_product_id;
+	  }
+	cout << " " << id->msg << endl;
+}
+
+
 void MainWindow::loadFile()
 {
 	if (filename.isEmpty())
@@ -208,7 +229,16 @@ void MainWindow::loadFile()
 
 void MainWindow::on_actionAbout_triggered()
 {
-	QString message = "<b>" + ProgramOptions::Instance().getVersion() + "</b><br><br>By Tim Hutt, &copy; 2010<br/><br>Parts of the source by Markus Schulz, &copy; 2010<br/><br/>This software allows you to read a vector image in <a href=\"http://en.wikipedia.org/wiki/Scalable_Vector_Graphics\">SVG format</a>, and send it to a <a href=\"http://www.graphteccorp.com/craftrobo/\">Graphtec Craft Robo 2</a> (or possibly 3) for cutting. It is designed to work with SVGs produced by the excellent free vector graphics editor <a href=\"http://www.inkscape.org/\">Inkscape</a>. It may work with other software but this has not been tested.<br/><br/>See <a href=\"http://concentriclivers.com/\">the online manual for instructions</a>.";
+	QString message = "<b>" + ProgramOptions::Instance().getVersion() + 
+	"</b><br><br>By Tim Hutt, &copy; 2010<br/>" +
+	"<br>Parts of the source by Markus Schulz, &copy; 2010<br/>" +
+	"<br/>This software allows you to read a vector image in <a href=\"http://en.wikipedia.org/wiki/Scalable_Vector_Graphics\">SVG format</a>, " +
+	"and send it to a <a href=\"http://www.graphteccorp.com/craftrobo/\">Graphtec Craft Robo 2</a>/3 " +
+	" or <a href=\"http://www.silhouette.com/cameo\">Silhouette Cameo</a> " + 
+	" (or similar device) for cutting. It is designed to work with SVGs produced " +
+	"by the excellent free vector graphics editor <a href=\"http://www.inkscape.org/\">Inkscape</a>. " + 
+	" It may work with other software but this has not been tested.<br/>" +
+	"<br/>See <a href=\"http://concentriclivers.com/robocut\">the online manual for instructions</a>.";
 	QMessageBox::information(this, "About", message);
 }
 

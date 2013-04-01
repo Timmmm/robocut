@@ -40,7 +40,7 @@
      <x>0</x>
      <y>0</y>
      <width>823</width>
-     <height>23</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -48,6 +48,7 @@
      <string>File</string>
     </property>
     <addaction name="actionOpen"/>
+    <addaction name="actionReload"/>
     <addaction name="actionCut"/>
     <addaction name="actionExit"/>
    </widget>
@@ -66,6 +67,7 @@
     <addaction name="actionReset"/>
     <addaction name="actionZoom_In"/>
     <addaction name="actionZoom_Out"/>
+    <addaction name="actionIdentify"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -121,6 +123,9 @@
    <property name="text">
     <string>Animate</string>
    </property>
+   <property name="toolTip">
+    <string>Animate -- Simulate movement onscreen</string>
+   </property>
    <property name="shortcut">
     <string>Ctrl+A</string>
    </property>
@@ -156,6 +161,28 @@
    </property>
    <property name="shortcut">
     <string>-</string>
+   </property>
+  </action>
+  <action name="actionReload">
+   <property name="text">
+    <string>Reload</string>
+   </property>
+   <property name="toolTip">
+    <string>Reload the current SVG file</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
+   </property>
+  </action>
+  <action name="actionIdentify">
+   <property name="text">
+    <string>Identify</string>
+   </property>
+   <property name="toolTip">
+    <string>Identify connected Plotter</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
    </property>
   </action>
  </widget>

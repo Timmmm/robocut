@@ -25,14 +25,7 @@
 #include <libusb-1.0/libusb.h>
 
       int VENDOR_ID = ProgramOptions::Instance().getVendorUSB_ID();
-const int VENDOR_ID_GRAPHTEC = 0x0b4d; 
       int PRODUCT_ID = ProgramOptions::Instance().getProductUSB_ID();
-const int PRODUCT_ID_CC200_20 = 0x110a;
-const int PRODUCT_ID_CC300_20 = 0x111a;
-const int PRODUCT_ID_SILHOUETTE_SD_1 = 0x111c;
-const int PRODUCT_ID_SILHOUETTE_SD_2 = 0x111d;
-const int PRODUCT_ID_SILHOUETTE_CAMEO =  0x1121;
-const int PRODUCT_ID_SILHOUETTE_PORTRAIT = 0x1123;
 
 #include <iostream>
 #include <cmath>
@@ -90,7 +83,7 @@ Error UsbSend(libusb_device_handle* handle, const string& s, int timeout = 0)
 			cerr << "Error writing to device: " << UsbError(ret) << endl;
 			return Error("Error writing to device: " + UsbError(ret));
 		}
-		if (transferred != data.length())
+		if ((unsigned int)transferred != data.length())
 		{
 			cerr << "Warning, some data not transferred correctly." << endl;
 			return Error("Some data not transfered. Attempted: " + ItoS(data.length()) + " Transferred: " + ItoS(transferred));
@@ -130,33 +123,15 @@ Error UsbReceive(libusb_device_handle* handle, string& s, int timeout = 0)
 //		unsigned char *data, uint16_t length, unsigned int timeout);
 //}
 
-Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int media, int speed, int pressure, bool trackenhancing,
-		  bool regmark, bool regsearch, double regwidth, double reglength)
+libusb_device_handle *UsbOpen(struct cutter_id *id)
 {
-	VENDOR_ID = ProgramOptions::Instance().getVendorUSB_ID();
-	PRODUCT_ID = ProgramOptions::Instance().getProductUSB_ID();
-	
-	cout << "Cutting... VENDOR_ID : " << VENDOR_ID << " PRODUCT_ID: " << PRODUCT_ID
-		 << " mediawidth: " << mediawidth << " mediaheight: " << mediaheight
-		 << "media: " << media << " speed: " << speed << " pressure: " << pressure
-		 << " trackenhancing: " << trackenhancing << " regmark: " <<  regmark
-		 << " regsearch:" <<  regsearch <<" regwidth:" <<  regwidth << " reglength: " << reglength << endl;
-
-	if (media < 100 || media > 300)
-		media = 300;
-	if (speed < 1)
-		speed = 1;
-	if (speed > 10)
-		speed = 10;
-	if (pressure < 1)
-		pressure = 1;
-	if (pressure > 33)
-		pressure = 33;
-
 	libusb_device** list;
 	ssize_t cnt = libusb_get_device_list(NULL, &list);
 	if (cnt < 1)
-		return Error("Couldn't get usb device list.");
+	{
+		id->msg = Error("Couldn't get usb device list.");
+		return NULL;
+	}
 
 	int err = 0;
 
@@ -180,6 +155,8 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 		{
 			// Just use the first one. Who has two?!
 			found = device;
+			id->usb_product_id = desc.idProduct;
+			id->usb_vendor_id = desc.idVendor;
 			break;
 		}
 	}
@@ -187,7 +164,8 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 	if (!found)
 	{
 		libusb_free_device_list(list, 1);
-		return Error("Couldn't find Craft Robo 2 (USB device with Vendor ID with USB VendorID 0b4d and ProductID 110a). Is it connected to the system and powered on?");
+		id->msg = Error("Couldn't find Craft Robo 2 (USB device with Vendor ID with USB VendorID 0b4d and ProductID 110a). Is it connected to the system and powered on?");
+		return NULL;
 	}
 
 	libusb_device_handle* handle;
@@ -196,13 +174,34 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 	if (err != 0)
 	{
 		libusb_free_device_list(list, 1);
-		return Error("Error accessing Craft Robo 2: " + UsbError(err) + ". Do you have permission (on Linux make sure you are in the group 'lp').");
+		id->msg = Error("Error accessing Craft Robo 2: " + UsbError(err) + ". Do you have permission (on Linux make sure you are in the group 'lp').");
+		return NULL;
 	}
 
 	libusb_free_device_list(list, 1);
+	id->msg = "Ready";
+	return handle;
+}
+
+// caller can use UsbSend() afterwards, and should
+// finally do libusb_release_interface(handle, 0); libusb_close(handle);
+libusb_device_handle *UsbInit(struct cutter_id *id)
+{
+	struct cutter_id id_dummy;
 
 	// Now do stuff with the handle.
 	int r = 0;
+
+	if (!id)
+	{
+		id = &id_dummy;
+		id->msg = "?";
+		id->usb_vendor_id = 0;
+		id->usb_product_id = 0;
+	}
+
+	libusb_device_handle* handle = UsbOpen(id);
+	if (!handle) return NULL;
 
 	if (libusb_kernel_driver_active(handle, 0) == 1)
 	{
@@ -210,7 +209,8 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 		if (r != 0)
 		{
 			libusb_close(handle);
-			return Error("Error detaching kernel USB driver: " + UsbError(r));
+			id->msg = Error("Error detaching kernel USB driver: " + UsbError(r));
+			return NULL;
 		}
 	}
 
@@ -218,7 +218,8 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 	if (r != 0)
 	{
 		libusb_close(handle);
-		return Error("Error resetting device: " + UsbError(r));
+		id->msg = Error("Error resetting device: " + UsbError(r));
+		return NULL;
 	}
 
 	cout << "Selecting configuration." << endl;
@@ -226,7 +227,8 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 	if (r < 0)
 	{
 		libusb_close(handle);
-		return Error("Error setting USB configuration: " + UsbError(r));
+		id->msg = Error("Error setting USB configuration: " + UsbError(r));
+		return NULL;
 	}
 
 
@@ -235,18 +237,73 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 	if (r < 0)
 	{
 		libusb_close(handle);
-		return Error("Error claiming USB interface: " + UsbError(r));
+		id->msg = Error("Error claiming USB interface: " + UsbError(r));
+		return NULL;
 	}
 
 	cout << "Setting alt interface." << endl;
 	r = libusb_set_interface_alt_setting(handle, 0, 0); // Probably not really necessary.
 	if (r < 0)
 	{
-		return Error("Error setting alternate USB interface: " + UsbError(r));
+		libusb_close(handle);
+		id->msg = Error("Error setting alternate USB interface: " + UsbError(r));
+		return NULL;
 	}
 
 	cout << "Initialisation successful." << endl;
+	return handle;
+}
 
+struct cutter_id *Identify()
+{
+	static struct cutter_id id;
+
+	libusb_device_handle *handle;
+
+	id.msg = "?";
+	id.usb_vendor_id = 0;
+	id.usb_product_id = 0;
+	if (1)
+	  {
+	    handle = UsbOpen(&id);
+	    if (handle)
+	      libusb_close(handle);
+	    else
+	      id.msg = "no device found";
+	  }
+	else
+	  {
+	    id.msg = Error("Cannot Identify while cut thread is running");
+	  }
+	return &id;
+}
+
+
+
+Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int media, int speed, int pressure, bool trackenhancing,
+		  bool regmark, bool regsearch, double regwidth, double reglength)
+{
+	VENDOR_ID = ProgramOptions::Instance().getVendorUSB_ID();
+	PRODUCT_ID = ProgramOptions::Instance().getProductUSB_ID();
+	
+	cout << "Cutting... VENDOR_ID : " << VENDOR_ID << " PRODUCT_ID: " << PRODUCT_ID
+		 << " mediawidth: " << mediawidth << " mediaheight: " << mediaheight
+		 << "media: " << media << " speed: " << speed << " pressure: " << pressure
+		 << " trackenhancing: " << trackenhancing << " regmark: " <<  regmark
+		 << " regsearch:" <<  regsearch <<" regwidth:" <<  regwidth << " reglength: " << reglength << endl;
+
+	if (media < 100 || media > 300)
+		media = 300;
+	if (speed < 1)
+		speed = 1;
+	if (speed > 10)
+		speed = 10;
+	if (pressure < 1)
+		pressure = 1;
+	if (pressure > 33)
+		pressure = 33;
+
+	libusb_device_handle* handle = UsbInit(NULL);
 
 	// TODO: Use exceptions.
 
@@ -348,7 +405,7 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 		if (!e) goto error;
 		e = UsbSend(handle, "FM1\x03"); // ?
 		if (!e) goto error;
-		
+
 		if (regmark)
 		{
 			stringstream regmarkstr;
@@ -404,7 +461,7 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 			e = UsbSend(handle, "TB50,1\x03"); // ???
 			if (!e) goto error;
 		}
- 
+
 		if (!e) goto error;
 		// I think this is the feed command. Sometimes it is 5588 - maybe a maximum?
 		e = UsbSend(handle, "FO" + ItoS(height - margintop) + "\x03");
@@ -413,7 +470,6 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 		page.flags(ios::fixed);
 		page.precision(0);
 		page << "&100,100,100,\\0,0,Z" << ItoS(width) << "," << ItoS(height) << ",L0";
-
 		for (int i = 0; i < cuts.size(); ++i)
 		{
 			if (cuts[i].size() < 2)
@@ -477,9 +533,10 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 			}
 		}
 
+
 		page << "&1,1,1,TB50,0\x03"; // TB maybe .. ah I dunno. Need to experiment. No idea what &1,1,1 does either.
 
-		cout << page.str() << endl;
+		// cout << page.str() << endl;
 
 		e = UsbSend(handle, page.str());
 		if (!e) goto error;
@@ -501,6 +558,7 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 	return Success;
 
 error: // Hey, this is basically C and I can't be bothered to properly C++-ify it. TODO: Use exceptions.
+        cout << "Error: " << e << endl;
 	libusb_release_interface(handle, 0);
 	libusb_close(handle);
 	return e;

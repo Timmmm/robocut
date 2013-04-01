@@ -87,6 +87,8 @@ private slots:
 	void on_actionExit_triggered();
 	void on_actionAbout_triggered();
 	void on_actionOpen_triggered();
+	void on_actionReload_triggered();
+	void on_actionIdentify_triggered();
 
 	// Advance the cutting animation frame.
 	void animate();
