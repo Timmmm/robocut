@@ -352,9 +352,14 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 	e = UsbReceive(handle, resp, 5000);
 	if (!e) goto error;
 
-	if (resp != "0\x03") // 0 = Ready. 1 = Moving. "  " = ??
+	if (resp != "0\x03") // 0 = Ready. 1 = Moving. 2 = Nothing loaded. "  " = ??
 	{
-		e = Error("Invalid response from plotter: " + resp);
+		if (resp == "1\x03")
+		  e = Error("Moving, please try again.");
+		else if (resp == "2\x03")
+		  e = Error("Empty tray, please load media.");	// Silhouette Cameo
+		else
+		  e = Error("Invalid response from plotter: " + resp);
 		goto error;
 	}
 
