@@ -1,0 +1,9 @@
+				jw, Mon Apr  1 19:56:38 CEST 2013
+Silhouette Cameo
+  - paint 24mm blocked area in the GUI at the bottom of the paper.
+  - put the Identify() output in a GUI element (rather than stdout).
+  - new sorting algorithm to limit backward movements
+    to max 20mm, so that we can cut paper and cardboard 
+    without a mat in many cases.
+  - debug this: when the paper was moved with the devices cursor keys, 
+    "cut" will just home the paper and not cut at all.

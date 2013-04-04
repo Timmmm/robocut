@@ -1,3 +1,13 @@
+  * added Transform_Silhouette_Cameo() to rotate the plot as SVG onscreen.
+    Allow left aligned paper. Cameo has high x-coordinates to the left,
+    although the head homes at the left side. 
+  * added File->Reload (CTRL-L), this saves a lot of klicking and 
+    scrolling through the file dialogue while adjusting the design.
+  * added View->Identify to print the device seen to stdout.
+    Refactored UsbOpen() / UsbInit() from Plotter.cpp:Cut().
+  * added to about message and tooltip. Removed debug page dump on stdout; 
+  * robocut.spec added, as used in https://build.opensuse.org/package/show?package=robocut&project=home:jnweiger
+
 1.0.10
   * Fixed missing image files.
 
