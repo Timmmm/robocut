@@ -70,10 +70,16 @@ string UsbError(int e)
 // Send some data to the USB device.
 Error UsbSend(libusb_device_handle* handle, const string& s, int timeout = 0)
 {
-	// Send in 4096 byte chunks. Not sure where I got this from, I'm not sure it is actually necessary.
-	for (unsigned int i = 0; i < s.length(); i += 4096)
+	// The manual for the Silhouette Portrait indicate that some plotters will
+	// produce skewed and distorted results (only really perceptible when you
+	// try to use registration marks). One of the solutions in their manual is
+	// to change the configuration in the Silhouette Studio to send 500 bytes at
+	// a time, considering we are probably very far away from saturating the
+	// USB communication while sending commands to the plotter, I take a far more
+	// conservative approach of using the same size as the receiving block.
+	for (unsigned int i = 0; i < s.length(); i += 64)
 	{
-		string data = s.substr(i, 4096);
+		string data = s.substr(i, 64);
 		int transferred;
 		unsigned char endpoint = '\x01';
 		int ret = libusb_bulk_transfer(handle, endpoint, reinterpret_cast<unsigned char*>(const_cast<char*>(data.c_str())),
