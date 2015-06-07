@@ -238,7 +238,7 @@ void MainWindow::on_actionAbout_triggered()
 	" (or similar device) for cutting. It is designed to work with SVGs produced " +
 	"by the excellent free vector graphics editor <a href=\"http://www.inkscape.org/\">Inkscape</a>. " + 
 	" It may work with other software but this has not been tested.<br/>" +
-	"<br/>See <a href=\"http://concentriclivers.com/robocut\">the online manual for instructions</a>.";
+	"<br/>See <a href=\"http://robocut.org\">the website for more information</a>.";
 	QMessageBox::information(this, "About", message);
 }
 
@@ -267,7 +267,7 @@ void MainWindow::on_actionCut_triggered()
 
 void MainWindow::on_actionManual_triggered()
 {
-	QMessageBox::information(this, "Manual", "An online manual is available at <br><br><a href=\"http://concentriclivers.com/\">http://concentriclivers.com/</a>");
+	QMessageBox::information(this, "Manual", "An online manual is available at <br><br><a href=\"http://robocut.org/\">http://robocut.org/</a>");
 }
 
 void MainWindow::on_actionAnimate_toggled(bool animate)

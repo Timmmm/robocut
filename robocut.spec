@@ -17,12 +17,11 @@ BuildRequires: libqt4-devel libusb-1_0-devel unzip
 
 %description
 Robocut is a simple graphical program to allow you to cut graphics with a
-Graphtec Craft Robo 2 Vinyl Cutter model CC220-20 and Sihouette SD.
+Graphtec Craft Robo 2 Vinyl Cutter model CC220-20 and Sihouette SD, among other devices.
 
 It can read SVG files produced by Inkscape, but it should also work with other
 SVG files.  Unlike the official programs, Robocut can run on Linux and probably
-Mac OS X with a tiny bit of work.  It may work with the newer CC330-20 model if
-the USB IDs are changed, but I don’t have one to test with.
+Mac OS X.
 
 Inside the “examples” folder there is also a registration marks template fully
 functional (yes, the Silhouette Cameo is able to recognize registration marks
