@@ -34,6 +34,8 @@
 		
 <h2><a id="robocut" class="anchor" href="#robocut" aria-hidden="true"><span class="octicon octicon-link"></span></a>Robocut</h2>
 
+<img src="images/robocut_windows.png"/>
+
 <h3><a id="overview" class="anchor" href="#overview" aria-hidden="true"><span class="octicon octicon-link"></span></a>Overview</h3>
 
 <p>Robocut is a simple program to control Craft Robo and other similar vinyl cutters. It takes an SVG file as input and sends it to the
@@ -67,10 +69,12 @@ On Ubuntu you can do <pre>apt-get install robocut</pre> or build from source (de
 
 <ul>
 <li>On OSX, the pressure settings sometimes gets reset to 1 for no apparent reason.</li>
-<li>It can't really handle SVG font objects. You must convert them to paths before exporting the SVG.</li>
 <li>It currently crashes if you feed it an SVG containing raster data. You probably don't want to do that anyway.</li>
 <li>Sometimes the cutter freezes mid-cut. I'm not sure if this is an issue with the cutter or the software (possibly a full buffer somewhere?).</li>
+<li>It can't really handle SVG font objects. You must convert them to paths before exporting the SVG.</li>
 </ul>
+
+<img src="images/object_to_path.png"/>
 
 <p>More information is available in the Readme.md (see <a href="https://github.com/Timmmm/robocut">Github</a>).</p>
 
