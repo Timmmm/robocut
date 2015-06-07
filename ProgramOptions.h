@@ -18,8 +18,7 @@
  *   51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.              *
  ***************************************************************************/
 
-#ifndef PROGRAMOPTIONS_H
-#define PROGRAMOPTIONS_H
+#pragma once
 
 #include <QString>
 class ProgramOptions
@@ -117,5 +116,3 @@ private:
 public:
 	int GetOpt (int argc, char *argv[] );
 };
-
-#endif // PROGRAMOPTIONS_H

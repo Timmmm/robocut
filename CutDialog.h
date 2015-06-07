@@ -19,8 +19,7 @@
  *   51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.              *
  ***************************************************************************/
 
-#ifndef CUTDIALOG_H
-#define CUTDIALOG_H
+#pragma once
 
 #include <QDialog>
 
@@ -43,10 +42,12 @@ public:
 	int speed() const;
 	// The cutting pressure (1-33).
 	int pressure() const;
-	// Track enhancing.
+	// Track enhancing. This is when the cutter rolls the media backwards and forwards
+	// a few times before cutting in order to indent it with tracks where the rollors are.
+	// The idea is that it will slip less after that is done.
 	bool trackEnhancing() const;
 
-	// Whether to search
+	// Whether to search.
 	bool regMark() const;
 	bool regSearch() const; 
 	// Positions of the registration marks.
@@ -57,10 +58,8 @@ protected:
 	void changeEvent(QEvent *e);
 
 private slots:
-	// When they change the media, update the default speed and pressure.
+	// When they change the media selection, update the default speed and pressure.
 	void onMediaChanged(int idx);
 private:
     Ui::CutDialog *ui;
 };
-
-#endif // CUTDIALOG_H

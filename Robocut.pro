@@ -36,6 +36,10 @@ FORMS += MainWindow.ui \
     CutDialog.ui \
     CuttingDialog.ui
 
+QMAKE_CXXFLAGS += -std=c++11
+
+DEFINES += ROBOCUT_VERSION=\\\"$$VERSION\\\"
+
 unix:LIBS += -lusb-1.0
 win32:LIBS += $$_PRO_FILE_PWD_/libusb-windows/libusb-1.0.a
 

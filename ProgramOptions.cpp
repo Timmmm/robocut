@@ -28,9 +28,11 @@ using namespace std;
 
 ProgramOptions::ProgramOptions ( ) 
 {
-initAttributes();
+	initAttributes();
 }
-ProgramOptions::~ProgramOptions ( ) { }
+ProgramOptions::~ProgramOptions ( )
+{
+}
 ProgramOptions& ProgramOptions::Instance()
 {
 	static ProgramOptions instance;
@@ -470,10 +472,10 @@ void ProgramOptions::showHelp ( )
 void ProgramOptions::showVersion ( )
 {
 	cout << (version.toStdString()); // see main.cpp
-	cout << "\n\nCopyright (C) 2010\n";
+	cout << "\n\nCopyright (C) 2015\n";
 	cout << "This is free software; see the source for copying conditions.  There is NO\n";
 	cout << "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n";
-	cout << "Written by Tim Hutt and Markus Schulz <schulz@alpharesearch.de>\n";
+	cout << "Written by Tim Hutt <tdhutt@gmail.com> and Markus Schulz <schulz@alpharesearch.de>\n";
 }
 
 void ProgramOptions::showShow ( )

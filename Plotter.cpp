@@ -303,28 +303,27 @@ QList<QPolygonF> Transform_Silhouette_Cameo(QList<QPolygonF> cuts, double *media
   return paths;
 }
 
-Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int media, int speed, int pressure, bool trackenhancing,
-		  bool regmark, bool regsearch, double regwidth, double reglength)
+Error Cut(CutParams p)
 {
 	VENDOR_ID = ProgramOptions::Instance().getVendorUSB_ID();
 	PRODUCT_ID = ProgramOptions::Instance().getProductUSB_ID();
 	
 	cout << "Cutting... VENDOR_ID : " << VENDOR_ID << " PRODUCT_ID: " << PRODUCT_ID
-		 << " mediawidth: " << mediawidth << " mediaheight: " << mediaheight
-		 << "media: " << media << " speed: " << speed << " pressure: " << pressure
-		 << " trackenhancing: " << trackenhancing << " regmark: " <<  regmark
-		 << " regsearch:" <<  regsearch <<" regwidth:" <<  regwidth << " reglength: " << reglength << endl;
+		 << " mediawidth: " << p.mediawidth << " mediaheight: " << p.mediaheight
+		 << "media: " << p.media << " speed: " << p.speed << " pressure: " << p.pressure
+		 << " trackenhancing: " << p.trackenhancing << " regmark: " <<  p.regmark
+		 << " regsearch:" <<  p.regsearch <<" regwidth:" <<  p.regwidth << " reglength: " << p.regheight << endl;
 
-	if (media < 100 || media > 300)
-		media = 300;
-	if (speed < 1)
-		speed = 1;
-	if (speed > 10)
-		speed = 10;
-	if (pressure < 1)
-		pressure = 1;
-	if (pressure > 33)
-		pressure = 33;
+	if (p.media < 100 || p.media > 300)
+		p.media = 300;
+	if (p.speed < 1)
+		p.speed = 1;
+	if (p.speed > 10)
+		p.speed = 10;
+	if (p.pressure < 1)
+		p.pressure = 1;
+	if (p.pressure > 33)
+		p.pressure = 33;
 
 	// how can VENDOR_ID / PRODUCT_ID report the correct values abve???
 	struct cutter_id id = { "?", 0, 0 };
@@ -333,7 +332,7 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 	   id.usb_product_id == PRODUCT_ID_SILHOUETTE_CAMEO)
 	  {
 	    // should this also transform the regwidth regheigth or not?
-	    cuts = Transform_Silhouette_Cameo(cuts, &mediawidth, &mediaheight);
+		p.cuts = Transform_Silhouette_Cameo(p.cuts, &p.mediawidth, &p.mediaheight);
 	  }
 
 	// TODO: Use exceptions.
@@ -381,23 +380,23 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 //		goto error;
 //	}
 
-	e = UsbSend(handle, "FW" + ItoS(media) + "\x03");
+	e = UsbSend(handle, "FW" + ItoS(p.media) + "\x03");
 	if (!e) goto error;
 
-	e = UsbSend(handle, "!" + ItoS(speed) + "\x03");
+	e = UsbSend(handle, "!" + ItoS(p.speed) + "\x03");
 	if (!e) goto error;
 
-	e = UsbSend(handle, "FX" + ItoS(pressure) + "\x03");
+	e = UsbSend(handle, "FX" + ItoS(p.pressure) + "\x03");
 	if (!e) goto error;
 
 	// I think this sets the distance from the position of the plotter
 	// head to the actual cutting point, maybe in 0.1 mms (todo: Measure blade).
 	// It is 0 for the pen, 18 for cutting.
 	// C possible stands for curvature. Not that any of the other letters make sense...
-	e = UsbSend(handle, "FC" + ItoS(media == 113 ? 0 : 18) + "\x03");
+	e = UsbSend(handle, "FC" + ItoS(p.media == 113 ? 0 : 18) + "\x03");
 	if (!e) goto error;
 
-	e = UsbSend(handle, "FY" + ItoS(trackenhancing ? 0 : 1) + "\x03");
+	e = UsbSend(handle, "FY" + ItoS(p.trackenhancing ? 0 : 1) + "\x03");
 	if (!e) goto error;
 
 	// Set to portrait. FN1 does landscape but it's easier just to rotate the image.
@@ -431,8 +430,8 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 		// Page size: height,width in 20ths of a mm minus a margin. This is for A4. TODO: Find maximum and use that.
 		stringstream page;
 
-		int width = lroundl(mediawidth * 20.0);
-		int height = lroundl(mediaheight * 20.0);
+		int width = lroundl(p.mediawidth * 20.0);
+		int height = lroundl(p.mediaheight * 20.0);
 
 		int margintop = ProgramOptions::Instance().getMarginTop();
 		int marginright = ProgramOptions::Instance().getMarginRight();
@@ -442,17 +441,17 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 		e = UsbSend(handle, "FM1\x03"); // ?
 		if (!e) goto error;
 
-		if (regmark)
+		if (p.regmark)
 		{
 			stringstream regmarkstr;
 			regmarkstr.precision(0);
 			string searchregchar = "23,";
-			int regw = lroundl(regwidth * 20.0);
-			int regl = lroundl(reglength * 20.0);
+			int regw = lroundl(p.regwidth * 20.0);
+			int regl = lroundl(p.regheight * 20.0);
 			e = UsbSend(handle, "TB50,381\x03"); //only with registration (it was TB50,1) ???
 			if (!e) goto error;
 			
-			if (regsearch)
+			if (p.regsearch)
 				searchregchar ="123,";
 			
 			regmarkstr <<  "TB99\x03TB55,1\x03TB" + searchregchar + ItoS(regw) + "," + ItoS(regl) + "\x03";
@@ -506,18 +505,18 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 		page.flags(ios::fixed);
 		page.precision(0);
 		page << "&100,100,100,\\0,0,Z" << ItoS(width) << "," << ItoS(height) << ",L0";
-		for (int i = 0; i < cuts.size(); ++i)
+		for (int i = 0; i < p.cuts.size(); ++i)
 		{
-			if (cuts[i].size() < 2)
+			if (p.cuts[i].size() < 2)
 				continue;
 
-			double x = cuts[i][0].x()*20.0;
-			double y = cuts[i][0].y()*20.0;
+			double x = p.cuts[i][0].x()*20.0;
+			double y = p.cuts[i][0].y()*20.0;
 
 			double xorigin = ProgramOptions::Instance().getRegOriginWidthMM();
 			double yorigin = ProgramOptions::Instance().getRegOriginHeightMM();
 
-			if (regmark)
+			if (p.regmark)
 			{
 				x = x - (xorigin*20.0);
 				y = y + (yorigin*20.0);
@@ -531,12 +530,12 @@ Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int medi
 			if (y > height) y = height;
 
 			page << ",M" << x << "," << height-y;
-			for (int j = 1; j < cuts[i].size(); ++j)
+			for (int j = 1; j < p.cuts[i].size(); ++j)
 			{
-				x = cuts[i][j].x()*20.0;
-				y = cuts[i][j].y()*20.0;
+				x = p.cuts[i][j].x()*20.0;
+				y = p.cuts[i][j].y()*20.0;
 
-				if (regmark)
+				if (p.regmark)
 				{
 					x = x - (xorigin*20.0);
 					y = y + (yorigin*20.0);

@@ -258,10 +258,21 @@ void MainWindow::on_actionCut_triggered()
 	// Create a new dialog and run the actual cutting in a different thread.
 
 	CuttingDialog* cuttingDlg = new CuttingDialog(this);
-	cuttingDlg->startCut(paths, mediaSize.width(), mediaSize.height(), cutDialog->media(), cutDialog->speed(),
-	                     cutDialog->pressure(), cutDialog->trackEnhancing(),
-	                     cutDialog->regMark(), cutDialog->regSearch(),
-	                     cutDialog->regWidth(), cutDialog->regHeight());
+
+	CutParams params;
+	params.cuts = paths;
+	params.mediawidth = mediaSize.width();
+	params.mediaheight = mediaSize.height();
+	params.media = cutDialog->media();
+	params.pressure = cutDialog->pressure();
+	params.regwidth = cutDialog->regWidth();
+	params.regheight = cutDialog->regHeight();
+	params.regmark = cutDialog->regMark();
+	params.regsearch = cutDialog->regSearch();
+	params.speed = cutDialog->speed();
+	params.trackenhancing = cutDialog->trackEnhancing();
+
+	cuttingDlg->startCut(params);
 	cuttingDlg->show();
 }
 
@@ -382,6 +393,7 @@ void MainWindow::setFileLoaded(QString filename)
 	ui->actionZoom_In->setEnabled(e);
 	ui->actionZoom_Out->setEnabled(e);
 	ui->actionCut->setEnabled(e);
+	ui->actionReload->setEnabled(e);
 
 }
 
@@ -391,9 +403,18 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
 	{
 		if (e->type() == QEvent::Wheel)
 		{
+			// Anchor under the mouse pointer when using the mouse wheel.
+			// This doesn't quite work as nicely as I'd like because it clamps the scrolling
+			// precisely to the scene boundary. It's a bit hard to zoom to corners. Oh well.
+			ui->graphicsView->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 			QWheelEvent *w = dynamic_cast<QWheelEvent*>(e);
-			if(w->delta() <= 0) on_actionZoom_In_triggered();
-			else on_actionZoom_Out_triggered();
+			if (w->delta() <= 0)
+				on_actionZoom_Out_triggered();
+			else
+				on_actionZoom_In_triggered();
+
+			// Anchor in view centre for keyboard shortcuts.
+			ui->graphicsView->setTransformationAnchor(QGraphicsView::AnchorViewCenter);
 			return true;
 		}
 	}

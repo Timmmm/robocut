@@ -52,7 +52,7 @@ private:
 const Error Success(true);
 const Error Failure(false);
 
-/** Integer to string. */
+// Integer to string.
 inline string ItoS(int I)
 {
 	std::stringstream S;
@@ -60,7 +60,7 @@ inline string ItoS(int I)
 	return S.str();
 }
 
-/** Unsigned integer to string. */
+// Unsigned integer to string.
 inline string UItoS(unsigned int I)
 {
 	std::stringstream S;
@@ -68,7 +68,7 @@ inline string UItoS(unsigned int I)
 	return S.str();
 }
 
-/** Unsigned long long to string. */
+// Unsigned long long to string.
 inline string ULLtoS(unsigned long long I)
 {
 	char out[128];
@@ -76,7 +76,7 @@ inline string ULLtoS(unsigned long long I)
 	return out;
 }
 
-/** String to integer, returns Fail on fail. */
+// String to integer, returns Fail on fail.
 inline int StoI(const string& S, int Fail = 0)
 {
 	char* EP;
@@ -87,7 +87,7 @@ inline int StoI(const string& S, int Fail = 0)
 	return R;
 }
 
-/** String to unsigned integer, returns Fail on fail. */
+// String to unsigned integer, returns Fail on fail.
 inline unsigned int StoUI(const string& S, unsigned int Fail = 0)
 {
 	char* EP;
@@ -98,7 +98,7 @@ inline unsigned int StoUI(const string& S, unsigned int Fail = 0)
 	return R;
 }
 
-/** String to unsigned integer, returns Fail on fail. */
+// String to unsigned integer, returns Fail on fail.
 inline unsigned int StoULL(const string& S, unsigned long long Fail = 0)
 {
 	char* EP;
@@ -109,7 +109,7 @@ inline unsigned int StoULL(const string& S, unsigned long long Fail = 0)
 	return R;
 }
 
-/** Get an environmental variable. */
+// Get an environmental variable.
 inline string GetEnv(const string& Var)
 {
 	char* V = getenv(Var.c_str());

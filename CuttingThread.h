@@ -34,6 +34,21 @@
 // 4. Call start().
 // 5. Wait for success() or error().
 
+struct CutParams
+{
+	QList<QPolygonF> cuts;
+	double mediawidth = 0.0;
+	double mediaheight = 0.0;
+	int media = 300;
+	int speed = 10;
+	int pressure = 10;
+	bool trackenhancing = false;
+	bool regmark = false;
+	bool regsearch = false;
+	double regwidth = 0.0;
+	double regheight = 0.0;
+};
+
 class CuttingThread : public QThread
 {
 	Q_OBJECT
@@ -41,8 +56,7 @@ public:
 	explicit CuttingThread(QObject *parent = 0);
 
 	// Set the parameters to use for the cut.
-	void setParams(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int media, int speed, int pressure,
-	               bool trackenhancing, bool regmark, bool regsearch, float regwidth, float reglength);
+	void setParams(const CutParams& params);
 
 signals:
 	// Emitted if the cutting was (as far as we can tell) successful.
@@ -57,15 +71,6 @@ protected:
 	void run();
 
 private:
-	QList<QPolygonF> _cuts;
-	double _mediawidth;
-	double _mediaheight;
-	int _media;
-	int _speed;
-	int _pressure;
-	bool _trackenhancing;
-	bool _regmark; 
-	bool _regsearch; 
-	double _regwidth;
-	double _reglength;
+	CutParams params;
+
 };

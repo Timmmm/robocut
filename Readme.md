@@ -93,6 +93,9 @@ Master
 * Move all information to Readme.md rather than spreading it out over multiple files.
 * Maybe very slightly better icon? It's still pretty rubbish! Contributions welcome!
 * Change links to point to http://robocut.org/
+* Code style fixes
+* Mouse zoom is the "standard" way now.
+* Mouse zooms to the cursor.
 
 1.0.10
 * Fixed missing image files.
@@ -156,6 +159,9 @@ Version 0.2 - a3b13ad - Oct 24th 2010
 
 * Initial working version.
 
+# Licence
+
+All code is GPL3 licensed.
 
 # TODO
 

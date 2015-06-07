@@ -26,8 +26,8 @@ public:
 	NoCopy() { }
 	~NoCopy() { }
 private:
-	NoCopy(const NoCopy&);
-	const NoCopy& operator=(const NoCopy&);
+	NoCopy(const NoCopy&) = delete;
+	const NoCopy& operator=(const NoCopy&) = delete;
 };
 
 #define NOCOPY NoCopy nocopyvar

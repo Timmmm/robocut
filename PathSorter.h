@@ -18,8 +18,7 @@
  *   51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.              *
  ***************************************************************************/
 
-#ifndef PATHSORTER_H
-#define PATHSORTER_H
+#pragma once
 
 #include <QGraphicsItem>
 
@@ -32,15 +31,15 @@ public:
 
 	void getQList (const QList<QPolygonF> inpaths);
 	QList<QPolygonF> Sort (const QList<QPolygonF> inpaths);
-	QList<QPolygonF> Sort () {return Sort(pathToSort);};
+	QList<QPolygonF> Sort () {return Sort(pathToSort);}
 	QList<QPolygonF> UnSort (const QList<QPolygonF> inpaths);
-	QList<QPolygonF> UnSort () {return UnSort(pathToSort);};
+	QList<QPolygonF> UnSort () {return UnSort(pathToSort);}
 	QList<QPolygonF> BestSort (const QList<QPolygonF> inpaths);
-	QList<QPolygonF> BestSort () {return BestSort(pathToSort);};
+	QList<QPolygonF> BestSort () {return BestSort(pathToSort);}
 	QList<QPolygonF> GroupTSP(const QList<QPolygonF> inpaths1, int groups = 3);
-	QList<QPolygonF> GroupTSP(int groups = 3) {return GroupTSP(pathToSort, groups);};
+	QList<QPolygonF> GroupTSP(int groups = 3) {return GroupTSP(pathToSort, groups);}
 	QList<QPolygonF> BbSort (const QList<QPolygonF> inpaths);
-	QList<QPolygonF> BbSort () {return BbSort(pathToSort);};
+	QList<QPolygonF> BbSort () {return BbSort(pathToSort);}
 	void setMediaHeight(qreal mediaheight);
 private:
 	QList<QPolygonF> pathToSort;
@@ -55,4 +54,3 @@ private:
 	static bool MyLessThan(const QPolygonF &p1, const QPolygonF &p2);
 };
 
-#endif // PATHSORTER_H

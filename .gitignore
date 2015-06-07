@@ -26,3 +26,4 @@ ui_CutDialog.h
 ui_CuttingDialog.h
 ui_MainWindow.h
 .gitignore
+*.user

@@ -59,9 +59,7 @@ void CuttingDialog::changeEvent(QEvent *e)
 }
 
 
-void CuttingDialog::startCut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int media, int speed,
-                             int pressure, bool trackenhancing,
-							 bool regmark, bool regsearch, double regwidth, double reglength)
+void CuttingDialog::startCut(const CutParams& params)
 {
 	if (thread)
 	{
@@ -73,8 +71,7 @@ void CuttingDialog::startCut(QList<QPolygonF> cuts, double mediawidth, double me
 	connect(thread, SIGNAL(success()), SLOT(onSuccess()));
 	connect(thread, SIGNAL(error(QString)), SLOT(onError(QString)));
 
-	thread->setParams(cuts, mediawidth, mediaheight, media, speed, pressure, trackenhancing,
-	                  regmark, regsearch, regwidth, reglength);
+	thread->setParams(params);
 
 	thread->start();
 }

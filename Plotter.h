@@ -27,6 +27,8 @@
 
 using namespace std;
 
+#include "CuttingThread.h"
+
 // Perform the cut. Returns error state. Note that this just sends the data, it has no way of knowing whether it really
 // worked and there is no easy way to cancel it.
 //
@@ -40,9 +42,7 @@ using namespace std;
 // regwidth/height: Distance between the registration marks.
 //
 // TODO: Apparently you can change the number of registration marks?
-Error Cut(QList<QPolygonF> cuts, double mediawidth, double mediaheight, int media, int speed, int pressure,
-		  bool trackenhancing, bool regmark, bool regsearch,
-		  double regwidth, double reglength);
+Error Cut(CutParams p);
 
 
 const int VENDOR_ID_GRAPHTEC = 0x0b4d; 

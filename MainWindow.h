@@ -19,8 +19,7 @@
  *   51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.              *
  ***************************************************************************/
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#pragma once
 
 #include <QMainWindow>
 
@@ -99,5 +98,3 @@ private:
 	bool eventFilter(QObject *o, QEvent *e);
 	void loadFile();
 };
-
-#endif // MAINWINDOW_H

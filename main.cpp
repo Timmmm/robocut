@@ -20,6 +20,7 @@
  ***************************************************************************/
 
 #include <QApplication>
+#include <QMessageBox>
 #include "MainWindow.h"
 
 #include "ProgramOptions.h"
@@ -31,12 +32,17 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-	ProgramOptions::Instance().setVersion("Robocut V1.0.10_jw1"); // would be nice if this could be imported from qmake
+	// Version is defined in Robocut.pro
+	ProgramOptions::Instance().setVersion(ROBOCUT_VERSION);
+
+	// Initialise options from command line if specified.
 	ProgramOptions::Instance().GetOpt(argc, argv);
-	int err = libusb_init(NULL);
+
+	int err = libusb_init(nullptr);
 	if (err != LIBUSB_SUCCESS)
 	{
-		cerr << "Error initialising usb library." << endl;
+		QMessageBox::critical(nullptr, "Error initialising USB library.", libusb_error_name(err));
+		cerr << "Error initialising USB library: " << libusb_error_name(err) << endl;
 		return 1;
 	}
 
@@ -49,6 +55,6 @@ int main(int argc, char *argv[])
 		ret = a.exec();
 	}
 
-	libusb_exit(NULL);
+	libusb_exit(nullptr);
 	return ret;
 }
