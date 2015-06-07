@@ -13,7 +13,7 @@
     <title>Robocut</title>
   </head>
 
-  <body style="display: none;">
+  <body>
     <div id="container">
       <div class="inner">
 
@@ -23,8 +23,8 @@
         </header>
 
         <section id="downloads" class="clearfix">
-          <a href="https://github.com/Timmmm/robocut/zipball/master" id="download-windows" class="button"><span>Windows</span></a>
-          <a href="https://github.com/Timmmm/robocut/tarball/master" id="download-osx" class="button"><span>OSX</span></a>
+          <a href="https://github.com/Timmmm/robocut/releases/download/v1.0.11/Robocut-1.0.11-Windows.zip" id="download-windows" class="button"><span>Windows</span></a>
+   <!--       <a href="https://github.com/Timmmm/robocut/tarball/master" id="download-osx" class="button"><span>OSX</span></a> -->
           <a href="https://github.com/Timmmm/robocut" id="view-on-github" class="button"><span>View on Github</span></a>
         </section>
 
@@ -51,15 +51,15 @@ Download binaries for:
 <p>
 
 <ul>
-<li><a href="#">Windows</a></li>
-<li><a href="#">OSX</a></li>
+<li><a href="https://github.com/Timmmm/robocut/releases/download/v1.0.11/Robocut-1.0.11-Windows.zip">Windows</a></li>
+<li><a href="#">OSX is coming "soon"</a></li>
 </ul>
 
 <p>
-On Ubuntu you can do <pre>apt-get install robocut</pre> or build from source (dependencies are libusb-1.0 and Qt 5).
+On Ubuntu you can do <pre>apt-get install robocut</pre> or build from source (dependencies are libusb-1.0 and Qt 5). Add yourself to the lp group.
 </p>
 
-On Windows you must install <a href="#">this driver</a> for the cutter.
+<p>On Windows you must get a libusb-compatible driver for your device. The easiest way is to use <a href="http://zadig.akeo.ie/">Zadig</a>. Run it, and select your device (you may need to go to Options->List all Devices). Then install the WinUSB driver.</p>
 
 <h3><a id="troubleshooting" class="anchor" href="#troubleshooting" aria-hidden="true"><span class="octicon octicon-link"></span></a>Troubleshooting</h3>
 
@@ -72,6 +72,7 @@ On Windows you must install <a href="#">this driver</a> for the cutter.
 <li>Sometimes the cutter freezes mid-cut. I'm not sure if this is an issue with the cutter or the software (possibly a full buffer somewhere?).</li>
 </ul>
 
+<p>More information is available in the Readme.md (see <a href="https://github.com/Timmmm/robocut">Github</a>).</p>
 
         </section>
 
