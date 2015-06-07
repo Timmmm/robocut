@@ -78,6 +78,10 @@ Make sure the WinUSB driver is installed with Zadig on Windows. On Linux make su
 
 Master
 
+...
+
+1.0.11
+
 * Windows and OSX binaries released for first time
 * Add in-tree libusb for Windows. Not the best practice but it is only two files.
 * Added Transform_Silhouette_Cameo() to rotate the plot as SVG onscreen.
