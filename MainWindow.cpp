@@ -105,7 +105,7 @@ void MainWindow::on_actionOpen_triggered()
 
 void MainWindow::on_actionReload_triggered()
 {
-	if(QFile::exists(filename)) 
+	if(QFile::exists(filename))
 	  loadFile();
 	else
 	  qDebug() << "Reload failed. File missing: " << filename;
@@ -128,7 +128,7 @@ void MainWindow::loadFile()
 {
 	if (filename.isEmpty())
 		return;
-		
+
 	qDebug() << "Reading file: " << filename;
 
 	QSvgRenderer rend;
@@ -145,9 +145,9 @@ void MainWindow::loadFile()
 	// Geqt size from SVG. TODO: Sanity check.
 	// Also TODO: This won't handle offset viewboxes... need to get the offset and subtract it from
 	// all the objects.
-	mediaSize = rend.viewBoxF().size() * 25.4 / 90.0;
+	mediaSize = rend.viewBoxF().size() * 25.4 / 96.0;
 
-	double ppm = 90.0/25.4; // Pixels per mm.
+	double ppm = 96.0/25.4; // Pixels per mm.
 
 	qDebug() << "Page size (mm): " << mediaSize << endl;
 
@@ -212,7 +212,7 @@ void MainWindow::loadFile()
 	// The old one was deleted when we cleared the scene.
 	cutMarker = scene->addEllipse(-1.0, -1.0, 2.0, 2.0, QPen(Qt::black), QBrush(Qt::red));
 	cutMarker->hide();
-	
+
 	ui->actionAnimate->setChecked(false);
 
 	// Reset the viewport.
@@ -229,14 +229,14 @@ void MainWindow::loadFile()
 
 void MainWindow::on_actionAbout_triggered()
 {
-	QString message = "<b>" + ProgramOptions::Instance().getVersion() + 
+	QString message = "<b>" + ProgramOptions::Instance().getVersion() +
 	"</b><br><br>By Tim Hutt, &copy; 2010<br/>" +
 	"<br>Parts of the source by Markus Schulz, &copy; 2010<br/>" +
 	"<br/>This software allows you to read a vector image in <a href=\"http://en.wikipedia.org/wiki/Scalable_Vector_Graphics\">SVG format</a>, " +
 	"and send it to a <a href=\"http://www.graphteccorp.com/craftrobo/\">Graphtec Craft Robo 2</a>/3 " +
-	" or <a href=\"http://www.silhouette.com/cameo\">Silhouette Cameo</a> " + 
+	" or <a href=\"http://www.silhouette.com/cameo\">Silhouette Cameo</a> " +
 	" (or similar device) for cutting. It is designed to work with SVGs produced " +
-	"by the excellent free vector graphics editor <a href=\"http://www.inkscape.org/\">Inkscape</a>. " + 
+	"by the excellent free vector graphics editor <a href=\"http://www.inkscape.org/\">Inkscape</a>. " +
 	" It may work with other software but this has not been tested.<br/>" +
 	"<br/>See <a href=\"http://robocut.org\">the website for more information</a>.";
 	QMessageBox::information(this, "About", message);
@@ -420,4 +420,3 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
 	}
 	return false;
 }
-
