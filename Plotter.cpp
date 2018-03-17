@@ -155,6 +155,7 @@ libusb_device_handle *UsbOpen(struct cutter_id *id)
 		     desc.idProduct == PRODUCT_ID_SILHOUETTE_SD_1 ||
 		     desc.idProduct == PRODUCT_ID_SILHOUETTE_SD_2 ||
 		     desc.idProduct == PRODUCT_ID_SILHOUETTE_CAMEO ||
+		     desc.idProduct == PRODUCT_ID_SILHOUETTE_CAMEO_3 ||
 		     desc.idProduct == PRODUCT_ID_SILHOUETTE_PORTRAIT
 		     )
 		    )
@@ -335,7 +336,8 @@ Error Cut(CutParams p)
 	struct cutter_id id = { "?", 0, 0 };
 	libusb_device_handle* handle = UsbInit(&id);
 	if (id.usb_vendor_id == VENDOR_ID_GRAPHTEC &&
-	   id.usb_product_id == PRODUCT_ID_SILHOUETTE_CAMEO)
+	    (id.usb_product_id == PRODUCT_ID_SILHOUETTE_CAMEO ||
+	     id.usb_product_id == PRODUCT_ID_SILHOUETTE_CAMEO_3))
 	  {
 	    // should this also transform the regwidth regheigth or not?
 		p.cuts = Transform_Silhouette_Cameo(p.cuts, &p.mediawidth, &p.mediaheight);
