@@ -171,7 +171,9 @@ libusb_device_handle *UsbOpen(struct cutter_id *id)
 	if (!found)
 	{
 		libusb_free_device_list(list, 1);
-		id->msg = Error("Couldn't find Craft Robo 2 (USB device with Vendor ID with USB VendorID 0b4d and ProductID 110a). Is it connected to the system and powered on?");
+		id->msg = Error("Couldn't find supported device. Is it connected to the system and powered "
+		                "on? The current list of supported devices includes the CC200, CC300, "
+		                "Silhouette SD 1, SD 2, Cameo, Cameo 3 and Portrait.");
 		return NULL;
 	}
 
