@@ -20,6 +20,6 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install qt5     ; fi
 
 script:
-  - qmake robocut.pro
+  - qmake Robocut.pro
   - make
   
