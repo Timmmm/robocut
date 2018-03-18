@@ -40,7 +40,7 @@ DEFINES += ROBOCUT_VERSION=\\\"$$VERSION\\\"
 unix:LIBS += -L/usr/local/lib -lusb-1.0
 unix:INCLUDEPATH += /usr/local/include
 
-win32:LIBS += $$_PRO_FILE_PWD_/libusb-windows/libusb-1.0.a
+win32:LIBS += $$_PRO_FILE_PWD_/libusb-windows/MS64/static/libusb-1.0.lib
 win32:INCLUDEPATH += $$_PRO_FILE_PWD_/libusb-windows
 
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
