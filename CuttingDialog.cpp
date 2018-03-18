@@ -33,7 +33,7 @@ CuttingDialog::CuttingDialog(QWidget *parent) :
 	ui(new Ui::CuttingDialog)
 {
 	ui->setupUi(this);
-	thread = NULL;
+	thread = nullptr;
 }
 
 CuttingDialog::~CuttingDialog()
@@ -83,7 +83,7 @@ void CuttingDialog::onSuccess()
 	thread->exit();
 	thread->wait(1000);
 	delete thread;
-	thread = NULL;
+	thread = nullptr;
 }
 
 void CuttingDialog::onError(QString message)
@@ -93,7 +93,7 @@ void CuttingDialog::onError(QString message)
 	thread->exit();
 	thread->wait(1000);
 	delete thread;
-	thread = NULL;
+	thread = nullptr;
 }
 
 void CuttingDialog::closeEvent(QCloseEvent* e)
@@ -111,7 +111,7 @@ void CuttingDialog::closeEvent(QCloseEvent* e)
 		thread->terminate();
 		thread->wait(5000);
 		delete thread;
-		thread = NULL;
+		thread = nullptr;
 	}
 	return QDialog::closeEvent(e);
 }

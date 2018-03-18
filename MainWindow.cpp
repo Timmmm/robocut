@@ -63,11 +63,11 @@ MainWindow::MainWindow(QWidget *parent)
 
 	ui->graphicsView->viewport()->installEventFilter(this);
 
-	cutDialog = NULL;
+	cutDialog = nullptr;
 
 	animationTimer = new QTimer(this);
 	connect(animationTimer, SIGNAL(timeout()), SLOT(animate()));
-	cutMarker = NULL;
+	cutMarker = nullptr;
 
 	// Alternative zoom shortcuts
 	QShortcut* zoom_in = new QShortcut(QKeySequence("X"), this);

@@ -132,16 +132,16 @@ Error UsbReceive(libusb_device_handle* handle, string& s, int timeout = 0)
 libusb_device_handle *UsbOpen(struct cutter_id *id)
 {
 	libusb_device** list;
-	ssize_t cnt = libusb_get_device_list(NULL, &list);
+	ssize_t cnt = libusb_get_device_list(nullptr, &list);
 	if (cnt < 1)
 	{
 		id->msg = Error("Couldn't get usb device list.");
-		return NULL;
+		return nullptr;
 	}
 
 	int err = 0;
 
-	libusb_device* found = NULL;
+	libusb_device* found = nullptr;
 	for (ssize_t i = 0; i < cnt; ++i)
 	{
 		libusb_device* device = list[i];
@@ -174,7 +174,7 @@ libusb_device_handle *UsbOpen(struct cutter_id *id)
 		id->msg = Error("Couldn't find supported device. Is it connected to the system and powered "
 		                "on? The current list of supported devices includes the CC200, CC300, "
 		                "Silhouette SD 1, SD 2, Cameo, Cameo 3 and Portrait.");
-		return NULL;
+		return nullptr;
 	}
 
 	libusb_device_handle* handle;
@@ -184,7 +184,7 @@ libusb_device_handle *UsbOpen(struct cutter_id *id)
 	{
 		libusb_free_device_list(list, 1);
 		id->msg = Error("Error accessing Craft Robo 2: " + UsbError(err) + ". Do you have permission (on Linux make sure you are in the group 'lp').");
-		return NULL;
+		return nullptr;
 	}
 
 	libusb_free_device_list(list, 1);
@@ -200,7 +200,7 @@ libusb_device_handle *UsbInit(struct cutter_id *id)
 	int r = 0;
 
 	libusb_device_handle* handle = UsbOpen(id);
-	if (!handle) return NULL;
+	if (!handle) return nullptr;
 
 	if (libusb_kernel_driver_active(handle, 0) == 1)
 	{
@@ -209,7 +209,7 @@ libusb_device_handle *UsbInit(struct cutter_id *id)
 		{
 			libusb_close(handle);
 			id->msg = Error("Error detaching kernel USB driver: " + UsbError(r));
-			return NULL;
+			return nullptr;
 		}
 	}
 
@@ -218,7 +218,7 @@ libusb_device_handle *UsbInit(struct cutter_id *id)
 	{
 		libusb_close(handle);
 		id->msg = Error("Error resetting device: " + UsbError(r));
-		return NULL;
+		return nullptr;
 	}
 
 	cout << "Selecting configuration." << endl;
@@ -227,7 +227,7 @@ libusb_device_handle *UsbInit(struct cutter_id *id)
 	{
 		libusb_close(handle);
 		id->msg = Error("Error setting USB configuration: " + UsbError(r));
-		return NULL;
+		return nullptr;
 	}
 
 
@@ -237,7 +237,7 @@ libusb_device_handle *UsbInit(struct cutter_id *id)
 	{
 		libusb_close(handle);
 		id->msg = Error("Error claiming USB interface: " + UsbError(r));
-		return NULL;
+		return nullptr;
 	}
 
 	cout << "Setting alt interface." << endl;
@@ -246,7 +246,7 @@ libusb_device_handle *UsbInit(struct cutter_id *id)
 	{
 		libusb_close(handle);
 		id->msg = Error("Error setting alternate USB interface: " + UsbError(r));
-		return NULL;
+		return nullptr;
 	}
 
 	cout << "Initialisation successful." << endl;

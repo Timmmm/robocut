@@ -45,7 +45,7 @@ uint qHash(const QPolygonF& key)
 
 PathPaintDevice::PathPaintDevice(double widthInMm, double heightInMm, double pixelsPerMm)
 {
-	engine = NULL;
+	engine = nullptr;
 	width = widthInMm;
 	height = heightInMm;
 	pathsClipped = false;
