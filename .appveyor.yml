@@ -1,0 +1,16 @@
+version: {build}
+
+image: Visual Studio 2017
+
+configuration: Release
+
+init:
+  - set PATH=C:\Qt\5.10.1\%qt%\bin;%PATH%
+  - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
+
+build_script:
+  - qmake Robocut.pro
+  - nmake
+
+test: off
+
