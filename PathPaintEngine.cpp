@@ -92,7 +92,6 @@ void PathPaintEngine::drawPath(const QPainterPath& path)
 						if (essentiallyEqual(origin.x(), polytemp[j].x(), 0.01 ) && approximatelyEqual(origin.y(), polytemp[j].y(),0.01) && j+1 < polytemp.size()) 
 						{
 							origin = polytemp[j];
-							int tempz = polytemp.size();
 							j++;
 							testp =  polytemp[j];
 						}
@@ -116,10 +115,16 @@ void PathPaintEngine::drawPath(const QPainterPath& path)
 void PathPaintEngine::drawPixmap(const QRectF& r, const QPixmap& pm, const QRectF& sr)
 {
 	// Nop.
+	(void)r;
+	(void)pm;
+	(void)sr;
 }
 
 void PathPaintEngine::drawPolygon(const QPointF* points, int pointCount, PolygonDrawMode mode)
 {
+	// Mode is only needed for fills.
+	(void)mode;
+
 	if (!dev)
 		return;
 
