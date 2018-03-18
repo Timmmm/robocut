@@ -20,7 +20,11 @@
 
 #include "ProgramOptions.h"
 #include <cmath>
+
+#ifndef _WIN32
 #include <getopt.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
@@ -288,6 +292,10 @@ int ProgramOptions::getTrackEnhancing ( )
 
 int ProgramOptions::GetOpt (int argc, char *argv[] )
 {
+  // TODO: Support this on Windows. We should use a modern command line
+  // parsing library like https://github.com/jarro2783/cxxopts
+
+#ifndef _WIN32
 	static int version_flag = 0, help_flag = 0, show_flag = 0;
 	int index, option_index = 0;
 	int c = 0;
@@ -411,6 +419,7 @@ int ProgramOptions::GetOpt (int argc, char *argv[] )
 			showVersion();
 			exit(0);
 		}
+#endif
 	return 0;
 }
 
