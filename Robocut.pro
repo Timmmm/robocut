@@ -4,7 +4,7 @@ VERSION = 1.0.11
 
 TEMPLATE = app
 
-QT += svg
+QT += widgets svg
 CONFIG = c++11
                          
 SOURCES += main.cpp \
@@ -42,6 +42,8 @@ unix:INCLUDEPATH += /usr/local/include
 
 win32:LIBS += $$_PRO_FILE_PWD_/libusb-windows/libusb-1.0.a
 win32:INCLUDEPATH += $$_PRO_FILE_PWD_/libusb-windows
+
+QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
 
 QMAKE_COPY += \
     readme.txt \
