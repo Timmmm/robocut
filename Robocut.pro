@@ -5,7 +5,7 @@ VERSION = 1.0.11
 TEMPLATE = app
 
 QT += widgets svg
-CONFIG = c++11
+CONFIG += c++11
                          
 SOURCES += main.cpp \
     MainWindow.cpp \
@@ -37,7 +37,7 @@ RESOURCES += \
 
 DEFINES += ROBOCUT_VERSION=\\\"$$VERSION\\\"
 
-unix:LIBS += -lusb-1.0
+unix:LIBS += -L/usr/local/lib -lusb-1.0
 unix:INCLUDEPATH += /usr/local/include
 
 win32:LIBS += $$_PRO_FILE_PWD_/libusb-windows/libusb-1.0.a
