@@ -45,7 +45,7 @@ win32:INCLUDEPATH += $$_PRO_FILE_PWD_/libusb-windows
 
 # Temporary hack because the binary releases of libusb are still compiled
 # with an old CRT.
-win32:LIBS += legacy_stdio_definitions.lib
+#win32:LIBS += legacy_stdio_definitions.lib
 
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
 
