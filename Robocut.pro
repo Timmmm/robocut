@@ -43,6 +43,10 @@ unix:INCLUDEPATH += /usr/local/include
 win32:LIBS += $$_PRO_FILE_PWD_/libusb-windows/MS64/static/libusb-1.0.lib
 win32:INCLUDEPATH += $$_PRO_FILE_PWD_/libusb-windows
 
+# Temporary hack because the binary releases of libusb are still compiled
+# with an old CRT.
+win32:LIBS += legacy_stdio_definitions.lib
+
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
 
 QMAKE_COPY += \
