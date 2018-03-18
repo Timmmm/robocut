@@ -1,14 +1,11 @@
-# -------------------------------------------------
-# Project created by QtCreator 2010-10-03T18:21:30
-# -------------------------------------------------
 TARGET = robocut
+
 VERSION = 1.0.11
+
 TEMPLATE = app
-INSTALLS += icon \
-	    target
-target.path = /usr/bin
-icon.files += ./images/robocut.xpm
-icon.path = /usr/share/pixmaps/
+
+QT += svg
+CONFIG = c++11
                          
 SOURCES += main.cpp \
     MainWindow.cpp \
@@ -35,20 +32,16 @@ HEADERS += MainWindow.h \
 FORMS += MainWindow.ui \
     CutDialog.ui \
     CuttingDialog.ui
-
-QMAKE_CXXFLAGS += -std=c++11
+RESOURCES += \
+    resources.qrc
 
 DEFINES += ROBOCUT_VERSION=\\\"$$VERSION\\\"
 
 unix:LIBS += -lusb-1.0
+unix:INCLUDEPATH += /usr/local/include
+
 win32:LIBS += $$_PRO_FILE_PWD_/libusb-windows/libusb-1.0.a
-
 win32:INCLUDEPATH += $$_PRO_FILE_PWD_/libusb-windows
-
-QT += svg
-
-RESOURCES += \
-    resources.qrc
 
 QMAKE_COPY += \
     readme.txt \
@@ -69,6 +62,12 @@ DISTFILES += \
     robocut.spec \
     Readme.md
 
+INSTALLS += icon \
+    target
+
+target.path = /usr/bin
+icon.files += ./images/robocut.xpm
+icon.path = /usr/share/pixmaps/
 
 # Instructions for Windows release:
 
