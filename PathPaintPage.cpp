@@ -134,10 +134,12 @@ int PathPaintDevice::metric(PaintDeviceMetric metric) const
 		return 25.4 * ppm;
 	case PdmPhysicalDpiY:
 		return 25.4 * ppm;
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 6, 0))
 	case PdmDevicePixelRatio:
 		return 1;
 	case PdmDevicePixelRatioScaled:
 		return 1;
+#endif
 	}
 	return 0;
 }
