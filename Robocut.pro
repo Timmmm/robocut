@@ -45,3 +45,11 @@ win32:INCLUDEPATH += $$_PRO_FILE_PWD_/libusb-windows
 
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
 
+OTHER_FILES += \
+    libusb/CMakeLists.txt \
+    CMakeLists.txt \
+    WindowsResources.rc \
+    Readme.md \
+    COPYING
+
+
