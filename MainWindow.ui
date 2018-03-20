@@ -14,8 +14,8 @@
    <string>Robocut</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="resources.qrc">
-    <normaloff>:/images/icon.png</normaloff>:/images/icon.png</iconset>
+   <iconset resource="Resources.qrc">
+    <normaloff>:/images/window_icon.png</normaloff>:/images/window_icon.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -40,7 +40,7 @@
      <x>0</x>
      <y>0</y>
      <width>823</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -194,7 +194,7 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
-  <include location="resources.qrc"/>
+  <include location="Resources.qrc"/>
  </resources>
  <connections/>
 </ui>
