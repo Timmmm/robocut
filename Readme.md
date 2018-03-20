@@ -1,3 +1,6 @@
+[![Travis Build Status](https://travis-ci.org/travis-ci/travis-web.svg?branch=master)](https://travis-ci.org/travis-ci/travis-web)
+[![Appveyor Build Status](https://ci.appveyor.com/api/projects/status/7xiee78m0i3rwqhq/branch/master?svg=true)](https://ci.appveyor.com/project/Timmmm/robocut/branch/master)
+
 # Robocut
 
 Robocut is a simple graphical program to allow you to cut graphics with a Graphtec Craft Robo 2 Vinyl Cutter model CC220-20 and Sihouette SD. It also works with several other Silhouette vinyl cutters.
