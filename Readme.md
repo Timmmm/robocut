@@ -1,12 +1,22 @@
 # Robocut
 
-Robocut is a simple graphical program to allow you to cut graphics with a Graphtec Craft Robo 2 Vinyl Cutter model CC220-20 and Sihouette SD. It also works with several other Silhouette vinyl cutters.
+Robocut is a simple graphical program to allow you to cut graphics with one of the following vinyl cutters made by Graphtec / Silhouette (it seems to be the same company).
 
-It can read SVG files produced by Inkscape, but it should also work with other SVG files. Unlike the official programs, Robocut can run on Linux and probably Mac OS X.
+* Graphtec CraftRobo CC200-20
+* Graphtec CraftRobo CC300-20
+* Silhouette SD
+* Silhouette SD 2
+* Silhouette Cameo
+* Silhouette Cameo 3
+* Silhouette Portrait
+
+It can read SVG Tiny 1.2 files ([details](https://doc.qt.io/qt-5.10/svgrendering.html)). This includes files produced by Inkscape. Unlike the official programs, Robocut can also run on Linux and Mac OS X.
+
+One limitation of SVG Tiny is that it does not support `x` and `y` position attributes in `<tspan>` elements. /Unfortunately this is how Inkscape does multi-line text, so you must convert multi-line text to paths before export.
 
 ## Authors
 
-At least: Tim Hutt, Markus Schulz, Juergen Weigert.
+Originally written by Tim Hutt with big improvements from Markus Schulz, Juergen Weigert and others.
 
 ## Installation Instructions
 
@@ -48,7 +58,7 @@ You will probably have to log out and log in again after that.
 Basic instructions are:
 
 1. Create a new A4 portrait drawing in Inkscape. (For the registration mark feature you can use the supplied public domain letter_reg-marks.svg file)
-2. Make sure in the options, the default export DPI is 96.0
+2. Make sure in the options that the default export DPI is 96.0
 3. Paste your stuff into the drawing.
 4. Export as Plain SVG.
 5. Open the SVG with Robocut.
@@ -59,8 +69,7 @@ Basic instructions are:
 
 * It doesn't cut my fonts correctly?!
 
-Qt SVG only supports the SVG 1.2 Tiny standard and this has a limited SVG support. For example multiline text is something that is not supported by Robocut, however you can export your text to a path or just create each line separate.
-The best option is to change them to paths (in Inkscape it is `Object->Convert to paths`), before exporting the SVG.
+Qt SVG only supports the SVG 1.2 Tiny standard which does not support positioning `<tspan>` elements. This is how Inkscape handles multi-line text. The best solution is to change them to paths (in Inkscape it is `Path->Object to Path`), before exporting the SVG.
 
 * The cutter stops mid-cut.
 
@@ -165,7 +174,7 @@ Version 0.2 - a3b13ad - Oct 24th 2010
 
 # Licence
 
-All code is GPL3 licensed.
+This project is licensed under the terms of the [GPL v3](https://www.gnu.org/licenses/gpl-3.0.en.html). See the `COPYING` file for more details.
 
 # TODO
 
