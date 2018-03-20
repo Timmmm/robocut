@@ -1,15 +1,17 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(UsbTool
+project(Robocut
 	VERSION 1.0.11
 	DESCRIPTION "A program to control Graphtec vinyl cutters."
-	LANGUAGES CXX)
+	LANGUAGES C CXX)
 
 # Set the CMAKE_PREFIX_PATH environment variable to (e.g) ~/Qt/5.8/clang_64 so it can find Qt.
 find_package(Qt5 COMPONENTS Core Widgets Svg REQUIRED)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
+
+add_subdirectory(libusb)
 
 set(src_files
 	"main.cpp"
@@ -40,13 +42,12 @@ set(src_files
 	"Resources.qrc"
 )
 
-# Windows icon.
 if (WIN32)
+	# Windows icon.
 	list(APPEND src_files "WindowsResources.rc")
-endif ()
 
-# OSX Icon
-if (APPLE)
+elseif (APPLE)
+	# OSX Icon
 	# This is the property added to Info.plist
 	set(MACOSX_BUNDLE_ICON_FILE "Robocut.icns")
 
@@ -69,7 +70,7 @@ add_executable(Robocut MACOSX_BUNDLE WIN32
 target_link_libraries(Robocut
 	Qt5::Widgets
 	Qt5::Svg
-	usb
+	libusb
 )
 
 target_compile_definitions(Robocut PRIVATE "-DROBOCUT_VERSION=\"${PROJECT_VERSION}\"")
@@ -111,8 +112,8 @@ if (WIN32)
     )
 
     add_custom_target(artefact
-        COMMAND "${CMAKE_COMMAND}" "-E" "tar" "cfv" "${CMAKE_BINARY_DIR}/UsbTool.zip"
-            "--format=zip" "--" ${zip_files}
+        COMMAND "${CMAKE_COMMAND}" "-E" "tar" "cfv"
+            "${CMAKE_BINARY_DIR}/Robocut-${PROJECT_VERSION}.zip" "--format=zip" "--" ${zip_files}
         WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/Pack/"
         DEPENDS pack
         COMMENT "Creating Zip"
@@ -125,8 +126,8 @@ elseif (APPLE)
 	add_custom_target(artefact
 		COMMAND "${_qt5Core_install_prefix}/bin/macdeployqt" "Robocut.app" "-dmg"
 		COMMAND "${CMAKE_COMMAND}" "-E" "rename" "${CMAKE_BINARY_DIR}/Robocut.dmg"
-		    "${CMAKE_BINARY_DIR}/UsbTool.dmg"
-		DEPENDS UsbTool
+		    "${CMAKE_BINARY_DIR}/Robocut-${PROJECT_VERSION}.dmg"
+		DEPENDS Robocut
 		WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 		COMMENT "Deploying Qt"
 		VERBATIM
