@@ -14,7 +14,6 @@ addons:
     packages:
       - gcc-7
       - g++-7
-      - cmake
       - qt510-meta-minimal
       - qt510svg
       - qt510imageformats
@@ -27,8 +26,8 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew link --force qt ; fi
 
 script:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then g++ --version ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then /usr/local/bin/g++ --version ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then g++-7 --version ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export CC=gcc-7 ; export CXX=g++-7 ; fi
   - cmake --version
   - qmake Robocut.pro
   - make
