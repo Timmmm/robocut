@@ -10,7 +10,7 @@ addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
-      - beineri
+      - sourceline: "ppa:beineri/opt-qt-5.10.1-trusty"
     packages:
       - gcc-7
       - g++-7
@@ -28,6 +28,7 @@ before_install:
 
 script:
   - if [[ "TRAVIS_OS_NAME" == "linux "]]; then g++ --version ; fi
+  - if [[ "TRAVIS_OS_NAME" == "linux "]]; then /usr/local/bin/g++ --version ; fi
   - cmake --version
   - qmake Robocut.pro
   - make
