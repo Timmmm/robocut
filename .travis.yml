@@ -4,25 +4,38 @@ os:
 
 language: cpp
 
-compiler:
-  - clang
-
 dist: trusty
 
 addons:
   apt:
-   packages:
-    - qt5-default
-    - qt5-qmake
-    - libqt5svg5-dev
-    - libusb-1.0-0-dev
+    sources:
+      - ubuntu-toolchain-r-test
+      - sourceline: "ppa:beineri/opt-qt-5.10.1-trusty"
+    packages:
+      - gcc-7
+      - g++-7
+      - qt510-meta-minimal
+      - qt510svg
+      - qt510imageformats
+      - qt510tools
+      - libusb-1.0-0-dev
 
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install qt5 libusb ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew link --force qt ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+      brew update ;
+      brew install qt5 libusb cmake ;
+      brew link --force qt ;
+    fi
 
 script:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      g++-7 --version ;
+      export CC=gcc-7 ;
+      export CXX=g++-7 ;
+      source /opt/qt510/bin/qt510-env.sh ;
+    fi
+  - cmake --version
+  - qmake --version
   - qmake Robocut.pro
   - make
   
