@@ -1,5 +1,4 @@
 os:
-  - linux
   - osx
 
 language: cpp
@@ -22,8 +21,7 @@ addons:
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       brew update ;
-      brew install qt5 cmake ;
-      brew link --force qt ;
+      brew install qt cmake ;
     fi
 
 script:
@@ -32,6 +30,8 @@ script:
       export CXX=g++-7 ;
       source /opt/qt510/bin/qt510-env.sh ;
     fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+      export CMAKE_PREFIX_PATH=$(brew --prefix qt)
   - mkdir build
   - cd build
   - cmake ..
