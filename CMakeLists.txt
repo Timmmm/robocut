@@ -129,7 +129,13 @@ elseif (APPLE)
 		    "${CMAKE_BINARY_DIR}/Robocut-${PROJECT_VERSION}.dmg"
 		DEPENDS Robocut
 		WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
-		COMMENT "Deploying Qt"
+		COMMENT "Creating DMG"
 		VERBATIM
 	)
+else ()
+	# This is just here for consistency with platforms that don't produce zip or dmg.
+	add_custom_Target(artefact
+		DEPENDS Robocut
+		COMMENT "Not generating build artefact"
+		VERBATIM)
 endif ()

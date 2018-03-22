@@ -50,6 +50,8 @@ OTHER_FILES += \
     CMakeLists.txt \
     WindowsResources.rc \
     Readme.md \
-    COPYING
+    COPYING \
+    .travis.yml \
+    .appveyor.yml
 
 
