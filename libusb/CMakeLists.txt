@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.9)
 
 # This compiles libusb as a static library and provides it as a CMake target.
 # Much cleaner and better than trying to use autotools or whatever nonsense they do.
