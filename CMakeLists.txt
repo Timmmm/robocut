@@ -79,46 +79,30 @@ target_compile_definitions(Robocut PRIVATE "-DROBOCUT_VERSION=\"${PROJECT_VERSIO
 if (WIN32)
 	add_custom_target(pack
 		# Make a temporary directory for the zip.
-		COMMAND "${CMAKE_COMMAND}" "-E" "make_directory" "${CMAKE_BINARY_DIR}/Pack"
+		COMMAND "${CMAKE_COMMAND}" "-E" "make_directory" "${CMAKE_BINARY_DIR}/Zip/Robocut"
 
 		# Copy the EXE there.
 		COMMAND "${CMAKE_COMMAND}" "-E" "copy" "$<TARGET_FILE:Robocut>"
-		    "${CMAKE_BINARY_DIR}/Pack/Robocut.exe"
+			"${CMAKE_BINARY_DIR}/Zip/Robocut/Robocut.exe"
 
 		# Deploy Qt to that directory. All the options are to save space.
 		COMMAND "${_qt5Core_install_prefix}/bin/windeployqt.exe" "--release" "--compiler-runtime"
-		    "--no-angle" "--no-opengl-sw" "--no-translations" "--no-system-d3d-compiler"
-			"${CMAKE_BINARY_DIR}/Pack/Robocut.exe"
+			"--no-angle" "--no-opengl-sw" "--no-translations" "--no-system-d3d-compiler"
+			"${CMAKE_BINARY_DIR}/Zip/Robocut/Robocut.exe"
 
 		DEPENDS Robocut
 		COMMENT "Deploying Qt"
 		VERBATIM
 	)
 
-    # Zip the result. This is a weird way of doing it but the cmake tar command isn't very flexible
-    # and this is the only way to avoid getting a directory called 'Pack' in the zip.
-    #
-    # You can't glob at this point because the files aren't actually there yet.
-    set(zip_files
-        "${CMAKE_BINARY_DIR}/Pack/platforms/qwindows.dll"
-        "${CMAKE_BINARY_DIR}/Pack/libgcc_s_dw2-1.dll"
-        "${CMAKE_BINARY_DIR}/Pack/libstdc++-6.dll"
-        "${CMAKE_BINARY_DIR}/Pack/libwinpthread-1.dll"
-        "${CMAKE_BINARY_DIR}/Pack/Qt5Core.dll"
-        "${CMAKE_BINARY_DIR}/Pack/Qt5Gui.dll"
-        "${CMAKE_BINARY_DIR}/Pack/Qt5Widgets.dll"
-        "${CMAKE_BINARY_DIR}/Pack/Qt5SVG.dll"
-        "${CMAKE_BINARY_DIR}/Pack/Robocut.exe"
-    )
-
-    add_custom_target(artefact
-        COMMAND "${CMAKE_COMMAND}" "-E" "tar" "cfv"
-            "${CMAKE_BINARY_DIR}/Robocut-${PROJECT_VERSION}.zip" "--format=zip" "--" ${zip_files}
-        WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/Pack/"
-        DEPENDS pack
-        COMMENT "Creating Zip"
-        VERBATIM
-    )
+	# Zip the result
+	add_custom_target(artefact
+		COMMAND 7z a "${CMAKE_BINARY_DIR}/Robocut-${PROJECT_VERSION}.zip"
+			"${CMAKE_BINARY_DIR}/Zip/Robocut"
+		DEPENDS pack
+		COMMENT "Creating Zip"
+		VERBATIM
+	)
 
 elseif (APPLE)
 	# Note there is a slight bug (https://bugreports.qt.io/browse/QTBUG-60324) in macdeployqt
@@ -126,7 +110,7 @@ elseif (APPLE)
 	add_custom_target(artefact
 		COMMAND "${_qt5Core_install_prefix}/bin/macdeployqt" "Robocut.app" "-dmg"
 		COMMAND "${CMAKE_COMMAND}" "-E" "rename" "${CMAKE_BINARY_DIR}/Robocut.dmg"
-		    "${CMAKE_BINARY_DIR}/Robocut-${PROJECT_VERSION}.dmg"
+			"${CMAKE_BINARY_DIR}/Robocut-${PROJECT_VERSION}.dmg"
 		DEPENDS Robocut
 		WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 		COMMENT "Creating DMG"
@@ -137,5 +121,6 @@ else ()
 	add_custom_Target(artefact
 		DEPENDS Robocut
 		COMMENT "Not generating build artefact"
-		VERBATIM)
+		VERBATIM
+	)
 endif ()

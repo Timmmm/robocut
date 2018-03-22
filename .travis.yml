@@ -31,7 +31,8 @@ script:
       source /opt/qt510/bin/qt510-env.sh ;
     fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      export CMAKE_PREFIX_PATH=$(brew --prefix qt)
+      export CMAKE_PREFIX_PATH=$(brew --prefix qt) ;
+    fi
   - mkdir build
   - cd build
   - cmake ..
