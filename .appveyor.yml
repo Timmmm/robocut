@@ -20,3 +20,6 @@ build_script:
 
 test: off
 
+artifacts:
+  - path: build/Robocut-*.zip
+    name: Robocut
