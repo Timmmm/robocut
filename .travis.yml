@@ -1,6 +1,5 @@
 os:
   - osx
-  - linux
 
 language: cpp
 
@@ -49,7 +48,6 @@ before_deploy:
       cp build/Robocut-*.dmg deploy/ ;
     fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      snapcraft --version ;
       snapcraft ;
       cp robocut_*.snap deploy/ ;
     fi
