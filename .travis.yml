@@ -49,6 +49,9 @@ before_deploy:
       cp build/Robocut-*.dmg deploy/ ;
     fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      pwd ;
+      ls ;
+      ls snap ;
       snapcraft ;
       cp robocut_*.snap deploy/ ;
     fi
