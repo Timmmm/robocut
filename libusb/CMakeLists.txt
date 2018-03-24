@@ -69,7 +69,8 @@ elseif (APPLE)
 	target_include_directories(libusb PRIVATE "libusb/Xcode")
 	target_link_libraries(libusb "-framework CoreFoundation" "-framework IOKit")
 elseif (UNIX)
-  target_include_directories(libusb PRIVATE "linux_config")
+	target_include_directories(libusb PRIVATE "linux_config")
+	target_link_libraries(libusb "-lpthread" "-ludev")
 endif ()
 
 

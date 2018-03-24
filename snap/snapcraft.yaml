@@ -1,0 +1,20 @@
+name: robocut
+version: '1.1.0'
+summary: Control Graphtec and Silhouette vinyl cutters
+description: |
+  Robocut is a simple program to control Craft Robo and other similar vinyl
+  cutters. It takes an SVG file as input and sends it to the vinyl cutter
+  for cutting. The program uses the Qt GUI toolkit and is available for
+  Window, OSX and Linux. It is very simple but gets the job done.
+
+grade: stable
+confinement: strict
+
+apps:
+  robocut:
+    command: Robocut
+
+parts:
+  robocut:
+    plugin: cmake
+    source: .

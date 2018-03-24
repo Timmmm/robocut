@@ -123,4 +123,8 @@ else ()
 		COMMENT "Not generating build artefact"
 		VERBATIM
 	)
+
+	install(TARGETS Robocut
+		RUNTIME DESTINATION bin)
+
 endif ()

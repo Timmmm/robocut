@@ -1,5 +1,6 @@
 os:
   - osx
+  - linux
 
 language: cpp
 
@@ -17,6 +18,7 @@ addons:
       - qt510svg
       - qt510imageformats
       - qt510tools
+      - snapcraft
 
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
@@ -41,7 +43,13 @@ script:
 
 before_deploy:
   - mkdir deploy
-  - cp build/Robocut-* deploy/
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+      cp build/Robocut-*.dmg deploy/
+    fi
+  - if [[ "$TRAVIS_OS_NAME == "linux" ]]; then
+      snapcraft
+      cp robocut_*.snap deploy/
+    fi
 
 deploy:
   skip_cleanup: true
