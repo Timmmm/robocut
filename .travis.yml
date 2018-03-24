@@ -11,6 +11,7 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
       - sourceline: "ppa:beineri/opt-qt-5.10.1-trusty"
+      - sourceline: "ppa:snappy-dev/tools"
     packages:
       - gcc-7
       - g++-7
