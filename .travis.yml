@@ -20,6 +20,7 @@ addons:
       - qt510imageformats
       - qt510tools
       - snapcraft
+      - libudev-dev
 
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
