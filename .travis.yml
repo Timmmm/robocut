@@ -11,7 +11,7 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
       - sourceline: "ppa:beineri/opt-qt-5.10.1-trusty"
-      - sourceline: "ppa:snappy-dev/tools"
+      - sourceline: "ppa:snappy-dev/snapcraft-daily"
     packages:
       - gcc-7
       - g++-7
@@ -49,9 +49,7 @@ before_deploy:
       cp build/Robocut-*.dmg deploy/ ;
     fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      pwd ;
-      ls ;
-      ls snap ;
+      snapcraft --version ;
       snapcraft ;
       cp robocut_*.snap deploy/ ;
     fi
