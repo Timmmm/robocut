@@ -47,7 +47,7 @@ before_deploy:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       cp build/Robocut-*.dmg deploy/ ;
     fi
-  - if [[ "$TRAVIS_OS_NAME == "linux" ]]; then
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       snapcraft ;
       cp robocut_*.snap deploy/ ;
     fi
