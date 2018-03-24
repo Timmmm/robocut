@@ -44,12 +44,13 @@ script:
 
 before_deploy:
   - mkdir deploy
+  - export VERSION=$(git describe --tags)
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      cp build/Robocut-*.dmg deploy/ ;
+      cp build/Robocut-*.dmg deploy/Robocut-$VERSION.dmg ;
     fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       snapcraft ;
-      cp robocut_*.snap deploy/ ;
+      cp robocut_*.snap deploy/robocut_$VERSION.snap ;
     fi
 
 deploy:
