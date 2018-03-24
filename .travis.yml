@@ -45,11 +45,11 @@ script:
 before_deploy:
   - mkdir deploy
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      cp build/Robocut-*.dmg deploy/
+      cp build/Robocut-*.dmg deploy/ ;
     fi
   - if [[ "$TRAVIS_OS_NAME == "linux" ]]; then
-      snapcraft
-      cp robocut_*.snap deploy/
+      snapcraft ;
+      cp robocut_*.snap deploy/ ;
     fi
 
 deploy:
