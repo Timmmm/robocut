@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <vector>
 #include <cstdlib>
+#include <limits>
 
 using std::vector;
 using std::string;
@@ -61,10 +62,13 @@ inline int StoI(const string& S, int Fail = 0)
 {
 	char* EP;
 	const char* P = S.c_str();
-	int R = strtol(P, &EP, 0);
+	auto R = strtol(P, &EP, 0);
 	if (EP == P)
 		return Fail;
-	return R;
+	if (R < std::numeric_limits<int>::lowest() ||
+	    R > std::numeric_limits<int>::max())
+		return Fail;
+	return static_cast<int>(R);
 }
 
 // String to unsigned integer, returns Fail on fail.
@@ -72,18 +76,20 @@ inline unsigned int StoUI(const string& S, unsigned int Fail = 0)
 {
 	char* EP;
 	const char* P = S.c_str();
-	int R = strtoul(P, &EP, 0);
+	auto R = strtoul(P, &EP, 0);
 	if (EP == P)
 		return Fail;
-	return R;
+	if (R > std::numeric_limits<unsigned int>::max())
+		return Fail;
+	return static_cast<unsigned int>(R);
 }
 
-// String to unsigned integer, returns Fail on fail.
-inline unsigned int StoULL(const string& S, unsigned long long Fail = 0)
+// String to unsigned long long, returns Fail on fail.
+inline unsigned long long StoULL(const string& S, unsigned long long Fail = 0)
 {
 	char* EP;
 	const char* P = S.c_str();
-	int R = strtoull(P, &EP, 0);
+	auto R = strtoull(P, &EP, 0);
 	if (EP == P)
 		return Fail;
 	return R;

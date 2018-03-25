@@ -15,7 +15,7 @@ class CuttingDialog : public QDialog
 	Q_OBJECT
 
 public:
-	explicit CuttingDialog(QWidget *parent = 0);
+	explicit CuttingDialog(QWidget *parent = nullptr);
 	~CuttingDialog();
 
 	// Start the cutting thread. Call this only once, before the dialog is shown.

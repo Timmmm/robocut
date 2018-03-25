@@ -12,7 +12,7 @@ class CutDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit CutDialog(QWidget *parent = 0);
+    explicit CutDialog(QWidget *parent = nullptr);
     ~CutDialog();
 
 	// The media code. See CutDialog.ui for a list.

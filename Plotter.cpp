@@ -3,12 +3,13 @@
 
 #include <libusb/libusb.h>
 
-int VENDOR_ID = ProgramOptions::Instance().getVendorUSB_ID();
-int PRODUCT_ID = ProgramOptions::Instance().getProductUSB_ID();
-
 #include <iostream>
 #include <cmath>
 
+namespace {
+	int VENDOR_ID = ProgramOptions::Instance().getVendorUSB_ID();
+	int PRODUCT_ID = ProgramOptions::Instance().getProductUSB_ID();
+}
 
 string UsbError(int e)
 {
@@ -60,9 +61,13 @@ Error UsbSend(libusb_device_handle* handle, const string& s, int timeout = 0)
 	{
 		string data = s.substr(i, 64);
 		int transferred;
-		unsigned char endpoint = '\x01';
-		int ret = libusb_bulk_transfer(handle, endpoint, reinterpret_cast<unsigned char*>(const_cast<char*>(data.c_str())),
-									 data.length(), &transferred, timeout);
+		unsigned char endpoint = 0x01;
+		int ret = libusb_bulk_transfer(handle,
+		                               endpoint,
+		                               reinterpret_cast<unsigned char*>(const_cast<char*>(data.c_str())),
+		                               data.length(),
+		                               &transferred,
+		                               timeout);
 		if (ret != 0)
 		{
 			cerr << "Error writing to device: " << UsbError(ret) << endl;
@@ -88,7 +93,7 @@ Error UsbReceive(libusb_device_handle* handle, string& s, int timeout = 0)
 	const int PacketSize = 64;
 	unsigned char buffer[PacketSize];
 	int transferred = 0;
-	unsigned char endpoint = '\x82';
+	unsigned char endpoint = 0x82;
 	int ret = libusb_bulk_transfer(handle, endpoint, buffer, PacketSize, &transferred, timeout);
 	if (ret != 0) // But it could be a timout.
 	{
@@ -582,7 +587,7 @@ Error Cut(CutParams p)
 	return Success;
 
 error: // Hey, this is basically C and I can't be bothered to properly C++-ify it. TODO: Use exceptions.
-        cout << "Error: " << e << endl;
+	cout << "Error: " << e << endl;
 	libusb_release_interface(handle, 0);
 	libusb_close(handle);
 	return e;
