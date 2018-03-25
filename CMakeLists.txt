@@ -75,6 +75,10 @@ target_link_libraries(Robocut
 
 target_compile_definitions(Robocut PRIVATE "-DROBOCUT_VERSION=\"${PROJECT_VERSION}\"")
 
+# A custom Info.plist is used to enable high dpi on OSX.
+set_target_properties(Robocut
+	PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/MacOSXBundleInfo.plist.in")
+
 # Packaging
 if (WIN32)
 	add_custom_target(pack
