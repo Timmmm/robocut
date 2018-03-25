@@ -1,7 +1,5 @@
 #pragma once
 
-// TODO: Rename this file to PathPaintDevice.h
-
 #include <QPaintDevice>
 #include <QList>
 #include <QPolygonF>

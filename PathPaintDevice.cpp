@@ -1,10 +1,8 @@
-#include "PathPaintPage.h"
+#include "PathPaintDevice.h"
 
 #include "PathPaintEngine.h"
 
 #include <QDebug>
-
-
 
 uint qHash(const QPolygonF& key)
 {
@@ -19,8 +17,6 @@ uint qHash(const QPolygonF& key)
 	}
 	return qHash(repr);
 }
-
-
 
 PathPaintDevice::PathPaintDevice(double widthInMm, double heightInMm, double pixelsPerMm)
 {

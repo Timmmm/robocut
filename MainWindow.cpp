@@ -1,7 +1,7 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 
-#include "PathPaintPage.h"
+#include "PathPaintDevice.h"
 #include "Plotter.h"
 
 #include "ProgramOptions.h"
