@@ -45,9 +45,6 @@ void PathPaintDevice::addPath(const QPolygonF& path)
 	// Clip the path.
 	for (int j = 0; j < pagePaths.back().size(); ++j)
 	{
-		// pagePaths are in mm, so convert from pixels to mm.
-		pagePaths.back()[j] /= ppm;
-
 		if (pagePaths.back()[j].x() < 0.0)
 		{
 			pathsClipped = true;
