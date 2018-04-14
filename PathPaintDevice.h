@@ -10,11 +10,12 @@ class PathPaintEngine;
 // Needed for QSet<QPolygonF>. Simply concatenates all the coordinates in a QByteArray and hashes that.
 uint qHash(const QPolygonF& key);
 
+// A paint device that just draws a list of paths in different colours.
 class PathPaintDevice : public QPaintDevice
 {
 public:
 	PathPaintDevice(double widthInMm, double heightInMm, double pixelsPerMm = 96.0/25.4);
-	~PathPaintDevice();
+	~PathPaintDevice() override;
 
 	// Adds a path to the device.
 	// Also automatically ignores duplicate paths, which QSvgPainter creates (I guess for the fill and stroke).
@@ -27,11 +28,11 @@ public:
 	// Returns true if any paths had to be clipped.
 	bool clipped() const;
 
-	QPaintEngine* paintEngine() const;
+	QPaintEngine* paintEngine() const override;
 
 
 protected:
-	int metric(PaintDeviceMetric metric) const;
+	int metric(PaintDeviceMetric metric) const override;
 private:
 	mutable PathPaintEngine* engine;
 
