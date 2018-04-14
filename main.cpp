@@ -1,22 +1,23 @@
+#include <iostream>
+
 #include <QApplication>
 #include <QMessageBox>
-#include "MainWindow.h"
+#include <QCommandLineParser>
 
-#include "ProgramOptions.h"
+#include "MainWindow.h"
+#include "CommandLineOptions.h"
 
 #include <libusb/libusb.h>
-#include <iostream>
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
-	// ROBOCUT_VERSION is defined in the build system.
-	ProgramOptions::Instance().setVersion(ROBOCUT_VERSION);
-
-	// Initialise options from command line if specified.
-	ProgramOptions::Instance().GetOpt(argc, argv);
-
+	// For the benefit of QSettings.
+	QCoreApplication::setOrganizationName("Robocut");
+    QCoreApplication::setOrganizationDomain("robocut.com");
+    QCoreApplication::setApplicationName("Robocut");
+	
 	int err = libusb_init(nullptr);
 	if (err != LIBUSB_SUCCESS)
 	{
@@ -30,6 +31,9 @@ int main(int argc, char *argv[])
 	// Code block to ensure usb devices are closed. Maybe.
 	{
 		QApplication a(argc, argv);
+		
+//		processCommandLineOptions(a, argc, argv);
+		
 		MainWindow w; 
 		ret = a.exec();
 	}
