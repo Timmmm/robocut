@@ -11,25 +11,23 @@
 class PathPaintEngine : public QPaintEngine
 {
 public:
-	PathPaintEngine(QPaintDevice* pdev);
-	bool begin(QPaintDevice* pdev);
+	PathPaintEngine();
+	
+	bool begin(QPaintDevice* pdev) override;
+	bool end() override;
 
-	void drawPath(const QPainterPath& path);
+	void drawPath(const QPainterPath& path) override;
+	void drawPixmap(const QRectF& r, const QPixmap& pm, const QRectF& sr) override;
+	void drawPolygon(const QPointF* points, int pointCount, PolygonDrawMode mode) override;
 
-	void drawPixmap(const QRectF& r, const QPixmap& pm, const QRectF& sr);
-
-	void drawPolygon(const QPointF* points, int pointCount, PolygonDrawMode mode);
-
-	bool end();
-
-	Type type() const;
-	void updateState(const QPaintEngineState& state);
+	Type type() const override;
+	
+	void updateState(const QPaintEngineState& state) override;
+	
 private:
-	PathPaintDevice* dev;
+	PathPaintDevice* dev = nullptr;
 	QTransform transform;
 	QVector<qreal> dashPattern;
-	bool isCosmetic;
-	qreal getDistance(const QPointF &p1, const QPointF &p2);
-	QPointF getPointAtLenght(const QPointF &p1, const QPointF &p2, qreal &l1);
+	bool zeroWidthPen = false;
 };
 

@@ -72,7 +72,7 @@ void PathPaintDevice::addPath(const QPolygonF& path)
 QPaintEngine* PathPaintDevice::paintEngine() const
 {
 	if (!engine)
-		engine = new PathPaintEngine(const_cast<PathPaintDevice*>(this));
+		engine = new PathPaintEngine();
 	return engine;
 }
 

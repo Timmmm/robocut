@@ -2,13 +2,131 @@
 
 #include <cmath>
 #include <QDebug>
+#include "Bezier.h"
 
-PathPaintEngine::PathPaintEngine(QPaintDevice* pdev)
-	: QPaintEngine(AllFeatures)
-{
-	dev = dynamic_cast<PathPaintDevice*>(pdev);
-	if (!dev)
-		qWarning("PathPaintEngine: unsupported target device.");
+namespace {
+
+	QList<QPolygonF> polygonToDashes(const QPolygonF& poly, const QVector<qreal>& dashPattern)
+	{
+		// Convert a polygon to a list of dash polygons using dashPattern.
+		
+		// If there's no valid dash pattern, just return the original polygon as one long "dash".	
+		if (dashPattern.size() < 2)
+			return {poly};
+		
+		QList<QPolygonF> dashes;
+		if (poly.empty())
+			return dashes;
+		
+		// Index into the dashPattern. dashPattern is an even-sized list of dash lengths
+		// where the first entry is a dash, and the second is a space and so on.
+		int dashIdx = 0;
+		
+		// Length remaining in this dash.
+		qreal dashLengthLeft = dashPattern[0];
+		
+		QPointF pos = poly[0];
+	
+		// Polygon for this dash.
+		QPolygonF dashPoly;
+		dashPoly.append(pos);
+		
+		for (int polyIdx = 1; polyIdx < poly.size();)
+		{
+			QPointF nextPos = poly[polyIdx];
+			
+			QLineF line(pos, nextPos);
+			auto len = line.length();
+			
+			// If this line is shorter than the remaining dash length, just add it.
+			if (len < dashLengthLeft)
+			{
+				if (dashIdx % 2 == 0)
+					dashPoly.append(nextPos);
+	
+				dashLengthLeft -= len;
+				++polyIdx;
+			}
+			else
+			{
+				// Otherwise clip it at the line length and start a new dash.
+				line.setLength(dashLengthLeft);
+				if (dashIdx % 2 == 0)
+				{
+					dashPoly.append(line.p2());
+					// TODO: Remove zero-length polys. They act weirdly.
+					dashes.append(dashPoly);
+					dashPoly.clear();
+				}
+				
+				dashIdx = (dashIdx + 1) % dashPattern.size();
+				dashLengthLeft = dashPattern[dashIdx];
+			}
+			
+			pos = nextPos;
+		}
+		
+		if (!dashPoly.empty())
+			dashes.append(dashPoly);
+		
+		return dashes;	
+	}
+	
+	
+	// This is a copy of QPainterPath::toSubpathPolygons with the tiny modification
+	// of exposing the bezier flattening threshold.
+	QList<QPolygonF> toSubpathPolygons(const QPainterPath &path,
+	                                   const QTransform &matrix,
+	                                   qreal angleThreshold = 0.5,
+	                                   qreal distanceThreshold = 0.5)
+	{
+		QList<QPolygonF> flatCurves;
+		if (path.isEmpty())
+			return flatCurves;
+		QPolygonF current;
+		for (int i = 0; i < path.elementCount(); ++i) {
+			const QPainterPath::Element &e = path.elementAt(i);
+			switch (e.type) {
+			case QPainterPath::MoveToElement:
+				if (current.size() > 1)
+					flatCurves += current;
+				current.clear();
+				current.reserve(16);
+				current += QPointF(e.x, e.y) * matrix;
+				break;
+			case QPainterPath::LineToElement:
+				current += QPointF(e.x, e.y) * matrix;
+				break;
+			case QPainterPath::CurveToElement: {
+				Q_ASSERT(path.elementAt(i+1).type == QPainterPath::CurveToDataElement);
+				Q_ASSERT(path.elementAt(i+2).type == QPainterPath::CurveToDataElement);
+				addBezierToPolygon(current,
+				                   QPointF(path.elementAt(i-1).x, path.elementAt(i-1).y) * matrix,
+				                   QPointF(e.x, e.y) * matrix,
+				                   QPointF(path.elementAt(i+1).x, path.elementAt(i+1).y) * matrix,
+				                   QPointF(path.elementAt(i+2).x, path.elementAt(i+2).y) * matrix,
+				                   angleThreshold,
+				                   distanceThreshold);
+				i+=2;
+				break;
+			}
+			case QPainterPath::CurveToDataElement:
+				Q_ASSERT(!"QPainterPath::toSubpathPolygons(), bad element type");
+				break;
+			}
+		}
+		if (current.size()>1)
+			flatCurves += current;
+		return flatCurves;
+	}
+
+}
+
+// We need to say that at least transforms are supported, otherwise transformed
+// elements are ignored. I just say everything is supported and we can ignore
+// most things.
+PathPaintEngine::PathPaintEngine() : QPaintEngine(QPaintEngine::AllFeatures)
+{	
 }
 
 bool PathPaintEngine::begin(QPaintDevice* pdev)
@@ -17,77 +135,27 @@ bool PathPaintEngine::begin(QPaintDevice* pdev)
 	if (!dev)
 		qWarning("PathPaintEngine: unsupported target device.");
 
-	// TODO: setActive?
+	setActive(true);
 	return true;
 }
 
-bool approximatelyEqual(qreal a, qreal b, qreal epsilon)
-{
-    return fabs(a - b) <= ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * epsilon);
-}
-
-bool essentiallyEqual(qreal a, qreal b, qreal epsilon)
-{
-    return fabs(a - b) <= ( (fabs(a) > fabs(b) ? fabs(b) : fabs(a)) * epsilon);
-}
-
-bool definitelyGreaterThan(qreal a, qreal b, qreal epsilon)
-{
-    return (a - b) > ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * epsilon);
-}
-
-bool definitelyLessThan(qreal a, qreal b, qreal epsilon)
-{
-    return (b - a) > ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * epsilon);
-}
-
-
 void PathPaintEngine::drawPath(const QPainterPath& path)
 {
-	if (!dev)
+	if (dev == nullptr)
 		return;
 
-	if(!isCosmetic)
+	if (zeroWidthPen)
+		return;
+
+	QList<QPolygonF> polys = toSubpathPolygons(path, transform, 0.05);
+	
+	for (const auto& poly : polys)
 	{
-		QList<QPolygonF> polys = path.toSubpathPolygons();
-		for (int i = 0; i < polys.size(); ++i)
-		{
-			if(dashPattern.empty()) dev->addPath(transform.map(polys[i]));
-			else
-			{
-				QPolygonF polytemp = transform.map(polys[i]), newpoly;
-				int  dashtoggle = 1, dashi=0, j = 0;
-				qreal actualdashsize = dashPattern[dashi];
-				QPointF origin = QPointF(polytemp[j]), testp;
-				j++; 
-				do
-				{
-					newpoly = QPolygonF();
-					newpoly.append(origin);
-					do
-					{
-						testp = polytemp[j];
-						origin = QPointF(getPointAtLenght(QPointF(origin), polytemp[j], actualdashsize));
-						if (essentiallyEqual(origin.x(), polytemp[j].x(), 0.01 ) && approximatelyEqual(origin.y(), polytemp[j].y(),0.01) && j+1 < polytemp.size()) 
-						{
-							origin = polytemp[j];
-							j++;
-							testp =  polytemp[j];
-						}
-						newpoly.append(origin);
-					
-					}while(definitelyGreaterThan(actualdashsize,0.0,0.1) && testp!=origin);
-					if(dashtoggle == 1)
-					{
-						dev->addPath(newpoly);
-					}
-					dashtoggle = dashtoggle * -1;
-					dashi++;
-					if(dashi >= dashPattern.size()) dashi=0;
-					actualdashsize = dashPattern[dashi];
-				}while(!essentiallyEqual(origin.x(), polytemp[j].x(), 0.001 ) || !essentiallyEqual(origin.y(), polytemp[j].y(),0.001));
-			}
-		}
+		// Convert polygon to dashes. If dashPattern is empty, only the original polygon
+		// is returned.
+		auto dashes = polygonToDashes(poly, dashPattern);
+		for (const auto &dash : dashes)
+			dev->addPath(dash);
 	}
 }
 
@@ -104,79 +172,42 @@ void PathPaintEngine::drawPolygon(const QPointF* points, int pointCount, Polygon
 	// Mode is only needed for fills.
 	(void)mode;
 
-	if (!dev)
+	if (dev == nullptr)
 		return;
 
-	QPolygonF p;
+	QPolygonF p(pointCount + 1);
 	for (int i = 0; i < pointCount; ++i)
-		p.append(points[i]);
+		p[i] = points[i];
+	
+	// Close the polygon.
+	p[pointCount] = p[0];
+	
 	dev->addPath(transform.map(p));
 }
 
 bool PathPaintEngine::end()
 {
-	if (!dev)
+	setActive(false);
+	if (dev == nullptr)
 		return false;
+	dev = nullptr;
 	return true;
 }
 
 QPaintEngine::Type PathPaintEngine::type() const
 {
+	// Return the type of the paint engine (X11, PDF, etc). This is the first custom type ID.
 	return QPaintEngine::User;
 }
+
 void PathPaintEngine::updateState(const QPaintEngineState& state)
 {
 	if (state.state() & DirtyTransform)
 		transform = state.transform();
-	dashPattern = state.pen().dashPattern();
-	isCosmetic  = state.pen().isCosmetic(); 
-}
-
-qreal PathPaintEngine::getDistance(const QPointF &p1, const QPointF &p2)
-{
-	qreal testx1 = p1.x();
-	qreal testy1 = p1.y();
-	qreal testx2 = p2.x();
-	qreal testy2 = p2.y();
-	qreal a = 0.0;
-	qreal b = 0.0;
-	double c = 0.0;
-	
-	if(testx1 >= testx2) a = testx1 - testx2;
-	else a = testx2 - testx1;
-	if(testy1 >= testy2) b = testy1 - testy2;
-	else b = testy2 - testy1;
-	c = sqrt((double)(a*a+b*b));
-	return (qreal) c;
-}
-
-QPointF PathPaintEngine::getPointAtLenght(const QPointF &p1, const QPointF &p2, qreal &l1)
-{
-	qreal testx1 = p1.x();
-	qreal testy1 = p1.y();
-	qreal testx2 = p2.x();
-	qreal testy2 = p2.y();
-	qreal lenghtp1p2 = getDistance(p1,p2);
-	qreal lenghtdash = l1;
-	l1 = lenghtp1p2 - lenghtdash;
-	if (definitelyLessThan(lenghtp1p2, lenghtdash, 0.01)) 
+	if (state.state() & DirtyPen)
 	{
-		l1 = lenghtdash - lenghtp1p2;
-		return p2;
+		dashPattern = state.pen().dashPattern();
+		zeroWidthPen = state.pen().widthF() == 0.0;
 	}
-	if (definitelyGreaterThan(lenghtdash, lenghtp1p2, 0.01)) 
-	{
-		l1 = lenghtdash - lenghtp1p2;
-		return p1;
-	}
-	l1 = 0;
-	qreal factor = lenghtp1p2/lenghtdash;
-	qreal a = testx1-testx2;
-	qreal b = testy1-testy2;
-	qreal aa = a/factor;
-	qreal bb = b/factor;
-	QPointF ret = QPointF(testx1-aa,testy1-bb);
-	return ret;
-	
 }
 
