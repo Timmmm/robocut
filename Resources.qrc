@@ -5,5 +5,11 @@
         <file>images/cap-red.png</file>
         <file>images/cap-yellow.png</file>
         <file>images/window_icon.png</file>
+        <file>examples/a4_reg-marks_h260.svg</file>
+        <file>examples/legal_reg-marks_h310.svg</file>
+        <file>examples/letter_reg-marks.svg</file>
+        <file>examples/shot message.svg</file>
+        <file>examples/stars.svg</file>
+        <file>examples/squares.svg</file>
     </qresource>
 </RCC>
