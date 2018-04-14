@@ -72,6 +72,12 @@ target_link_libraries(Robocut
 	libusb
 )
 
+target_include_directories(Robocut
+	PRIVATE
+		"."
+		"nanoflann/include"
+)
+
 target_compile_definitions(Robocut PRIVATE "-DROBOCUT_VERSION=\"${PROJECT_VERSION}\"")
 
 # A custom Info.plist is used to enable high dpi on OSX.
