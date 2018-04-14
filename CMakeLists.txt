@@ -27,7 +27,6 @@ set(src_files
 	"ProgramOptions.cpp"
 	"MainWindow.h"
 	"Plotter.h"
-	"NoCopy.h"
 	"Common.h"
 	"PathPaintEngine.h"
 	"CutDialog.h"
