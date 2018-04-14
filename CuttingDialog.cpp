@@ -79,8 +79,10 @@ void CuttingDialog::closeEvent(QCloseEvent* e)
 {
 	if (thread)
 	{
-		if (QMessageBox::question(this, "Kill cutting process?", "Are you sure you wish to stop the cutting process? "
-								  "This may result in bad stuff. It might be better just to turn the plotter off and on again.",
+		if (QMessageBox::question(this,
+		                          "Kill cutting process?",
+		                          "Are you sure you wish to stop the cutting process? It might be better "
+		                          "just to turn the plotter off and on again.",
 								  QMessageBox::Yes, QMessageBox::No) == QMessageBox::No)
 		{
 			e->ignore();
