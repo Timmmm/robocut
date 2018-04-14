@@ -1,29 +1,25 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 
-#include "PathPaintDevice.h"
-#include "Plotter.h"
-
-#include "ProgramOptions.h"
-
 #include "CuttingDialog.h"
+#include "PathPaintDevice.h"
 #include "PathSorter.h"
+#include "Plotter.h"
+#include "SvgRenderer.h"
 
-#include <QPainter>
-#include <QDebug>
-
-#include <QSvgRenderer>
-
-#include <QMessageBox>
-#include <QFileDialog>
-#include <QDir>
-
-#include <QShortcut>
 #include <cmath>
-#include <QFile>
-
-#include <QEvent>
 #include <iostream>
+
+#include <QDebug>
+#include <QDir>
+#include <QEvent>
+#include <QFile>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QPainter>
+#include <QSettings>
+#include <QShortcut>
+#include <QSvgRenderer>
 #include <QWheelEvent>
 
 using namespace std;
@@ -34,38 +30,54 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
+	
+	QSettings settings;
+	lastOpenDir = settings.value("lastOpenDir").toString();	
+	recentFiles = settings.value("recentFiles").toStringList();	
 
 	scene = new QGraphicsScene(this);
+	
 	ui->graphicsView->setScene(scene);
-
 	ui->graphicsView->scale(InitialZoom, InitialZoom);
-
 	ui->graphicsView->viewport()->installEventFilter(this);
 
-	cutDialog = nullptr;
-
 	animationTimer = new QTimer(this);
-	connect(animationTimer, SIGNAL(timeout()), SLOT(animate()));
-	cutMarker = nullptr;
+	connect(animationTimer, &QTimer::timeout, this, &MainWindow::animate);
+	
+	recentFilesModel = new SvgPreviewModel(64, this);
+	recentFilesModel->setFiles(recentFiles);
+	ui->recentFilesList->setModel(recentFilesModel);
+	
+	exampleFilesModel = new SvgPreviewModel(64, this);
+	exampleFilesModel->setFiles({":/examples/shot message.svg",
+	                             ":/examples/stars.svg"});
+	ui->examplesList->setModel(exampleFilesModel);
 
 	// Alternative zoom shortcuts
 	QShortcut* zoom_in = new QShortcut(QKeySequence("X"), this);
-	connect(zoom_in, SIGNAL(activated()), SLOT(on_actionZoom_In_triggered()));
+	connect(zoom_in, &QShortcut::activated, this, &MainWindow::on_actionZoom_In_triggered);
 	QShortcut* zoom_out = new QShortcut(QKeySequence("Z"), this);
-	connect(zoom_out, SIGNAL(activated()), SLOT(on_actionZoom_Out_triggered()));
-
-	//default options if not specified on command line
-	this->show();
-	filename = ProgramOptions::Instance().getFileName();
-	if(QFile::exists(filename)) loadFile();
-	if(ProgramOptions::Instance().getStartCut() == true) on_actionCut_triggered();
-	sortFlag = ProgramOptions::Instance().getSortPath();
-	cout << ProgramOptions::Instance().getVersion().toStdString() << endl;
+	connect(zoom_out, &QShortcut::activated, this, &MainWindow::on_actionZoom_Out_triggered);
+	
+	auto sortMethodGroup = new QActionGroup(this);
+	sortMethodGroup->addAction(ui->actionSortShortest);
+	sortMethodGroup->addAction(ui->actionSortByY);
+	sortMethodGroup->addAction(ui->actionSortGreedy);
+	sortMethodGroup->addAction(ui->actionSortInsideFirst);
+	sortMethodGroup->addAction(ui->actionSortNone);
+	
+	connect(sortMethodGroup, &QActionGroup::triggered, this, &MainWindow::on_sortMethod_triggered);
+	
+	show();	
 }
 
 MainWindow::~MainWindow()
 {
 	delete ui;
+
+	QSettings settings;
+	settings.setValue("lastOpenDir", lastOpenDir);
+	settings.setValue("recentFiles", recentFiles);
 }
 
 void MainWindow::on_actionOpen_triggered()
@@ -73,118 +85,99 @@ void MainWindow::on_actionOpen_triggered()
 	if (lastOpenDir.isEmpty())
 		lastOpenDir = QDir::homePath();
 
-	filename = QFileDialog::getOpenFileName(this,
-			tr("Open File"), lastOpenDir, tr("SVG Files (*.svg)"));
+	auto filename = QFileDialog::getOpenFileName(this, tr("Open File"), lastOpenDir, tr("SVG Files (*.svg)"));
+	
 	if (filename.isEmpty())
 		return;
 
 	lastOpenDir = QFileInfo(filename).absoluteDir().path();
-	loadFile();
+	loadFile(filename);
 }
 
 void MainWindow::on_actionReload_triggered()
 {
-	if(QFile::exists(filename))
-	  loadFile();
-	else
-	  qDebug() << "Reload failed. File missing: " << filename;
+	if (!QFile::exists(currentFilename))
+	{
+		qDebug() << "Reload failed. File missing: " << currentFilename;
+		return;
+	}
+	
+	loadFile(currentFilename);
 }
 
 void MainWindow::on_actionIdentify_triggered()
 {
 	// CAUTION: only call this when not cutting!
-        struct cutter_id *id = Identify();
+	CutterId id = DetectDevices();
 	cout << "Identify:";
-	if (id->usb_product_id)
-	  {
-	    cout << " usb=" << id->usb_vendor_id << "/" << id->usb_product_id;
-	  }
-	cout << " " << id->msg << endl;
+	if (id.usb_product_id)
+	{
+		cout << " usb=" << id.usb_vendor_id << "/" << id.usb_product_id;
+	}
+	cout << " " << id.msg << endl;
 }
 
-
-void MainWindow::loadFile()
+void MainWindow::loadFile(QString filename)
 {
-	if (filename.isEmpty())
-		return;
-
 	qDebug() << "Reading file: " << filename;
 
-	QSvgRenderer rend;
-	if (!rend.load(filename))
+	QSvgRenderer renderer;
+	if (!renderer.load(filename))
 	{
 		QMessageBox::critical(this, "Error loading file.", "Couldn't open the file for reading.");
 		qDebug() << "Error loading svg.";
 		return;
 	}
+	
+	mediaSize = renderer.viewBoxF().size();
 
-	qDebug() << "SVG default size: " << rend.defaultSize() << endl;
-	qDebug() << "SVG view box: " << rend.viewBoxF() << endl;
-
-	// Geqt size from SVG. TODO: Sanity check.
-	// Also TODO: This won't handle offset viewboxes... need to get the offset and subtract it from
-	// all the objects.
-	mediaSize = rend.viewBoxF().size() * 25.4 / 96.0;
-
-	double ppm = 96.0/25.4; // Pixels per mm.
-
-	qDebug() << "Page size (mm): " << mediaSize << endl;
-
-	PathPaintDevice pg(mediaSize.width(), mediaSize.height(), ppm);
-	QPainter p(&pg);
-
-	rend.render(&p);
-
-	PathSorter pathsort(pg.paths(), mediaSize.height());
-	paths = pathsort.UnSort();
-	//paths = pathsort.Sort();
-	//paths = pathsort.TspSort();
-	//paths = pathsort.GroupTSP();
-	if(!ProgramOptions::Instance().getSortPath() == true)paths = pathsort.BestSort();
-	if(ProgramOptions::Instance().getTspSortPath() == true)paths = pathsort.BbSort(paths);
+	qDebug() << "SVG default size: " << renderer.defaultSize() << endl;
+	qDebug() << "SVG view box: " << mediaSize << endl;
+	
+	bool clipped = false;
+	
+	// Convert the SVG to paths.
+	auto paths = svgToPaths(renderer, clipped);
+	
+	// Sort the paths with the following goals:
+	//
+	// 1. Minimise the time spend travelling without cutting.
+	// 2. Try to cut inside shapes before outside shapes.
+	// 3. Try not to travel too much in the Y direction (it can lead to accumulation of
+	//    errors due to the vinyl slipping in the rollers).
+	auto sortedPaths = sortPaths(paths,
+	                             sortMethod,
+	                             QPointF(0.0, mediaSize.height()));
+	
+	// Save the paths for the animation.
+	this->paths = sortedPaths;
+	
+	// Clear the scene.
 	scene->clear();
 	scene->setBackgroundBrush(QBrush(Qt::lightGray));
 
-	// The page.
+	// Add the page rect.
 	scene->addRect(0.0, 0.0, mediaSize.width(), mediaSize.height(), QPen(), QBrush(Qt::white));
 
-	QPen pen;
-	pen.setWidthF(0.0);
-	for (int i = 0, ii = 50, iii=0; i < paths.size(); ++i,ii+=10)
+	// Add all the paths.
+	double hue = 0.0;
+	const double golden = 0.5 * (1.0 + sqrt(5.0));
+	
+	for (const auto& path : sortedPaths)
 	{
-		switch (iii)
-		{
-		case 0:
-			pen.setColor(QColor(ii, ii, ii));
-				break;
-		case 1:
-			pen.setColor(QColor(ii, 0, 0));
-				break;
-		case 2:
-			pen.setColor(QColor(0, ii, 0));
-				break;
-		case 3:
-			pen.setColor(QColor(0, 0, ii));
-				break;
-		case 4:
-			pen.setColor(QColor(ii, ii, 0));
-				break;
-		case 5:
-			pen.setColor(QColor(ii, 0, ii));
-				break;
-		case 6:
-			pen.setColor(QColor(0, ii, ii));
-				break;
-		}
-		QPainterPath path;
-		path.addPolygon(paths[i]);
-		scene->addPath(path, pen);
-		if(ii >= 200)
-		{
-			ii = 50;
-			iii++;
-			if(iii >=7)iii=0;
-		}
+		QPen pen(QColor::fromHsvF(hue, 1.0, 0.7));
+		
+		// Don't change the pen width with zoom.
+		pen.setCosmetic(true);
+		pen.setWidthF(3.0);
+		
+		// addPath() is used rather than addPolygon() because addPolygon() is always closed.
+		QPainterPath pp;
+        pp.addPolygon(path);
+        scene->addPath(pp, pen);
+				
+		hue += golden;
+		hue -= trunc(hue);
 	}
 
 	// Handle the animation. I.e. stop it.
@@ -196,10 +189,14 @@ void MainWindow::loadFile()
 
 	// Reset the viewport.
 	on_actionReset_triggered();
+	
+	// Set the page that shows the file.
+	ui->stackedWidget->setCurrentIndex(1);
+
 	// Redraw. Probably not necessary.
 	update();
-
-	if (pg.clipped())
+	
+	if (clipped)
 		QMessageBox::warning(this, "Paths clipped", "<b>BIG FAT WARNING!</b><br><br>Some paths lay outside the 210&times;297&thinsp;mm A4 area. These have been squeezed back onto the page in a most ugly fashion, so cutting will almost certainly not do what you want.");
 
 	// Change window title and enable menu items.
@@ -208,7 +205,7 @@ void MainWindow::loadFile()
 
 void MainWindow::on_actionAbout_triggered()
 {
-	QString message = "<b>" + ProgramOptions::Instance().getVersion() +
+	QString message = QString("<b>") + ROBOCUT_VERSION +
 	"</b><br><br>By Tim Hutt, &copy; 2010<br/>" +
 	"<br>Parts of the source by Markus Schulz, &copy; 2010<br/>" +
 	"<br/>This software allows you to read a vector image in <a href=\"http://en.wikipedia.org/wiki/Scalable_Vector_Graphics\">SVG format</a>, " +
@@ -317,7 +314,7 @@ void MainWindow::animate()
 
 	QPointF a = paths[cutMarkerPath][cutMarkerLine];
 	QPointF b;
-	if (cutMarkerLine == paths[cutMarkerPath].size()-1)
+	if (cutMarkerLine >= paths[cutMarkerPath].size()-1)
 	{
 		// We are moving between paths, and not cutting.
 		b = paths[(cutMarkerPath+1) % paths.size()][0];
@@ -373,29 +370,59 @@ void MainWindow::setFileLoaded(QString filename)
 	ui->actionZoom_Out->setEnabled(e);
 	ui->actionCut->setEnabled(e);
 	ui->actionReload->setEnabled(e);
-
-}
-
-bool MainWindow::eventFilter(QObject *o, QEvent *e)
-{
-	if (o == ui->graphicsView->viewport())
+	ui->actionClose->setEnabled(e);
+	
+	// Update the recent files list. Also ignore files that start
+	// with a colon - those are examples.
+	if (!filename.isEmpty() && !filename.startsWith(":"))
 	{
-		if (e->type() == QEvent::Wheel)
-		{
-			// Anchor under the mouse pointer when using the mouse wheel.
-			// This doesn't quite work as nicely as I'd like because it clamps the scrolling
-			// precisely to the scene boundary. It's a bit hard to zoom to corners. Oh well.
-			ui->graphicsView->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-			QWheelEvent *w = dynamic_cast<QWheelEvent*>(e);
-			if (w->delta() <= 0)
-				on_actionZoom_Out_triggered();
-			else
-				on_actionZoom_In_triggered();
-
-			// Anchor in view centre for keyboard shortcuts.
-			ui->graphicsView->setTransformationAnchor(QGraphicsView::AnchorViewCenter);
-			return true;
-		}
+		recentFiles.removeAll(filename);
+		recentFiles.prepend(filename);
 	}
-	return false;
+	
+	currentFilename = filename;
 }
+
+void MainWindow::on_openSvgButton_clicked()
+{
+	on_actionOpen_triggered();
+}
+
+void MainWindow::on_actionClose_triggered()
+{
+	setFileLoaded("");
+	scene->clear();
+	ui->stackedWidget->setCurrentIndex(0);
+}
+
+void MainWindow::on_recentFilesList_activated(const QModelIndex &index)
+{	
+	auto filename = index.data(SvgPreviewModel::FilenameRole).toString();
+	
+	lastOpenDir = QFileInfo(filename).absoluteDir().path();
+	loadFile(filename);
+}
+
+void MainWindow::on_examplesList_activated(const QModelIndex &index)
+{
+	auto filename = index.data(SvgPreviewModel::FilenameRole).toString();
+	
+	loadFile(filename);
+}
+
+void MainWindow::on_sortMethod_triggered(QAction* action)
+{
+	if (action == ui->actionSortGreedy)
+		sortMethod = PathSortMethod::Greedy;
+	else if (action == ui->actionSortByY)
+		sortMethod = PathSortMethod::IncreasingY;
+	else if (action == ui->actionSortInsideFirst)
+		sortMethod = PathSortMethod::InsideFirst;
+	else if (action == ui->actionSortShortest)
+		sortMethod = PathSortMethod::Best;
+	else if (action == ui->actionSortNone)
+		sortMethod = PathSortMethod::None;
+	
+	on_actionReload_triggered();
+}
+

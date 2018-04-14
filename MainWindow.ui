@@ -20,16 +20,92 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QGraphicsView" name="graphicsView">
-      <property name="renderHints">
-       <set>QPainter::Antialiasing|QPainter::TextAntialiasing</set>
+     <widget class="QStackedWidget" name="stackedWidget">
+      <property name="currentIndex">
+       <number>0</number>
       </property>
-      <property name="dragMode">
-       <enum>QGraphicsView::ScrollHandDrag</enum>
-      </property>
-      <property name="transformationAnchor">
-       <enum>QGraphicsView::AnchorUnderMouse</enum>
-      </property>
+      <widget class="QWidget" name="welcomePage">
+       <layout class="QVBoxLayout" name="verticalLayout_5">
+        <item>
+         <widget class="QPushButton" name="openSvgButton">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>64</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Open an SVG</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_3">
+            <item>
+             <widget class="QLabel" name="recentFilesLabel">
+              <property name="text">
+               <string>Recent Files</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QListView" name="recentFilesList"/>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_4">
+            <item>
+             <widget class="QLabel" name="examplesLabel">
+              <property name="text">
+               <string>Examples</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QListView" name="examplesList">
+              <property name="viewMode">
+               <enum>QListView::ListMode</enum>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="viewPage">
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="ZoomableGraphicsView" name="graphicsView">
+          <property name="renderHints">
+           <set>QPainter::Antialiasing|QPainter::TextAntialiasing</set>
+          </property>
+          <property name="dragMode">
+           <enum>QGraphicsView::ScrollHandDrag</enum>
+          </property>
+          <property name="transformationAnchor">
+           <enum>QGraphicsView::AnchorUnderMouse</enum>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -48,7 +124,10 @@
      <string>File</string>
     </property>
     <addaction name="actionOpen"/>
+    <addaction name="actionOpen_Recent"/>
     <addaction name="actionReload"/>
+    <addaction name="actionClose"/>
+    <addaction name="separator"/>
     <addaction name="actionCut"/>
     <addaction name="actionExit"/>
    </widget>
@@ -68,9 +147,37 @@
     <addaction name="actionZoom_In"/>
     <addaction name="actionZoom_Out"/>
     <addaction name="actionIdentify"/>
+    <addaction name="actionRulers"/>
+    <addaction name="actionGrid"/>
+    <addaction name="actionDimensions"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionVerify_Adjust_Scale"/>
+   </widget>
+   <widget class="QMenu" name="menuPreferences">
+    <property name="title">
+     <string>Preferences</string>
+    </property>
+    <widget class="QMenu" name="menuPath_Sort_Method">
+     <property name="title">
+      <string>Path Sort Method</string>
+     </property>
+     <addaction name="actionSortShortest"/>
+     <addaction name="separator"/>
+     <addaction name="actionSortGreedy"/>
+     <addaction name="actionSortByY"/>
+     <addaction name="actionSortInsideFirst"/>
+     <addaction name="actionSortNone"/>
+    </widget>
+    <addaction name="menuPath_Sort_Method"/>
    </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
    <addaction name="menuView"/>
+   <addaction name="menuPreferences"/>
    <addaction name="menuHelp"/>
   </widget>
   <action name="actionAbout">
@@ -88,7 +195,7 @@
   </action>
   <action name="actionOpen">
    <property name="text">
-    <string>Open</string>
+    <string>Open...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
@@ -191,8 +298,97 @@
     <bool>false</bool>
    </property>
   </action>
+  <action name="actionVerify_Adjust_Scale">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Verify / Adjust Scale...</string>
+   </property>
+  </action>
+  <action name="actionOpen_Recent">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Open Recent</string>
+   </property>
+  </action>
+  <action name="actionClose">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Close</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
+   </property>
+  </action>
+  <action name="actionRulers">
+   <property name="text">
+    <string>Rulers</string>
+   </property>
+  </action>
+  <action name="actionGrid">
+   <property name="text">
+    <string>Grid</string>
+   </property>
+  </action>
+  <action name="actionDimensions">
+   <property name="text">
+    <string>Dimensions</string>
+   </property>
+  </action>
+  <action name="actionSortShortest">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Shortest</string>
+   </property>
+  </action>
+  <action name="actionSortGreedy">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Closest Next</string>
+   </property>
+  </action>
+  <action name="actionSortByY">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Sort by Y</string>
+   </property>
+  </action>
+  <action name="actionSortInsideFirst">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Inside First</string>
+   </property>
+  </action>
+  <action name="actionSortNone">
+   <property name="text">
+    <string>None</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>ZoomableGraphicsView</class>
+   <extends>QGraphicsView</extends>
+   <header>ZoomableGraphicsView.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="Resources.qrc"/>
  </resources>

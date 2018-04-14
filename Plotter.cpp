@@ -1,5 +1,4 @@
 #include "Plotter.h"
-#include "ProgramOptions.h"
 
 #include <libusb/libusb.h>
 
@@ -7,8 +6,8 @@
 #include <cmath>
 
 namespace {
-	int VENDOR_ID = ProgramOptions::Instance().getVendorUSB_ID();
-	int PRODUCT_ID = ProgramOptions::Instance().getProductUSB_ID();
+	int VENDOR_ID = 0; //ProgramOptions::Instance().getVendorUSB_ID();
+	int PRODUCT_ID = 0; //ProgramOptions::Instance().getProductUSB_ID();
 }
 
 string UsbError(int e)
@@ -113,7 +112,7 @@ Error UsbReceive(libusb_device_handle* handle, string& s, int timeout = 0)
 //		unsigned char *data, uint16_t length, unsigned int timeout);
 //}
 
-libusb_device_handle *UsbOpen(struct cutter_id *id)
+libusb_device_handle* UsbOpen(CutterId* id)
 {
 	libusb_device** list;
 	ssize_t cnt = libusb_get_device_list(nullptr, &list);
@@ -131,25 +130,19 @@ libusb_device_handle *UsbOpen(struct cutter_id *id)
 		libusb_device* device = list[i];
 		libusb_device_descriptor desc;
 		libusb_get_device_descriptor(device, &desc);
+		
 		// I don't want to be more specific than this really.
-		if ((desc.idVendor == VENDOR_ID || desc.idVendor == VENDOR_ID_GRAPHTEC) && 
-		    (desc.idProduct == PRODUCT_ID ||
-		     desc.idProduct == PRODUCT_ID_CC200_20 ||
-		     desc.idProduct == PRODUCT_ID_CC300_20 ||
-		     desc.idProduct == PRODUCT_ID_SILHOUETTE_SD_1 ||
-		     desc.idProduct == PRODUCT_ID_SILHOUETTE_SD_2 ||
-		     desc.idProduct == PRODUCT_ID_SILHOUETTE_CAMEO ||
-		     desc.idProduct == PRODUCT_ID_SILHOUETTE_CAMEO_3 ||
-		     desc.idProduct == PRODUCT_ID_SILHOUETTE_PORTRAIT
-		     )
-		    )
-		{
-			// Just use the first one. Who has two?!
-			found = device;
-			id->usb_product_id = desc.idProduct;
-			id->usb_vendor_id = desc.idVendor;
-			break;
-		}
+		if (desc.idVendor != VENDOR_ID && desc.idVendor != VENDOR_ID_GRAPHTEC)
+			continue;
+		
+		if (desc.idProduct != PRODUCT_ID && PRODUCT_ID_LIST.count(desc.idProduct) == 0)
+			continue;
+		
+		// Just use the first one. Who has two?!
+		found = device;
+		id->usb_product_id = desc.idProduct;
+		id->usb_vendor_id = desc.idVendor;
+		break;
 	}
 
 	if (!found)
@@ -178,7 +171,7 @@ libusb_device_handle *UsbOpen(struct cutter_id *id)
 
 // caller can use UsbSend() afterwards, and should
 // finally do libusb_release_interface(handle, 0); libusb_close(handle);
-libusb_device_handle *UsbInit(struct cutter_id *id)
+libusb_device_handle *UsbInit(struct CutterId *id)
 {
 	// Now do stuff with the handle.
 	int r = 0;
@@ -237,24 +230,24 @@ libusb_device_handle *UsbInit(struct cutter_id *id)
 	return handle;
 }
 
-struct cutter_id *Identify()
+CutterId DetectDevices()
 {
-	static struct cutter_id id = { "?", 0, 0 };
+	CutterId id = { "?", 0, 0 };
 	libusb_device_handle *handle;
-
+	
 	if (1)
-	  {
-	    handle = UsbOpen(&id);
-	    if (handle)
-	      libusb_close(handle);
-	    else
-	      id.msg = "no device found";
-	  }
+	{
+		handle = UsbOpen(&id);
+		if (handle)
+			libusb_close(handle);
+		else
+			id.msg = "no device found";
+	}
 	else
-	  {
-	    id.msg = Error("Cannot Identify while cut thread is running");
-	  }
-	return &id;
+	{
+		id.msg = Error("Cannot Identify while cut thread is running");
+	}
+	return id;
 }
 
 
@@ -277,11 +270,11 @@ QList<QPolygonF> Transform_Silhouette_Cameo(QList<QPolygonF> cuts, double *media
 		*mediawidth = devicewidth;
 		cout << "Paper left aligned" << endl;
 	}
-	  
-
+	
+	
 	// flip it around 180 deg, and go backwards through the path list.
 	QList<QPolygonF> paths;
-  	for (int i = cuts.size()-1; i >= 0; i--)
+	for (int i = cuts.size()-1; i >= 0; i--)
 	{
 		QPolygonF poly;
 		for (int j = 0; j < cuts[i].size(); j++)
@@ -293,13 +286,13 @@ QList<QPolygonF> Transform_Silhouette_Cameo(QList<QPolygonF> cuts, double *media
 		}
 		paths << poly;
 	}
-  return paths;
+	return paths;
 }
 
 Error Cut(CutParams p)
 {
-	VENDOR_ID = ProgramOptions::Instance().getVendorUSB_ID();
-	PRODUCT_ID = ProgramOptions::Instance().getProductUSB_ID();
+	VENDOR_ID = 0;//ProgramOptions::Instance().getVendorUSB_ID();
+	PRODUCT_ID = 0;//ProgramOptions::Instance().getProductUSB_ID();
 	
 	cout << "Cutting... VENDOR_ID : " << VENDOR_ID << " PRODUCT_ID: " << PRODUCT_ID
 		 << " mediawidth: " << p.mediawidth << " mediaheight: " << p.mediaheight
@@ -319,15 +312,17 @@ Error Cut(CutParams p)
 		p.pressure = 33;
 
 	// how can VENDOR_ID / PRODUCT_ID report the correct values abve???
-	struct cutter_id id = { "?", 0, 0 };
+	struct CutterId id = { "?", 0, 0 };
 	libusb_device_handle* handle = UsbInit(&id);
-	if (id.usb_vendor_id == VENDOR_ID_GRAPHTEC &&
-	    (id.usb_product_id == PRODUCT_ID_SILHOUETTE_CAMEO ||
-	     id.usb_product_id == PRODUCT_ID_SILHOUETTE_CAMEO_3))
-	  {
-	    // should this also transform the regwidth regheigth or not?
-		p.cuts = Transform_Silhouette_Cameo(p.cuts, &p.mediawidth, &p.mediaheight);
-	  }
+	
+	// TODO: Renable this.
+//	if (id.usb_vendor_id == VENDOR_ID_GRAPHTEC &&
+//	        (id.usb_product_id == PRODUCT_ID_SILHOUETTE_CAMEO ||
+//	         id.usb_product_id == PRODUCT_ID_SILHOUETTE_CAMEO_3))
+//	{
+//		// should this also transform the regwidth regheigth or not?
+//		p.cuts = Transform_Silhouette_Cameo(p.cuts, &p.mediawidth, &p.mediaheight);
+//	}
 
 	// TODO: Use exceptions.
 
@@ -427,8 +422,8 @@ Error Cut(CutParams p)
 		int width = lroundl(p.mediawidth * 20.0);
 		int height = lroundl(p.mediaheight * 20.0);
 
-		int margintop = ProgramOptions::Instance().getMarginTop();
-		int marginright = ProgramOptions::Instance().getMarginRight();
+		int margintop = 0;//ProgramOptions::Instance().getMarginTop();
+		int marginright = 0;//ProgramOptions::Instance().getMarginRight();
 
 		e = UsbSend(handle, "FU" + ItoS(height - margintop) + "," + ItoS(width - marginright) + "\x03");
 		if (!e) goto error;
@@ -507,8 +502,8 @@ Error Cut(CutParams p)
 			double x = p.cuts[i][0].x()*20.0;
 			double y = p.cuts[i][0].y()*20.0;
 
-			double xorigin = ProgramOptions::Instance().getRegOriginWidthMM();
-			double yorigin = ProgramOptions::Instance().getRegOriginHeightMM();
+			double xorigin = 0;//ProgramOptions::Instance().getRegOriginWidthMM();
+			double yorigin = 0;//ProgramOptions::Instance().getRegOriginHeightMM();
 
 			if (p.regmark)
 			{

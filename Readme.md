@@ -181,11 +181,22 @@ This project is licensed under the terms of the [GPL v3](https://www.gnu.org/lic
 
 # TODO
 
-Silhouette Cameo
-  - paint 24mm blocked area in the GUI at the bottom of the paper.
-  - put the Identify() output in a GUI element (rather than stdout).
-  - new sorting algorithm to limit backward movements
+## General
+
+* Control path polygonisation - currently toPolygonSubpaths() gives a rather coarse result
+* Use a fancy TSPN algorithm for sorting paths
+* Render previews etc. in another thread. Though it does seem pretty fast so maybe I won't bother
+* Add rulers and dimension printing
+* Fix zooming and scrolling, especially with a trackpad on mac.
+* Support multiple devices properly. Ideally with hotplug
+* Re-enable command line options
+
+## Silhouette Cameo
+
+* paint 24mm blocked area in the GUI at the bottom of the paper.
+* put the Identify() output in a GUI element (rather than stdout).
+* new sorting algorithm to limit backward movements
 	to max 20mm, so that we can cut paper and cardboard
 	without a mat in many cases.
-  - debug this: when the paper was moved with the devices cursor keys,
+* debug this: when the paper was moved with the devices cursor keys,
 	"cut" will just home the paper and not cut at all.

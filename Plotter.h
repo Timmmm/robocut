@@ -23,21 +23,26 @@ using namespace std;
 // TODO: Apparently you can change the number of registration marks?
 Error Cut(CutParams p);
 
+const int VENDOR_ID_GRAPHTEC = 0x0b4d;
 
-const int VENDOR_ID_GRAPHTEC = 0x0b4d; 
-const int PRODUCT_ID_CC200_20 = 0x110a;
-const int PRODUCT_ID_CC300_20 = 0x111a;
-const int PRODUCT_ID_SILHOUETTE_SD_1 = 0x111c;
-const int PRODUCT_ID_SILHOUETTE_SD_2 = 0x111d;
-const int PRODUCT_ID_SILHOUETTE_CAMEO =  0x1121;
-const int PRODUCT_ID_SILHOUETTE_CAMEO_3 =  0x112f;
-const int PRODUCT_ID_SILHOUETTE_PORTRAIT = 0x1123;
+// Map from product ID to product name.
+const map<int, string> PRODUCT_ID_LIST = {
+    { 0x110a, "CC200 20" },
+    { 0x111a, "CC300 20" },
+    { 0x111c, "Silhouette SD" },
+    { 0x111d, "Silhouette SD 2" },
+    { 0x1121, "Silhouette Cameo" },
+    { 0x112f, "Silhouette Cameo 3" },
+    { 0x1223, "Silhouette Portrait" },
+};
 
-struct cutter_id
+struct CutterId
 {
   string msg;
   int usb_vendor_id;
   int usb_product_id;
 };
 
-struct cutter_id *Identify();
+// Get the connected device.
+// TODO: Do this properly with hotplug, listing multiple devices etc.
+CutterId DetectDevices();
