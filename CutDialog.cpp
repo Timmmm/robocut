@@ -1,28 +1,27 @@
 #include "CutDialog.h"
 #include "ui_CutDialog.h"
-#include "ProgramOptions.h"
 
 CutDialog::CutDialog(QWidget *parent) :
 	QDialog(parent),
 	ui(new Ui::CutDialog)
 {
 	ui->setupUi(this);
-	ui->mediaCombo->setCurrentIndex(ProgramOptions::Instance().getMedia());
-	ui->speedSlider->setValue(ProgramOptions::Instance().getSpeed());
-	ui->pressureSlider->setValue(ProgramOptions::Instance().getPressure());
-	ui->trackEnhancingCheckbox->setChecked(ProgramOptions::Instance().getTrackEnhancing());
-	if(ProgramOptions::Instance().getRegMark())
-	{
-		ui->regMarksGroup->setChecked(true);
-		ui->regSearchCheckbox->setChecked(false);
-	}
-	if(ProgramOptions::Instance().getRegMarkAuto())
-	{
-		ui->regMarksGroup->setChecked(true);
-		ui->regSearchCheckbox->setChecked(true);
-	}
-	ui->regWidthSpinner->setValue(ProgramOptions::Instance().getRegDimensionWidthMM());
-	ui->regHeightSpinner->setValue(ProgramOptions::Instance().getRegDimensionHeightMM());
+//	ui->mediaCombo->setCurrentIndex(ProgramOptions::Instance().getMedia());
+//	ui->speedSlider->setValue(ProgramOptions::Instance().getSpeed());
+//	ui->pressureSlider->setValue(ProgramOptions::Instance().getPressure());
+//	ui->trackEnhancingCheckbox->setChecked(ProgramOptions::Instance().getTrackEnhancing());
+//	if(ProgramOptions::Instance().getRegMark())
+//	{
+//		ui->regMarksGroup->setChecked(true);
+//		ui->regSearchCheckbox->setChecked(false);
+//	}
+//	if(ProgramOptions::Instance().getRegMarkAuto())
+//	{
+//		ui->regMarksGroup->setChecked(true);
+//		ui->regSearchCheckbox->setChecked(true);
+//	}
+//	ui->regWidthSpinner->setValue(ProgramOptions::Instance().getRegDimensionWidthMM());
+//	ui->regHeightSpinner->setValue(ProgramOptions::Instance().getRegDimensionHeightMM());
 }
 
 CutDialog::~CutDialog()
@@ -56,14 +55,17 @@ int CutDialog::media() const
 		idx = 0;
 	return medias[idx];
 }
+
 int CutDialog::speed() const
 {
 	return ui->speedSlider->value();
 }
+
 int CutDialog::pressure() const
 {
 	return ui->pressureSlider->value();
 }
+
 bool CutDialog::trackEnhancing() const
 {
 	return ui->trackEnhancingCheckbox->isChecked();
@@ -91,7 +93,6 @@ double CutDialog::regHeight() const
 
 void CutDialog::onMediaChanged(int idx)
 {
-
 	if (idx < 0 || idx >= 26)
 		idx = 0;
 

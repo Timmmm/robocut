@@ -26,8 +26,10 @@ public:
 	// The idea is that it will slip less after that is done.
 	bool trackEnhancing() const;
 
-	// Whether to search.
+	// Whether registration marks are enabled.
 	bool regMark() const;
+	// If true, search for registration marks automatically, otherwise
+	// rely on manual positioning?
 	bool regSearch() const; 
 	// Positions of the registration marks.
 	double regWidth() const;
