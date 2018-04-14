@@ -1,237 +1,332 @@
 #include "PathSorter.h"
+
 #include <cmath>
-#include <QSvgRenderer>
 #include <iostream>
 
-using namespace std;
+#include <nanoflann.hpp>
 
-PathSorter::PathSorter ( ) {}
-PathSorter::PathSorter (const QList<QPolygonF> inpaths, qreal mediaheight ) 
+#include <QSvgRenderer>
+
+// Return the distance travelled by the cutter when it isn't
+// cutting paths.
+double pathSortDistance(const QList<QPolygonF>& paths,
+                        QPointF startingPoint)
 {
-	getQList(inpaths);
-	mediaHeight = mediaheight;
-}
-PathSorter::~PathSorter ( ) { }
-
-void PathSorter::getQList (const QList<QPolygonF> inpaths)
-{
-	pathToSort = QList<QPolygonF>(inpaths);
-}
-
-void PathSorter::setMediaHeight(qreal mediaheight)
-{
-	mediaHeight = mediaheight;
-}
-
-QList<QPolygonF> PathSorter::UnSort (const QList<QPolygonF> inpaths)
-{
-	QList<QPolygonF> outpaths = QList<QPolygonF>(inpaths);
-	return outpaths;
-}
-
-bool PathSorter::MyLessThan(const QPolygonF &p1, const QPolygonF &p2)
-{
-	qreal testx1 = p1[0].x();
-	qreal testx2 = p2[0].x();
-	qreal testy1 = p1[0].y();
-	qreal testy2 = p2[0].y();
-	if(testy1 == testy2) return testx1 > testx2;
-	else return testy1 > testy2;
-}
-
-QList<QPolygonF> PathSorter::Sort (const QList<QPolygonF> inpaths)
-{
-	QList<QPolygonF> outpaths = QList<QPolygonF>(inpaths);
-	qSort(outpaths.begin(), outpaths.end(), MyLessThan);
-	return outpaths;
-}
-
-QList<QPolygonF> PathSorter::BestSort (const QList<QPolygonF> inpaths)
-{
-	qreal inpath = getTotalDistance(inpaths);
-	qreal sortpath = inpath;
-	qreal tsppath = inpath, temppath;
-	qreal tsppath2 = inpath;
-	cout<<"in path: "<< inpath << endl;
-
-	QList<QPolygonF> outpathSort = Sort(QList<QPolygonF>(inpaths));
-	sortpath = getTotalDistance(outpathSort);
-	cout<<"Sort outpath: "<<  sortpath << endl;
-
-	int bestpath=1;
-	for (int i = 1; i < inpaths.size()/2; i++)
+	double distance = 0.0;
+	for (const auto& path : paths)
 	{
-		QList<QPolygonF> outpathTSP = GroupTSP(QList<QPolygonF>(inpaths),i);
-		temppath = getTotalDistance(outpathTSP);
-		//cout<<"xTSPSort outpaths: "<< temppath << " Groups " << i <<endl;
-		if (temppath < tsppath)
+		distance += QLineF(startingPoint, path.front()).length();
+		startingPoint = path.back();
+	}
+	// Shorter distance is higher quality.
+	return distance;
+}
+
+QPolygonF rotatePolygonStart(const QPolygonF& poly, int newStart)
+{
+	if (poly.isEmpty())
+		return {};
+
+	if (newStart == 0)
+		return poly;
+	
+	// If the polygon is closed then all we can do is reverse the direction.
+	// This is based on which end is closest to the new start point.
+	if (!poly.isClosed())
+	{
+		if (QLineF(poly.front(), poly[newStart]).length() > QLineF(poly.back(), poly[newStart]).length())
 		{
-			bestpath = i;
-			tsppath = temppath;
+			QPolygonF rotated(poly.size());
+			for (int i = 0; i < poly.size(); ++i)
+				rotated[i] = poly[poly.size() - i - 1];
+			return rotated;
 		}
+
+		return poly;
+	}
+	
+	// It's a closed polygon. Wrap the points ignoring the last repeated point.
+	QPolygonF rotated(poly.size());
+	
+	for (std::size_t i = 0; i < poly.size()-1; ++i)
+		rotated[i] = poly[(i + newStart) % (poly.size() - 1)];
+	
+	// And then set the repeated point.
+	rotated[poly.size() - 1] = rotated[0];
+	
+	return rotated;
+}
+
+// Return the index of the point in the polygon with the smallest Y coordinate.
+int lowestIndex(const QPolygonF& poly)
+{
+	int minIdx = 0;
+	qreal minY = std::numeric_limits<qreal>::max();
+	for (std::size_t i = 0; i < poly.size(); ++i)
+	{
+		if (poly[i].y() < minY)
+		{
+			minIdx = i;
+			minY = poly[i].y();
+		}
+	}
+	return minIdx;
+}
+
+// Return the index of the point in the polygon closest to p.
+int closestIndex(const QPolygonF& poly, QPointF p)
+{
+	int minIdx = 0;
+	qreal minDist = std::numeric_limits<qreal>::max();
+	for (std::size_t i = 0; i < poly.size(); ++i)
+	{
+		auto dist = QLineF(poly[i], p).length();
+		if (dist < minDist)
+		{
+			minIdx = i;
+			minDist = dist;
+		}
+	}
+	return minIdx;
+}
+
+
+QList<QPolygonF> sortPathsIncreasingY(const QList<QPolygonF>& paths,
+		                              QPointF startingPoint)
+{
+	(void)startingPoint;
+	
+	// Basically this tries to avoid going backwards as much as possible.
+	
+	struct IndexAndBottom
+	{
+		// Index of the path in `paths`
+		int pathIndex;
+		// Index of the point in the path with the lowest Y coordinate.
+		int bottomIndex;
+	};
+	
+	// Get the indices of the lowest points.
+	QList<IndexAndBottom> indices;
+	indices.reserve(paths.size());
+	
+	for (int i = 0; i < paths.size(); ++i)
+		indices.append({i, lowestIndex(paths[i])});
+	
+	qSort(indices.begin(), indices.end(),
+	      [&](const IndexAndBottom& a, const IndexAndBottom& b) {
+		return paths[a.pathIndex][a.bottomIndex].y() < paths[b.pathIndex][b.bottomIndex].y();
+	});
+	
+	QList<QPolygonF> sorted;
+	sorted.reserve(paths.size());
+	
+	// And rotate the polygons so that the lowest point is at the start.
+	for (auto& idx : indices)
+		sorted.append(rotatePolygonStart(paths[idx.pathIndex], idx.bottomIndex));
+	
+	return sorted;
+}
+
+QList<QPolygonF> sortPathsInsideFirst(const QList<QPolygonF>& paths,
+                                      QPointF startingPoint)
+{
+	// Sort based on bounding boxes - one path is cut before the other if their bounding boxes intersect
+	// and its width or height is smaller. The idea being inside contours, like the two holes in an 8
+	// are cut before the outside.
+	
+	struct IndexAndBB
+	{
+		// Index of the path in `paths`
+		int pathIndex;
+		// The bounding box of the path.
+		QRectF boundingBox;
+	};
+	
+	// Get the indices of the lowest points.
+	QList<IndexAndBB> indices;
+	indices.reserve(paths.size());
+	
+	for (int i = 0; i < paths.size(); ++i)
+		indices.append({i, paths[i].boundingRect()});
+	
+	qSort(indices.begin(), indices.end(),
+	      [&](const IndexAndBB& a, const IndexAndBB& b) {
+		if (a.boundingBox.intersects(b.boundingBox))
+			return a.boundingBox.width() + a.boundingBox.height() < b.boundingBox.width() + b.boundingBox.height();
 		
-	}
-	QList<QPolygonF> outpathTSP = GroupTSP(QList<QPolygonF>(inpaths),bestpath);
-	tsppath = getTotalDistance(outpathTSP);
-	cout<<"TSPSort outpaths: "<< tsppath << " Groups " << bestpath <<endl;
+		return a.boundingBox.bottom() < b.boundingBox.bottom();
+	});
 	
+	QList<QPolygonF> sorted;
+	sorted.reserve(paths.size());
 	
-	int bestpath2=1;
-	for (int i = 1; i < outpathSort.size()/2; i++)
+	for (auto& idx : indices)
 	{
-		QList<QPolygonF> outpathTSP2 = GroupTSP(QList<QPolygonF>(outpathSort),i);
-		temppath = getTotalDistance(outpathTSP2);
-		//cout<<"xxTSPSort outpaths: "<< temppath << " Groups " << i <<endl;
-		if (temppath < tsppath2)
-		{
-			bestpath2 = i;
-			tsppath2 = temppath;
-		}
+		auto closestPointIndex = closestIndex(paths[idx.pathIndex], startingPoint);
+		auto poly = rotatePolygonStart(paths[idx.pathIndex], closestPointIndex);
+		sorted.append(poly);
+		startingPoint = poly.back();
+	}
+	
+	return sorted;
+}
+
+// A data structure that stores a set of points, and the index
+// of the polygon they are from and the index of the point within that polygon.
+class VertexCloud
+{
+public:
+	struct Point
+	{
+		Point(qreal x, qreal y, int polygon, int vertex)
+		    : x(x), y(y), polygon(polygon), vertex(vertex) {}
 		
-	}
-	QList<QPolygonF> outpathTSP2 = GroupTSP(QList<QPolygonF>(outpathSort),bestpath2);
-	tsppath2 = getTotalDistance(outpathTSP2);
-	cout<<"TSPSort outpath sort: "<< tsppath2 << " Groups " << bestpath2 <<endl;
-	
-	if(tsppath < tsppath2 && tsppath < tsppath2) return outpathTSP;
-	if(tsppath2 < tsppath && tsppath2 < tsppath) return outpathTSP2;
-	if(tsppath2 < sortpath && tsppath2 < inpath) return outpathTSP2;
-	if(sortpath < inpath && sortpath < tsppath2) return outpathSort;
-	if(inpath < sortpath && inpath < tsppath2 ) return inpaths;
-	if(tsppath < sortpath && tsppath < inpath) return outpathTSP;
-	if(sortpath < inpath && sortpath < tsppath) return outpathSort;
-	if(inpath < sortpath && inpath < tsppath ) return inpaths;
-	if(tsppath2 < tsppath) return outpathTSP2;
-	if(tsppath < sortpath) return outpathTSP;
-	if(sortpath < tsppath) return outpathSort;
-	return inpaths;
-}
+		qreal x;
+		qreal y;
+		
+		int polygon;
+		int vertex;
+	};
 
-QList<QPolygonF> PathSorter::BbSort (const QList<QPolygonF> inpaths)
-{
-	QList<QPolygonF> outpaths = QList<QPolygonF>(inpaths);
-	for (int i = 0; i < (outpaths.size()-1); i++)
-	{
-		for (int j = (i+1); j < outpaths.size(); j++)
-		{
-		if (outpaths[i].boundingRect().intersects(outpaths[j].boundingRect()))
-			{
-				if (outpaths[i].boundingRect().width() > outpaths[j].boundingRect().width() || outpaths[i].boundingRect().height() > outpaths[j].boundingRect().height()) 
-				{
-					outpaths.swap(i,j);
-					break;
-				}
-			}
-		}
-	}
-	cout<<"BbSort outpaths: "<< getTotalDistance(outpaths) << endl;
-	return outpaths;
-}
+	std::vector<Point> points;
 
-QList<QPolygonF> PathSorter::GroupTSP(const QList<QPolygonF> inpaths, int groups)
-{
-	if (groups > inpaths.size()) groups = (int)((double) inpaths.size()-((double)inpaths.size()*0.2));
-	if (groups < 1) groups = 1;
-	QList<QList< QPolygonF> > listlistpath;
-	QList<QPolygonF> temppaths;
-	int inps = inpaths.size();
-	int inpsparts = inps / groups;
-	
-	for (int i = 0; i < inps; i++)
+	inline size_t kdtree_get_point_count() const
 	{
-		if(i>=inpsparts)
-		{
-			listlistpath.append(temppaths);
-			inpsparts += inps / groups;
-			temppaths = QList<QPolygonF>() ;
-		}
-		temppaths.append(inpaths[i]);
-	}
-	listlistpath.append(temppaths);
-
-	for (int i = 0; i < listlistpath.size(); i++)
-	{
-		listlistpath[i] = MyFakeTSP(listlistpath[i]);
+		return points.size();
 	}
 	
-	QList<QPolygonF> outpaths;
-	for (int i = 0; i < listlistpath.size(); i++)
+	inline qreal kdtree_get_pt(const size_t idx, int dim) const
 	{
-		for (int j = 0; j < listlistpath[i].size(); j++)
-		{
-			outpaths.append(listlistpath[i][j]);
-		}
+		if (dim == 0)
+			return points[idx].x;
+		if (dim == 1)
+			return points[idx].y;
+		return 0;
 	}
-	//cout<<"xTSPSort outpaths: "<< getTotalDistance(outpaths) << " Groups " << groups <<endl;
-	return outpaths;
-}
 
-qreal PathSorter::getDistance(const QPolygonF &p1, const QPolygonF &p2)
+	// Unused bounding box calculation.
+	template <class BBOX>
+	bool kdtree_get_bbox(BBOX&) const { return false; }
+};
+
+
+QList<QPolygonF> sortPathsGreedy(const QList<QPolygonF>& paths,
+                                 QPointF startingPoint)
 {
-	qreal testx1 = p1.last().x();
-	qreal testy1 = p1.last().y();
-	qreal testx2 = p2.first().x();
-	qreal testy2 = p2.first().y();
-	qreal a = 0.0;
-	qreal b = 0.0;
-	double c = 0.0;
+	// Always cut the next nearest shape next.
 	
-	if(testx1 >= testx2) a = testx1 - testx2;
-	else a = testx2 - testx1;
-	if(testy1 >= testy2) b = testy1 - testy2;
-	else b = testy2 - testy1;
-	c = sqrt((double)(a*a+b*b));
-	return (qreal) c;
+	// To do this vaguely efficiently we create a spatial index of points
+	// where each point records the polygon that it is a part of. We also store
+	// a map from polygin number to the list of points in the spatial index.
+	//
+	// We search for the nearest point, then add that polygon and remove all of
+	// its points from the spatial index.
+	
+	using namespace nanoflann;
+	
+	QList<QPolygonF> sorted;
+	sorted.reserve(paths.size());
+	
+	VertexCloud vertices;
+	
+	typedef KDTreeSingleIndexDynamicAdaptor<
+		L2_Simple_Adaptor<qreal, VertexCloud>,
+		VertexCloud,
+		2> kd_tree_adapter;
+	
+	kd_tree_adapter index(2, vertices);
+	
+	QVector<int> pathOffset(paths.size());
+	int offs = 0;
+	
+	// Add the points to the dataset.
+	for (int p = 0; p < paths.size(); ++p)
+	{
+		pathOffset[p] = offs;
+		offs += paths[p].size();
+		
+		for (int v = 0; v < paths[p].size(); ++v)
+		{
+			auto pt = paths[p][v];
+			vertices.points.emplace_back(pt.x(), pt.y(), p, v);
+		}
+	}
+	
+	// Add all the points from the dataset to the index.
+	// Note! This is [begin, end] not [begin, end) as you might expect!
+	if (!vertices.points.empty())
+		index.addPoints(0, vertices.points.size() - 1);
+	
+	while (sorted.size() < paths.size())
+	{
+		// Find the nearest point 
+		const size_t num_results = 1;
+		size_t ret_index = 0;
+		qreal out_dist_sqr = 0;
+		KNNResultSet<qreal> resultSet(num_results);
+		resultSet.init(&ret_index, &out_dist_sqr);
+		std::vector<qreal> queryPoint{startingPoint.x(), startingPoint.y()};
+		index.findNeighbors(resultSet,
+		                    queryPoint.data(),
+		                    SearchParams());
+
+		const auto& closest = vertices.points[ret_index];
+		
+		// Add the polygon and rotate it appropriately.
+		sorted.append(rotatePolygonStart(paths[closest.polygon], closest.vertex));
+		
+		// Remove those points from the index.
+		for (int i = pathOffset[closest.polygon];
+		     i < pathOffset[closest.polygon] + paths[closest.polygon].size();
+		     ++i)
+			index.removePoint(i);
+		
+		startingPoint = sorted.back().back();
+	}
+	
+	return sorted;
 }
 
-qreal PathSorter::getTotalDistance(const QList<QPolygonF> inpaths, int maxdepth)
+QList<QPolygonF> sortPaths(const QList<QPolygonF>& paths,
+                           PathSortMethod method,
+                           QPointF startingPoint)
 {
-	if (maxdepth >= inpaths.size()-1) maxdepth = inpaths.size()-1;
-	if (maxdepth <= 0) maxdepth = inpaths.size()-1;
-	QPolygonF zero = QPolygonF(QRectF(0.0,mediaHeight,0.0,0.0)); // able to change the start point
-	qreal dist = getDistance(zero,inpaths[0]);
-	for (int i = 0; i < maxdepth; ++i)
+	switch (method)
 	{
-		dist = dist + getDistance(inpaths[i],inpaths[(i+1)]);
-	}
-	return dist;
-}
-
-QList<QPolygonF> PathSorter::MyFakeTSP(const QList<QPolygonF> inpaths)
-{
-	QPolygonF zero = QPolygonF(QRectF(0.0,mediaHeight,0.0,0.0)); // able to change the start point
-
-	QList<QPolygonF> outpaths = QList<QPolygonF>(inpaths);
-
-	// find the shortest path
-	for (int i = 0; i < (outpaths.size()-1); ++i)
+	case PathSortMethod::Best:
 	{
-		if(i == 0) // find good start
-		{
-			qreal dist=10000.0;
-			int bestindex=i;
-			for (int j = (i+1); j < outpaths.size(); ++j)
-			{
-				if (getDistance(zero,outpaths[j]) < dist) 
-				{
-				dist = getDistance(zero,outpaths[j]);
-				bestindex = j;
-				}
-				
-			}
-			if (dist != 0) outpaths.swap(0,bestindex);
-		}
-		qreal dist=10000.0;
-		int bestindex=i;
-		for (int j = (i+1); j < outpaths.size(); ++j)
-		{
-			if (getDistance(outpaths[i],outpaths[j]) < dist) 
-			{
-				dist = getDistance(outpaths[i],outpaths[j]);
-				bestindex = j;
-			}
-		}
-		if (dist != 0) outpaths.swap((i+1),bestindex);
+		QList<QList<QPolygonF>> pathsSorted{
+		    sortPathsIncreasingY(paths, startingPoint),
+		    sortPathsInsideFirst(paths, startingPoint),
+		    sortPathsGreedy(paths, startingPoint),
+		    paths,
+		};
+		
+		// Determine path quality by the distance travelled by the cutter
+		// while it isn't cutting (shorter distance is higher quality).
+		QList<double> qualities;
+		for (const auto& p : pathsSorted)
+			qualities.append(-pathSortDistance(p, startingPoint));
+		
+		auto bestIdx = std::distance(qualities.begin(),
+		                             std::max_element(qualities.begin(), qualities.end()));
+		
+		return pathsSorted[bestIdx];
 	}
-	return outpaths;
+	
+	case PathSortMethod::IncreasingY:
+		return sortPathsIncreasingY(paths, startingPoint);
+	
+	case PathSortMethod::InsideFirst:
+		return sortPathsInsideFirst(paths, startingPoint);
+	
+	case PathSortMethod::Greedy:
+		return sortPathsGreedy(paths, startingPoint);
+		
+	default:
+		break;
+	}
+	
+	return paths;
 }

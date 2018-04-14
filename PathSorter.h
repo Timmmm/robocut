@@ -1,36 +1,35 @@
 #pragma once
 
-#include <QGraphicsItem>
+#include <QPolygonF>
+#include <QList>
 
-class PathSorter
+enum class PathSortMethod
 {
-public:
-	PathSorter( );
-	PathSorter(const QList<QPolygonF> inpaths, qreal mediaheight);
-	virtual ~PathSorter( );
-
-	void getQList (const QList<QPolygonF> inpaths);
-	QList<QPolygonF> Sort (const QList<QPolygonF> inpaths);
-	QList<QPolygonF> Sort () {return Sort(pathToSort);}
-	QList<QPolygonF> UnSort (const QList<QPolygonF> inpaths);
-	QList<QPolygonF> UnSort () {return UnSort(pathToSort);}
-	QList<QPolygonF> BestSort (const QList<QPolygonF> inpaths);
-	QList<QPolygonF> BestSort () {return BestSort(pathToSort);}
-	QList<QPolygonF> GroupTSP(const QList<QPolygonF> inpaths1, int groups = 3);
-	QList<QPolygonF> GroupTSP(int groups = 3) {return GroupTSP(pathToSort, groups);}
-	QList<QPolygonF> BbSort (const QList<QPolygonF> inpaths);
-	QList<QPolygonF> BbSort () {return BbSort(pathToSort);}
-	void setMediaHeight(qreal mediaheight);
-private:
-	QList<QPolygonF> pathToSort;
-	qreal mediaHeight;
+	// Don't sort.
+	None,
 	
-protected:
-
-private:
-	QList<QPolygonF> MyFakeTSP(const QList<QPolygonF> inpaths);
-	qreal getDistance(const QPolygonF &p1, const QPolygonF &p2);
-	qreal getTotalDistance(const QList<QPolygonF> inpaths, int maxdepth = 0);
-	static bool MyLessThan(const QPolygonF &p1, const QPolygonF &p2);
+	// Try every method and choose the best one.
+	Best,
+	
+	// Sort based on the first point in each polygon, by increasing y (and then increasing x in the
+	// very unlikely event that y is equal).
+	IncreasingY,
+	
+	// Sort based on bounding boxes - one path is cut before the other if their bounding boxes intersect
+	// and its width or height is smaller. The idea being inside contours, like the two holes in an 8
+	// are cut before the outside.
+	InsideFirst,
+	
+	// Always cut the next nearest shape next.
+	Greedy,
 };
+
+// Sort the paths to be cut using the given method. startingPoint is where the cutter starts, so it
+// will try to cut a shape near there first (depending on the method).
+//
+// Closed polygons may be modified so that the start and end point is different (but they won't be split
+// into multiple paths).
+QList<QPolygonF> sortPaths(const QList<QPolygonF>& paths,
+                           PathSortMethod method,
+                           QPointF startingPoint);
 
