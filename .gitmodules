@@ -3,4 +3,4 @@
 	url = https://github.com/libusb/libusb.git
 [submodule "nanoflann"]
 	path = nanoflann
-	url = git@github.com:jlblancoc/nanoflann.git
+	url = https://github.com/jlblancoc/nanoflann.git
