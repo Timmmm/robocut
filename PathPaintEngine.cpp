@@ -77,8 +77,7 @@ namespace {
 	// of exposing the bezier flattening threshold.
 	QList<QPolygonF> toSubpathPolygons(const QPainterPath &path,
 	                                   const QTransform &matrix,
-	                                   qreal angleThreshold = 0.5,
-	                                   qreal distanceThreshold = 0.5)
+	                                   qreal fineness)
 	{
 		QList<QPolygonF> flatCurves;
 		if (path.isEmpty())
@@ -105,8 +104,7 @@ namespace {
 				                   QPointF(e.x, e.y) * matrix,
 				                   QPointF(path.elementAt(i+1).x, path.elementAt(i+1).y) * matrix,
 				                   QPointF(path.elementAt(i+2).x, path.elementAt(i+2).y) * matrix,
-				                   angleThreshold,
-				                   distanceThreshold);
+				                   fineness);
 				i+=2;
 				break;
 			}
@@ -147,7 +145,8 @@ void PathPaintEngine::drawPath(const QPainterPath& path)
 	if (zeroWidthPen)
 		return;
 
-	QList<QPolygonF> polys = toSubpathPolygons(path, transform, 0.05);
+	// TODO: Make the 30 configurable.
+	QList<QPolygonF> polys = toSubpathPolygons(path, transform, 30.0);
 	
 	for (const auto& poly : polys)
 	{
