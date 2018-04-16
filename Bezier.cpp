@@ -14,7 +14,8 @@ namespace {
 //
 //   curvinessness = sqrt( integral(dot(a, a) dt, from 0 to 1) )
 //
-// Something like that anyway. This seems to work.
+// Something like that anyway. This seems to work ok. It's not perfect though.
+// I need to do more maths.
 //
 qreal curvinessness(const QPointF& p0, const QPointF& p1,
                     const QPointF& p2, const QPointF& p3)
