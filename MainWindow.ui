@@ -313,6 +313,9 @@
    <property name="text">
     <string>Open Recent</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionClose">
    <property name="enabled">
@@ -328,6 +331,9 @@
   <action name="actionRulers">
    <property name="text">
     <string>Rulers</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
    </property>
   </action>
   <action name="actionGrid">
