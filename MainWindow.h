@@ -50,6 +50,14 @@ private slots:
 	
 	void on_sortMethod_triggered(QAction* action);
 	
+	void on_actionRulers_toggled(bool enabled);
+	
+	void on_actionGrid_toggled(bool enabled);
+	
+	void on_actionDimensions_toggled(bool enabled);
+	
+	void on_actionVerify_Adjust_Scale_triggered();
+	
 private:
 	// Attempt to load the given file.
 	void loadFile(QString currentFilename);
@@ -64,11 +72,20 @@ private:
 	// The cutting paths that were loaded from the SVG.
 	QList<QPolygonF> paths;
 
-	// For displaying the cuts.
+	// The graphics scene which holds the cuts, the grid, the dimensions, etc.
 	QGraphicsScene* scene;
 
 	// The dialog that asks what settings to use. We keep this around and reuse it as necessary.
 	CutDialog* cutDialog = nullptr;
+	
+	// The dimensions item, e.g. "210 x 297 mm"
+	QGraphicsTextItem* dimensionsItem = nullptr;
+	
+	// The grid item - the grid squares are children of this.
+	QGraphicsItemGroup* gridItem = nullptr;
+	
+	// The rulers...
+//	QGraphicsItem* 
 
 	// The directory that the last file was opened from.
 	QString lastOpenDir;
@@ -101,5 +118,9 @@ private:
 	
 	// The current path sort method.
 	PathSortMethod sortMethod = PathSortMethod::Best;
+	
+	bool rulersEnabled = true;
+	bool gridEnabled = true;
+	bool dimensionsEnabled = true;
 
 };

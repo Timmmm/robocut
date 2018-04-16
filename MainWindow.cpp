@@ -31,9 +31,20 @@ MainWindow::MainWindow(QWidget *parent)
 {
 	ui->setupUi(this);
 	
+	// Load settings from disk.
 	QSettings settings;
 	lastOpenDir = settings.value("lastOpenDir").toString();	
 	recentFiles = settings.value("recentFiles").toStringList();	
+	gridEnabled = settings.value("gridEnabled", true).toBool();
+	dimensionsEnabled = settings.value("dimensionsEnabled", true).toBool();
+	rulersEnabled = settings.value("rulersEnabled", true).toBool();
+	
+	ui->actionGrid->setChecked(gridEnabled);
+	ui->actionDimensions->setChecked(dimensionsEnabled);
+	ui->actionRulers->setChecked(rulersEnabled);
+	
+	// TODO: Implement this.
+	ui->menuEdit->hide();
 
 	scene = new QGraphicsScene(this);
 	
@@ -78,6 +89,9 @@ MainWindow::~MainWindow()
 	QSettings settings;
 	settings.setValue("lastOpenDir", lastOpenDir);
 	settings.setValue("recentFiles", recentFiles);
+	settings.setValue("gridEnabled", gridEnabled);
+	settings.setValue("dimensionsEnabled", dimensionsEnabled);
+	settings.setValue("rulersEnabled", rulersEnabled);
 }
 
 void MainWindow::on_actionOpen_triggered()
@@ -155,10 +169,44 @@ void MainWindow::loadFile(QString filename)
 	// Clear the scene.
 	scene->clear();
 	scene->setBackgroundBrush(QBrush(Qt::lightGray));
+	
+	QRectF pageRect(0.0, 0.0, mediaSize.width(), mediaSize.height());
 
-	// Add the page rect.
-	scene->addRect(0.0, 0.0, mediaSize.width(), mediaSize.height(), QPen(), QBrush(Qt::white));
-
+	// Add the page background
+	scene->addRect(pageRect, Qt::NoPen, QBrush(Qt::white));
+	
+	// Add the dimensions test.
+	dimensionsItem = scene->addText(QString::number(mediaSize.width()) + " × " +
+	                                QString::number(mediaSize.height()) + " mm",
+	                                QFont("Helvetica", 8));
+	dimensionsItem->setPos(0.0, mediaSize.height());
+	dimensionsItem->setVisible(dimensionsEnabled);
+	
+	// Add the rulers.
+//	addRulers(scene);
+	
+	QList<QGraphicsItem*> gridSquares;
+	
+	// Add the centimetre grid.
+	for (int x = 0; x < mediaSize.width() / 10; ++x)
+	{
+		for (int y = x % 2; y < mediaSize.height() / 10; y += 2)
+		{
+			int w = std::min(10.0, mediaSize.width() - x * 10.0);
+			int h = std::min(10.0, mediaSize.height() - y * 10.0);
+			gridSquares.append(
+			            scene->addRect(x*10, mediaSize.height() - y*10 - h, w, h,
+						               Qt::NoPen, QBrush(QColor::fromRgb(240, 240, 240)))
+			        );
+		}
+	}
+	
+	gridItem = scene->createItemGroup(gridSquares);
+	gridItem->setVisible(gridEnabled);	
+	
+	// Add the outline of the page.
+	scene->addRect(pageRect, QPen(), Qt::NoBrush);
+	        
 	// Add all the paths.
 	double hue = 0.0;
 	const double golden = 0.5 * (1.0 + sqrt(5.0));
@@ -426,3 +474,31 @@ void MainWindow::on_sortMethod_triggered(QAction* action)
 	on_actionReload_triggered();
 }
 
+
+void MainWindow::on_actionRulers_toggled(bool enabled)
+{
+    rulersEnabled = enabled;
+	ui->centralWidget->update();
+}
+
+void MainWindow::on_actionGrid_toggled(bool enabled)
+{
+    gridEnabled = enabled;
+	if (gridItem != nullptr)
+		gridItem->setVisible(gridEnabled);
+}
+
+void MainWindow::on_actionDimensions_toggled(bool enabled)
+{
+    dimensionsEnabled = enabled;
+	if (dimensionsItem != nullptr)
+		dimensionsItem->setVisible(dimensionsEnabled);
+}
+
+void MainWindow::on_actionVerify_Adjust_Scale_triggered()
+{
+    // TODO: Allow the user to select two vertices (snap-to-vertex) and
+	// then a dialog will open saying the distance between those points and
+	// giving the option to specify what the distance *should* be, thereby
+	// scaling the entire thing.
+}
