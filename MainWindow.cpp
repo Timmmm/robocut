@@ -24,8 +24,6 @@
 
 using namespace std;
 
-const double InitialZoom = 2.0;
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -49,7 +47,7 @@ MainWindow::MainWindow(QWidget *parent)
 	scene = new QGraphicsScene(this);
 	
 	ui->graphicsView->setScene(scene);
-	ui->graphicsView->scale(InitialZoom, InitialZoom);
+	ui->graphicsView->scale(defaultZoom, defaultZoom);
 	ui->graphicsView->viewport()->installEventFilter(this);
 
 	animationTimer = new QTimer(this);
@@ -148,6 +146,13 @@ void MainWindow::loadFile(QString filename)
 	}
 	
 	mediaSize = renderer.viewBoxF().size();
+	
+	QRectF pageRect(0.0, 0.0, mediaSize.width(), mediaSize.height());
+		
+	auto viewSize = ui->centralWidget->size();
+	
+	defaultZoom = 0.8 * std::min(viewSize.width() / mediaSize.width(),
+	                             viewSize.height() / mediaSize.height());
 
 	qDebug() << "SVG default size: " << renderer.defaultSize() << endl;
 	qDebug() << "SVG view box: " << mediaSize << endl;
@@ -172,9 +177,11 @@ void MainWindow::loadFile(QString filename)
 	
 	// Clear the scene.
 	scene->clear();
+	// And reset the sceneRect, which it doesn't do by default.
+	scene->setSceneRect(pageRect.adjusted(-20, -20, 20, 20));
+	
 	scene->setBackgroundBrush(QBrush(Qt::lightGray));
 	
-	QRectF pageRect(0.0, 0.0, mediaSize.width(), mediaSize.height());
 
 	// Add the page background
 	scene->addRect(pageRect, Qt::NoPen, QBrush(Qt::white));
@@ -182,7 +189,7 @@ void MainWindow::loadFile(QString filename)
 	// Add the dimensions test.
 	dimensionsItem = scene->addText(QString::number(mediaSize.width()) + " × " +
 	                                QString::number(mediaSize.height()) + " mm",
-	                                QFont("Helvetica", 8));
+	                                QFont("Helvetica", 10));
 	dimensionsItem->setPos(0.0, mediaSize.height());
 	dimensionsItem->setVisible(dimensionsEnabled);
 	
@@ -335,7 +342,7 @@ void MainWindow::on_actionAnimate_toggled(bool animate)
 void MainWindow::on_actionReset_triggered()
 {
 	ui->graphicsView->resetTransform();
-	ui->graphicsView->scale(InitialZoom, InitialZoom);
+	ui->graphicsView->scale(defaultZoom, defaultZoom);
 }
 
 void MainWindow::on_actionZoom_In_triggered()
@@ -383,6 +390,9 @@ void MainWindow::animate()
 	double h = hypot(r.x(), r.y());
 	if (h > 0.0)
 		r /= h;
+	
+	// TODO: The speed isn't correct if there are a lot of small lines,
+	// e.g. from a Bezier.
 
 	// The current position of the marker.
 	QPointF p = a + r * cutMarkerDistance;

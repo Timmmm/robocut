@@ -122,5 +122,8 @@ private:
 	bool rulersEnabled = true;
 	bool gridEnabled = true;
 	bool dimensionsEnabled = true;
+	
+	// The default zoom for the current document, which is based on its size.
+	double defaultZoom = 1.0;
 
 };
