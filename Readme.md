@@ -183,11 +183,13 @@ This project is licensed under the terms of the [GPL v3](https://www.gnu.org/lic
 
 ## General
 
-* Control path polygonisation - currently toPolygonSubpaths() gives a rather coarse result
+* Improve Bezier-to-polyline conversion and make the coarseness user-configurable
 * Use a fancy TSPN algorithm for sorting paths
-* Render previews etc. in another thread. Though it does seem pretty fast so maybe I won't bother
-* Add rulers and dimension printing
-* Fix zooming and scrolling, especially with a trackpad on mac.
+* Render previews etc. in another thread. Though it does seem pretty fast so maybe I won't bother.
+* Add rulers.
+* Read SVG size from XML
+* Detect multi-line text in SVG and warn about it (this an unofficial Inkscape extension)
+* Implement a tool to measure sizes, and adjust the scale to correct them
 * Support multiple devices properly. Ideally with hotplug
 * Re-enable command line options
 
