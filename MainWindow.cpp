@@ -79,8 +79,8 @@ MainWindow::MainWindow(QWidget *parent)
 	sortMethodGroup->addAction(ui->actionSortInsideFirst);
 	sortMethodGroup->addAction(ui->actionSortNone);
 	
-	connect(sortMethodGroup, &QActionGroup::triggered, this, &MainWindow::on_sortMethod_triggered);
-	
+	connect(sortMethodGroup, &QActionGroup::triggered, this, &MainWindow::onSortMethodTriggered);
+
 	show();	
 }
 
@@ -154,8 +154,9 @@ void MainWindow::loadFile(QString filename)
 	defaultZoom = 0.8 * std::min(viewSize.width() / mediaSize.width(),
 	                             viewSize.height() / mediaSize.height());
 
-	qDebug() << "SVG default size: " << renderer.defaultSize() << endl;
-	qDebug() << "SVG view box: " << mediaSize << endl;
+	// TODO: It isn't really the view box that we want. We'll probably have to parse the XML
+	// ourselves. (This will allow searching for multi-line text that Inkscape creates too though.)
+	qDebug() << "SVG view box:" << renderer.viewBoxF() << endl;
 	
 	bool clipped = false;
 	
@@ -216,7 +217,9 @@ void MainWindow::loadFile(QString filename)
 	gridItem->setVisible(gridEnabled);	
 	
 	// Add the outline of the page.
-	scene->addRect(pageRect, QPen(), Qt::NoBrush);
+	QPen pageOutlinePen;
+	pageOutlinePen.setCosmetic(true);
+	scene->addRect(pageRect, pageOutlinePen, Qt::NoBrush);
 	        
 	// Add all the paths.
 	double hue = 0.0;
@@ -256,7 +259,7 @@ void MainWindow::loadFile(QString filename)
 	update();
 	
 	if (clipped)
-		QMessageBox::warning(this, "Paths clipped", "<b>BIG FAT WARNING!</b><br><br>Some paths lay outside the 210&times;297&thinsp;mm A4 area. These have been squeezed back onto the page in a most ugly fashion, so cutting will almost certainly not do what you want.");
+		QMessageBox::warning(this, "Paths clipped", "<b>WARNING!</b><br><br>Some paths lay outside the 210&times;297&thinsp;mm A4 area. These have been squeezed back onto the page in a most ugly fashion, so cutting will almost certainly not do what you want.");
 
 	// Change window title and enable menu items.
 	setFileLoaded(filename);
@@ -438,6 +441,7 @@ void MainWindow::setFileLoaded(QString filename)
 	// with a colon - those are examples.
 	if (!filename.isEmpty() && !filename.startsWith(":"))
 	{
+		qDebug() << "Adding" << filename << "to recents";
 		recentFiles.removeAll(filename);
 		recentFiles.prepend(filename);
 	}
@@ -455,6 +459,10 @@ void MainWindow::on_actionClose_triggered()
 	setFileLoaded("");
 	scene->clear();
 	ui->stackedWidget->setCurrentIndex(0);
+	// Update the recent files - a new one may have been loaded. Unfortunately
+	// this re-renders them all, but eh.
+	// TODO: Don't re-render them all.
+	recentFilesModel->setFiles(recentFiles);
 }
 
 void MainWindow::on_recentFilesList_activated(const QModelIndex &index)
@@ -472,7 +480,7 @@ void MainWindow::on_examplesList_activated(const QModelIndex &index)
 	loadFile(filename);
 }
 
-void MainWindow::on_sortMethod_triggered(QAction* action)
+void MainWindow::onSortMethodTriggered(QAction* action)
 {
 	if (action == ui->actionSortGreedy)
 		sortMethod = PathSortMethod::Greedy;

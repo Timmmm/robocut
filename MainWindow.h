@@ -25,38 +25,31 @@ public:
 	
 	
 private slots:
-	void on_actionZoom_Out_triggered();
-	void on_actionZoom_In_triggered();
-	void on_actionReset_triggered();
-	void on_actionAnimate_toggled(bool animate);
-	void on_actionManual_triggered();
-	void on_actionCut_triggered();
-	void on_actionExit_triggered();
 	void on_actionAbout_triggered();
+	void on_actionAnimate_toggled(bool animate);
+	void on_actionClose_triggered();
+	void on_actionCut_triggered();
+	void on_actionDimensions_toggled(bool enabled);
+	void on_actionExit_triggered();
+	void on_actionGrid_toggled(bool enabled);
+	void on_actionIdentify_triggered();
+	void on_actionManual_triggered();
 	void on_actionOpen_triggered();
 	void on_actionReload_triggered();
-	void on_actionIdentify_triggered();
-
-	// Advance the cutting animation frame.
-	void animate();
-
-	void on_openSvgButton_clicked();
-	
-	void on_actionClose_triggered();
-	
+	void on_actionReset_triggered();
+	void on_actionRulers_toggled(bool enabled);
+	void on_actionVerify_Adjust_Scale_triggered();
+	void on_actionZoom_In_triggered();
+	void on_actionZoom_Out_triggered();
+	void on_examplesList_activated(const QModelIndex &index);
+	void on_openSvgButton_clicked();	
 	void on_recentFilesList_activated(const QModelIndex &index);
 	
-	void on_examplesList_activated(const QModelIndex &index);
+	// Advance the cutting animation frame.
+	void animate();
 	
-	void on_sortMethod_triggered(QAction* action);
+	void onSortMethodTriggered(QAction* action);
 	
-	void on_actionRulers_toggled(bool enabled);
-	
-	void on_actionGrid_toggled(bool enabled);
-	
-	void on_actionDimensions_toggled(bool enabled);
-	
-	void on_actionVerify_Adjust_Scale_triggered();
 	
 private:
 	// Attempt to load the given file.
@@ -102,8 +95,6 @@ private:
 	// The page size in mm.
 	QSizeF mediaSize;
 	
-	// TODO: In several places I just set the filename and then try to open an image - instead
-	// there should be a proper open() method.
 	// The currently loaded file. Empty if there isn't one.
 	QString currentFilename;
 	
