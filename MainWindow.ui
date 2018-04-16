@@ -305,6 +305,9 @@
    <property name="text">
     <string>Verify / Adjust Scale...</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionOpen_Recent">
    <property name="enabled">
