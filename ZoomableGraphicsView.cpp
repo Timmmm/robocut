@@ -2,19 +2,18 @@
 
 #include <QEvent>
 #include <QGesture>
-#include <QScroller>
 #include <QDebug>
 
 ZoomableGraphicsView::ZoomableGraphicsView(QWidget* parent)
   : QGraphicsView(parent)
 {
-	QScroller::grabGesture(this, QScroller::TouchGesture);
+	grabGesture(Qt::PinchGesture);
 }
 
 ZoomableGraphicsView::ZoomableGraphicsView(QGraphicsScene* scene, QWidget* parent)
   : QGraphicsView(scene, parent)
 {
-	QScroller::grabGesture(this, QScroller::TouchGesture);  
+	grabGesture(Qt::PinchGesture);
 }
 
 ZoomableGraphicsView::~ZoomableGraphicsView()
@@ -26,76 +25,56 @@ bool ZoomableGraphicsView::event(QEvent* event)
 {
 	switch (event->type())
 	{
-	case QEvent::ScrollPrepare:
-	{
-		qDebug() << "Scroll prepare";
-		QScrollPrepareEvent *se = static_cast<QScrollPrepareEvent*>(event);
-		se->setViewportSize(size());
-		QRectF br = sceneRect();
-		se->setContentPosRange(QRectF(0, 0,
-		                              qMax(qreal(0), br.width() - width()),
-		                              qMax(qreal(0), br.height() - height())));
-//		se->setContentPos(/* the current position */);
-		se->accept();
-		return true;
-	}
-	case QEvent::Scroll:
-	{
-		qDebug() << "Scroll";
-		QScrollEvent *se = static_cast<QScrollEvent*>(event);
-		centerOn(-se->contentPos() - se->overshootDistance());
-		return true;
-	}
-//	case QEvent::Wheel:
-//	{
-//		// Anchor under the mouse pointer when using the mouse wheel.
-//		// This doesn't quite work as nicely as I'd like because it clamps the scrolling
-//		// precisely to the scene boundary. It's a bit hard to zoom to corners. Oh well.
-//		setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-//		QWheelEvent *we = static_cast<QWheelEvent*>(event);
-//		if (we->delta() <= 0)
-//			scale(1.0/1.2, 1.0/1.2);
-//		else
-//			scale(1.2, 1.2);
-
-//		// Anchor in view centre for keyboard shortcuts.
-//		setTransformationAnchor(QGraphicsView::AnchorViewCenter);
-//		return true;
-//	}
+	case QEvent::Gesture:
+		return gestureEvent(static_cast<QGestureEvent*>(event));
 	default:
 		break;
 	}
 	return QGraphicsView::event(event);
 }
-/*
+
 bool ZoomableGraphicsView::gestureEvent(QGestureEvent* event)
 {
-	if (QGesture *pan = event->gesture(Qt::PanGesture))
+	if (QGesture* pan = event->gesture(Qt::PanGesture))
 		panTriggered(static_cast<QPanGesture*>(pan));
-	else if (QGesture *pinch = event->gesture(Qt::PinchGesture))
+	else if (QGesture* pinch = event->gesture(Qt::PinchGesture))
 		pinchTriggered(static_cast<QPinchGesture*>(pinch));
+	
+	event->accept();
 	
 	return true;
 }
 
 void ZoomableGraphicsView::panTriggered(QPanGesture* gesture)
 {
-	gesture->
-	if (gesture->state() == Qt::GestureFinished) {
-		if (gesture->horizontalDirection() == QSwipeGesture::Left
-		        || gesture->verticalDirection() == QSwipeGesture::Up) {
-			qCDebug(lcExample) << "swipeTriggered(): swipe to previous";
-			goPrevImage();
-		} else {
-			qCDebug(lcExample) << "swipeTriggered(): swipe to next";
-			goNextImage();
-		}
-		update();
-	}
 }
 
 void ZoomableGraphicsView::pinchTriggered(QPinchGesture* gesture)
 {
-	
+	// Anchor under mouse for pinch events.
+	setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+	scale(gesture->scaleFactor(), gesture->scaleFactor());
+	// Anchor in view centre for keyboard shortcuts.
+	setTransformationAnchor(QGraphicsView::AnchorViewCenter);
 }
-*/
+
+void ZoomableGraphicsView::wheelEvent(QWheelEvent* event)
+{
+	// For synthesized mouse events, i.e. ones not from a real mouse wheel
+	// use the default implementation, which does nothing (we use pinch to zoom instead).
+	if (event->source() != Qt::MouseEventNotSynthesized)
+		return QGraphicsView::wheelEvent(event);
+	
+	// Anchor under mouse for mouse events.
+	setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+	if (event->delta() <= 0)
+		scale(1.0/1.2, 1.0/1.2);
+	else
+		scale(1.2, 1.2);
+	
+	// Anchor in view centre for keyboard shortcuts.
+	setTransformationAnchor(QGraphicsView::AnchorViewCenter);
+	
+	event->accept();
+}
+

@@ -14,13 +14,13 @@ public:
 	
 protected:
 	bool event(QEvent* event) override;
-	/*
+	
 	bool gestureEvent(QGestureEvent* event);
 	void panTriggered(QPanGesture* gesture);
 	void pinchTriggered(QPinchGesture* gesture);
 	
-	void mouseMoveEvent(QMouseEvent* event) override;
-	void mousePressEvent(QMouseEvent* event) override;
-	void wheelEvent(QWheelEvent* event) override;*/
+//	void mouseMoveEvent(QMouseEvent* event) override;
+//	void mousePressEvent(QMouseEvent* event) override;
+	void wheelEvent(QWheelEvent* event) override;
 	
 };
