@@ -324,7 +324,7 @@ Error Cut(CutParams p)
 //		p.cuts = Transform_Silhouette_Cameo(p.cuts, &p.mediawidth, &p.mediaheight);
 //	}
 
-	// TODO: Use exceptions.
+	// TODO: Use Rust-style error handling?
 
 	Error e = Success;
 	string resp;
@@ -415,7 +415,6 @@ Error Cut(CutParams p)
 
 	// Block for all the "jump to error crosses initialization" errors. Really need to use exceptions!
 	{
-
 		// Page size: height,width in 20ths of a mm minus a margin. This is for A4. TODO: Find maximum and use that.
 		stringstream page;
 
@@ -511,7 +510,6 @@ Error Cut(CutParams p)
 				y = y + (yorigin*20.0);
 			}
 
-			// TODO: Also do this in the UI and warn the user about it.
 			if (x < 0.0) x = 0.0;
 			if (x > width) x = width;
 
