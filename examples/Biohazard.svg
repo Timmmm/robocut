@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   width="210mm"
+   height="297mm"
+   id="svg5974"
+   sodipodi:docname="Biohazard.svg"
+   inkscape:version="0.92.2 5c3e80d, 2017-08-06"
+   viewBox="0 0 210 297">
+  <metadata
+     id="metadata5978">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1242"
+     inkscape:window-height="774"
+     id="namedview5976"
+     showgrid="false"
+     units="mm"
+     inkscape:zoom="0.32091769"
+     inkscape:cx="1099.4915"
+     inkscape:cy="-92.542376"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg5974" />
+  <defs
+     id="defs5966">
+    <path
+       d="M 2.8117,-1.046 A 3,3 0 0 1 0.5,2.958 V 4.5119 A 10.5,10.5 0 0 1 2,25.3078 v 0.5583 A 15,15 0 0 0 14.7975,8.5433 15,15 0 0 0 23.4007,-11.201 l -0.4835,0.2792 A 10.5,10.5 0 0 1 4.1574,-1.8229 Z m 3.4148,8.871 a 10,10 0 0 1 -12.453,0 9.5,9.5 0 0 0 -2.1756,2.7417 13.5,13.5 0 0 0 16.8042,0 A 10,10 0 0 0 6.2265,7.825 Z"
+       id="p"
+       transform="matrix(10,0,0,-10,260,260)"
+       inkscape:connector-curvature="0" />
+  </defs>
+  <use
+     xlink:href="#p"
+     id="use5968"
+     x="0"
+     y="0"
+     width="100%"
+     height="100%"
+     transform="matrix(0.359867,0,0,0.359867,11.102434,113.39294)" />
+  <use
+     xlink:href="#p"
+     transform="matrix(-0.1799335,0.31165396,-0.31165396,-0.1799335,232.4806,172.71104)"
+     id="use5970"
+     x="0"
+     y="0"
+     width="100%"
+     height="100%" />
+  <use
+     xlink:href="#p"
+     transform="matrix(-0.1799335,-0.31165396,0.31165396,-0.1799335,70.420544,334.7711)"
+     id="use5972"
+     x="0"
+     y="0"
+     width="100%"
+     height="100%" />
+</svg>
