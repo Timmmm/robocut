@@ -329,6 +329,12 @@
    </property>
   </action>
   <action name="actionRulers">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Rulers</string>
    </property>
@@ -337,11 +343,23 @@
    </property>
   </action>
   <action name="actionGrid">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Grid</string>
    </property>
   </action>
   <action name="actionDimensions">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Dimensions</string>
    </property>
