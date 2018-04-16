@@ -60,8 +60,12 @@ MainWindow::MainWindow(QWidget *parent)
 	ui->recentFilesList->setModel(recentFilesModel);
 	
 	exampleFilesModel = new SvgPreviewModel(64, this);
-	exampleFilesModel->setFiles({":/examples/shot message.svg",
-	                             ":/examples/stars.svg"});
+	
+	auto exampleFiles = QDir(":/examples").entryList(QDir::Files, QDir::Name);
+	for (auto& f : exampleFiles)
+		f.prepend(":/examples/");
+	exampleFilesModel->setFiles(exampleFiles);
+	
 	ui->examplesList->setModel(exampleFilesModel);
 
 	// Alternative zoom shortcuts
