@@ -23,7 +23,6 @@ PathPaintDevice::PathPaintDevice(double widthInMm, double heightInMm, double pix
 	engine = nullptr;
 	width = widthInMm;
 	height = heightInMm;
-	pathsClipped = false;
 	ppm = pixelsPerMm;
 	if (ppm == 0.0)
 		ppm = 1.0;
@@ -41,32 +40,6 @@ void PathPaintDevice::addPath(const QPolygonF& path)
 		return;
 	pagePathSet.insert(path);
 	pagePaths.append(path);
-
-	// Clip the path.
-	for (int j = 0; j < pagePaths.back().size(); ++j)
-	{
-		if (pagePaths.back()[j].x() < 0.0)
-		{
-			pathsClipped = true;
-			pagePaths.back()[j].setX(0.0);
-		}
-		if (pagePaths.back()[j].y() < 0.0)
-		{
-			pathsClipped = true;
-			pagePaths.back()[j].setY(0.0);
-		}
-		if (pagePaths.back()[j].x() > width)
-		{
-			pathsClipped = true;
-			pagePaths.back()[j].setX(width);
-		}
-		if (pagePaths.back()[j].y() > height)
-		{
-			pathsClipped = true;
-			pagePaths.back()[j].setY(height);
-		}
-	}
-
 }
 
 QPaintEngine* PathPaintDevice::paintEngine() const
@@ -116,7 +89,3 @@ int PathPaintDevice::metric(PaintDeviceMetric metric) const
 	return 0;
 }
 
-bool PathPaintDevice::clipped() const
-{
-	return pathsClipped;
-}

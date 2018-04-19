@@ -14,7 +14,7 @@ uint qHash(const QPolygonF& key);
 class PathPaintDevice : public QPaintDevice
 {
 public:
-	PathPaintDevice(double widthInMm, double heightInMm, double pixelsPerMm = 96.0/25.4);
+	PathPaintDevice(double widthInMm, double heightInMm, double pixelsPerMm = 90.0/25.4);
 	~PathPaintDevice() override;
 
 	// Adds a path to the device.
@@ -25,11 +25,7 @@ public:
 	// Get a list of paths.
 	QList<QPolygonF> paths();
 
-	// Returns true if any paths had to be clipped.
-	bool clipped() const;
-
 	QPaintEngine* paintEngine() const override;
-
 
 protected:
 	int metric(PaintDeviceMetric metric) const override;
@@ -40,8 +36,6 @@ private:
 	QList<QPolygonF> pagePaths;
 	// Set of paths, so we can detect duplicates.
 	QSet<QPolygonF> pagePathSet;
-
-	bool pathsClipped;
 
 	double width;
 	double height;

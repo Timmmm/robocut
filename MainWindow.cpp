@@ -22,8 +22,26 @@
 #include <QSvgRenderer>
 #include <QWheelEvent>
 
+#include <algorithm>
+
 using namespace std;
 
+namespace
+{
+	bool fileDoesntExist(const QString& filename)
+	{
+		return !QFile::exists(filename);
+	}
+
+	void removeNonexistentFiles(QStringList& filenames)
+	{
+		filenames.erase(
+			std::remove_if(filenames.begin(), filenames.end(), fileDoesntExist),
+			filenames.end()
+		);
+	}
+
+}
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -53,6 +71,7 @@ MainWindow::MainWindow(QWidget *parent)
 	animationTimer = new QTimer(this);
 	connect(animationTimer, &QTimer::timeout, this, &MainWindow::animate);
 	
+	removeNonexistentFiles(recentFiles);
 	recentFilesModel = new SvgPreviewModel(64, this);
 	recentFilesModel->setFiles(recentFiles);
 	ui->recentFilesList->setModel(recentFilesModel);
@@ -136,16 +155,30 @@ void MainWindow::on_actionIdentify_triggered()
 void MainWindow::loadFile(QString filename)
 {
 	qDebug() << "Reading file: " << filename;
+	
+	// Convert the SVG to paths.
+	auto render = svgToPaths(filename, true);
 
-	QSvgRenderer renderer;
-	if (!renderer.load(filename))
+	if (!render.success)
 	{
 		QMessageBox::critical(this, "Error loading file.", "Couldn't open the file for reading.");
 		qDebug() << "Error loading svg.";
 		return;
 	}
 	
-	mediaSize = renderer.viewBoxF().size();
+	if (render.hasTspanPosition)
+	{
+		QMessageBox::warning(this, "Multi-line Text", "This SVG contains multi-line text which "
+		                     "is not supported in SVG Tiny. Text may be rendered incorrectly. "
+		                     "The easiest workaround is to convert the text to paths.");
+	}
+	
+	// TODO: Use the width and height attributes.
+		
+	// See https://code.woboq.org/qt5/qtsvg/src/svg/qsvghandler.cpp.html#_ZL15convertToPixelsdbN11QSvgHandler10LengthTypeE
+	// The default size is derived from the width="" height="" svg attribute tags
+	// assuming 90 DPI
+	mediaSize = render.viewBox.size();
 	
 	QRectF pageRect(0.0, 0.0, mediaSize.width(), mediaSize.height());
 		
@@ -154,27 +187,19 @@ void MainWindow::loadFile(QString filename)
 	defaultZoom = 0.8 * std::min(viewSize.width() / mediaSize.width(),
 	                             viewSize.height() / mediaSize.height());
 
-	// TODO: It isn't really the view box that we want. We'll probably have to parse the XML
-	// ourselves. (This will allow searching for multi-line text that Inkscape creates too though.)
-	qDebug() << "SVG view box:" << renderer.viewBoxF() << endl;
-	
-	bool clipped = false;
-	
-	// Convert the SVG to paths.
-	auto paths = svgToPaths(renderer, clipped);
-	
+
 	// Sort the paths with the following goals:
 	//
 	// 1. Minimise the time spend travelling without cutting.
 	// 2. Try to cut inside shapes before outside shapes.
 	// 3. Try not to travel too much in the Y direction (it can lead to accumulation of
 	//    errors due to the vinyl slipping in the rollers).
-	auto sortedPaths = sortPaths(paths,
+	auto sortedPaths = sortPaths(render.paths,
 	                             sortMethod,
 	                             QPointF(0.0, mediaSize.height()));
 	
 	// Save the paths for the animation.
-	this->paths = sortedPaths;
+	paths = sortedPaths;
 	
 	// Clear the scene.
 	scene->clear();
@@ -233,9 +258,10 @@ void MainWindow::loadFile(QString filename)
 		pen.setCosmetic(true);
 		pen.setWidthF(3.0);
 		
-		// addPath() is used rather than addPolygon() because addPolygon() is always closed.
+		// Add the path to the painter path, but offset to account for the viewBox position.
 		QPainterPath pp;
-        pp.addPolygon(path);
+        pp.addPolygon(path.translated(-render.viewBox.top(), -render.viewBox.left()));
+		// addPath() is used rather than addPolygon() because addPolygon() is always closed.
         scene->addPath(pp, pen);
 				
 		hue += golden;
@@ -258,8 +284,8 @@ void MainWindow::loadFile(QString filename)
 	// Redraw. Probably not necessary.
 	update();
 	
-	if (clipped)
-		QMessageBox::warning(this, "Paths clipped", "<b>WARNING!</b><br><br>Some paths lay outside the 210&times;297&thinsp;mm A4 area. These have been squeezed back onto the page in a most ugly fashion, so cutting will almost certainly not do what you want.");
+//	if (clipped)
+//		QMessageBox::warning(this, "Paths clipped", "<b>WARNING!</b><br><br>Some paths lay outside the 210&times;297&thinsp;mm A4 area. These have been squeezed back onto the page in a most ugly fashion, so cutting will almost certainly not do what you want.");
 
 	// Change window title and enable menu items.
 	setFileLoaded(filename);

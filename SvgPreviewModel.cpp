@@ -57,13 +57,9 @@ void SvgPreviewModel::setFiles(const QStringList& filenames)
 	
 	for (const auto& fn : filenames) {
 		
-		QPixmap preview;
-		
-		QSvgRenderer renderer;
-		if (renderer.load(fn))
-			preview = svgToPreviewImage(renderer, {previewSize, previewSize});
-
 		// TODO: Render in another thread.
+		QPixmap preview = svgToPreviewImage(fn, {previewSize, previewSize});
+
 		entries.append({fn, preview});
 	}
 	
