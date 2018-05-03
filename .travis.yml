@@ -61,6 +61,7 @@ deploy:
     secure: NvHYmNPKHehn/WlBMtrFL6Bs2QZxTJoO5EDrVVkIj2Ycndregxx8kqCCW1qntY3O3XakSL7oSwdg7UoKz+PvjXStNX9cy+EGcvVqTurLSdD347SsO69NUv60NHsOaGMoEkkKYGP7kXBdSQgxuABP6072IrieiitEnU3kyui/SfMm77C3abEYfDQaOc7QRZEqkWvuAlhrI0qJ8E+65DbHxUCpUU+Yonf3sD75cZnAvdA67x/1b5O+8JULLwkVzAL86bc/ApaTe5h3d44Ti3S3dw5VlEbPfQ/DB+wv9X+lDIucjK4f47c3vhUs5aIK9e6XPYr7/V0lrTlKiSsTH9PagMqbqXSCMa+3QA7XITMfuF47NVquZCYV/M7jGyrrEKI5lE6R1OX74DU8XE05I94vDdOI67wlV4gd4luauVJIz7AS36eNYz1GqJOJsWwJ2nXLzsWqB/1MM2v986cFgVRpeqTP5h/ZBRPpXk/DapWqmwyZNm2uNqUsuVhMdIEsgYj2WdTeOvzZqIehwfg6yglcMxqMP3NogTtEjNMKkzZxhn0TBwxtY0HlyXXD3nYgf157PIVxEMYQLJAXdINN065PGJ9NXktZ/aeiy8a9xmHGOQW426g7dqPvLpDnDWCXVUglFUv2hAQFo6a+rWXcBE++ESpypTtfihXQHpHm+XZjmkI=
   bucket: osx_artefacts
   on:
+    all_branches: true
     repo: Timmmm/robocut
   acl: public-read
   local_dir: deploy
