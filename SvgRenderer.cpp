@@ -5,6 +5,72 @@
 
 #include "PathPaintDevice.h"
 
+namespace
+{
+	// Parse a width or height attribute, and try to return its size in mm.
+	// If no units are given it is assumed to be mm.
+	// If the unit is percent, then it returns 0.
+	// length ::= number ("em" | "ex" | "px" | "in" | "cm" | "mm" | "pt" | "pc" | "%")?
+	double sizeAttributeToMm(const QString& attr)
+	{
+		double multiplier = 1.0;
+	
+		auto a = attr.trimmed();
+		
+		if (a.endsWith("em"))
+		{
+			multiplier = 1.0;
+			a.chop(2);
+		}
+		else if (a.endsWith("ex"))
+		{
+			multiplier = 1.0;
+			a.chop(2);
+		}
+		else if (a.endsWith("px"))
+		{
+			multiplier = 1.0;
+			a.chop(2);
+		}
+		else if (a.endsWith("in"))
+		{
+			multiplier = 1.0;
+			a.chop(2);
+		}
+		else if (a.endsWith("cm"))
+		{
+			multiplier = 1.0;
+			a.chop(2);
+		}
+		else if (a.endsWith("mm"))
+		{
+			multiplier = 1.0;
+			a.chop(2);
+		}
+		else if (a.endsWith("pt"))
+		{
+			multiplier = 1.0;
+			a.chop(2);
+		}
+		else if (a.endsWith("pc"))
+		{
+			multiplier = 1.0;
+			a.chop(2);
+		}
+		else if (a.endsWith("%"))
+		{
+			return 0.0;
+		}
+		
+		bool ok = false;
+		double len = a.toDouble(&ok);
+		if (!ok)
+			return 0.0;
+		
+		return len * multiplier;
+	}
+}
+
 struct SvgXmlData
 {
 	QString widthAttribute;
@@ -97,7 +163,6 @@ SvgRender svgToPaths(const QString& filename, bool searchForTspans)
 		qDebug() << "Empty file or error:" << filename;
 		return render;
 	}
-	
 
 	auto xmlData = scanSvgElements(svgContents, searchForTspans);
 	if (xmlData.parseError)
@@ -108,6 +173,9 @@ SvgRender svgToPaths(const QString& filename, bool searchForTspans)
 	render.widthAttribute = xmlData.widthAttribute;
 	render.heightAttribute = xmlData.heightAttribute;
 	render.hasTspanPosition = xmlData.hasTspanPosition;
+	
+	render.widthMm = sizeAttributeToMm(render.widthAttribute);
+	render.heightMm = sizeAttributeToMm(render.heightAttribute);
 	
 	QSvgRenderer renderer;
 	if (!renderer.load(svgContents))
@@ -127,6 +195,13 @@ SvgRender svgToPaths(const QString& filename, bool searchForTspans)
 	render.paths = pg.paths();
 	
 	render.success = true;
+	
+	
+	if (render.widthMm <= 0.0 || render.heightMm <= 0.0)
+	{
+		render.widthMm = render.viewBox.width();
+		render.heightMm = render.viewBox.height();
+	}
 	
 	return render;
 }
