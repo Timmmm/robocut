@@ -150,6 +150,7 @@
     <addaction name="actionRulers"/>
     <addaction name="actionGrid"/>
     <addaction name="actionDimensions"/>
+    <addaction name="actionCutter_Path"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -405,6 +406,14 @@
   <action name="actionSortNone">
    <property name="text">
     <string>None</string>
+   </property>
+  </action>
+  <action name="actionCutter_Path">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Cutter Path</string>
    </property>
   </action>
  </widget>

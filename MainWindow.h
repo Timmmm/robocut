@@ -51,6 +51,8 @@ private slots:
 	void onSortMethodTriggered(QAction* action);
 	
 	
+	void on_actionCutter_Path_toggled(bool enabled);
+	
 private:
 	// Attempt to load the given file.
 	void loadFile(QString currentFilename);
@@ -91,6 +93,9 @@ private:
 	int cutMarkerPath; // Current path.
 	int cutMarkerLine; // Current line in path
 	double cutMarkerDistance; // Current distance along edge.
+	
+	// The lines that show the path the cutter takes.
+	QGraphicsItemGroup* cutterPathItem = nullptr;
 
 	// The page size in mm.
 	QSizeF mediaSize;
@@ -113,6 +118,7 @@ private:
 	bool rulersEnabled = true;
 	bool gridEnabled = true;
 	bool dimensionsEnabled = true;
+	bool cutterPathEnabled = false;
 	
 	// The default zoom for the current document, which is based on its size.
 	double defaultZoom = 1.0;

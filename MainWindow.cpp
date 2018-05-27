@@ -54,10 +54,12 @@ MainWindow::MainWindow(QWidget *parent)
 	gridEnabled = settings.value("gridEnabled", true).toBool();
 	dimensionsEnabled = settings.value("dimensionsEnabled", true).toBool();
 	rulersEnabled = settings.value("rulersEnabled", true).toBool();
+	cutterPathEnabled = settings.value("cutterPathEnabled", false).toBool();
 	
 	ui->actionGrid->setChecked(gridEnabled);
 	ui->actionDimensions->setChecked(dimensionsEnabled);
 	ui->actionRulers->setChecked(rulersEnabled);
+	ui->actionCutter_Path->setChecked(cutterPathEnabled);
 	
 	// TODO: Implement this.
 	ui->menuEdit->hide();
@@ -187,6 +189,7 @@ void MainWindow::loadFile(QString filename)
 	defaultZoom = 0.8 * std::min(viewSize.width() / mediaSize.width(),
 	                             viewSize.height() / mediaSize.height());
 
+	QPointF startingPoint(0.0, mediaSize.height());
 
 	// Sort the paths with the following goals:
 	//
@@ -196,7 +199,7 @@ void MainWindow::loadFile(QString filename)
 	//    errors due to the vinyl slipping in the rollers).
 	auto sortedPaths = sortPaths(render.paths,
 	                             sortMethod,
-	                             QPointF(0.0, mediaSize.height()));
+	                             startingPoint);
 	
 	// Save the paths for the animation.
 	paths = sortedPaths;
@@ -250,7 +253,7 @@ void MainWindow::loadFile(QString filename)
 	double hue = 0.0;
 	const double golden = 0.5 * (1.0 + sqrt(5.0));
 	
-	for (const auto& path : sortedPaths)
+	for (const auto& path : paths)
 	{
 		QPen pen(QColor::fromHsvF(hue, 1.0, 0.7));
 		
@@ -267,6 +270,23 @@ void MainWindow::loadFile(QString filename)
 		hue += golden;
 		hue -= trunc(hue);
 	}
+	
+	// Add the lines that show where the cutter goes between shapes in light grey.
+	QList<QGraphicsItem*> cutterPathLines;
+	
+	QPointF currentPoint = startingPoint;
+	QPen pen(QColor::fromHsvF(0.0, 0.0, 0.8));
+	// Don't change the pen width with zoom.
+	pen.setCosmetic(true);
+	pen.setWidthF(3.0);
+	for (const auto& path : paths)
+	{
+		cutterPathLines.append(scene->addLine(QLineF(currentPoint, path.first()), pen));
+		currentPoint = path.last();
+	}
+	
+	cutterPathItem = scene->createItemGroup(cutterPathLines);
+	cutterPathItem->setVisible(cutterPathEnabled);	
 
 	// Handle the animation. I.e. stop it.
 	// The old one was deleted when we cleared the scene.
@@ -519,6 +539,8 @@ void MainWindow::onSortMethodTriggered(QAction* action)
 	else if (action == ui->actionSortNone)
 		sortMethod = PathSortMethod::None;
 	
+	// TODO: This resets the view. It would be nice if it didn't need to actually reload the
+	// whole file and we just resorted the polygons.
 	on_actionReload_triggered();
 }
 
@@ -549,4 +571,12 @@ void MainWindow::on_actionVerify_Adjust_Scale_triggered()
 	// then a dialog will open saying the distance between those points and
 	// giving the option to specify what the distance *should* be, thereby
 	// scaling the entire thing.
+}
+
+void MainWindow::on_actionCutter_Path_toggled(bool enabled)
+{
+	cutterPathEnabled = enabled;
+	if (cutterPathItem != nullptr)
+		cutterPathItem->setVisible(cutterPathEnabled);
+    
 }
