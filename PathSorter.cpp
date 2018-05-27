@@ -57,20 +57,20 @@ QPolygonF rotatePolygonStart(const QPolygonF& poly, int newStart)
 	return rotated;
 }
 
-// Return the index of the point in the polygon with the smallest Y coordinate.
-int lowestIndex(const QPolygonF& poly)
+// Return the index of the point in the polygon with the largest Y coordinate (+Y is down).
+int highestIndex(const QPolygonF& poly)
 {
-	int minIdx = 0;
-	qreal minY = std::numeric_limits<qreal>::max();
+	int maxIdx = 0;
+	qreal maxY = std::numeric_limits<qreal>::lowest();
 	for (std::size_t i = 0; i < poly.size(); ++i)
 	{
-		if (poly[i].y() < minY)
+		if (poly[i].y() > maxY)
 		{
-			minIdx = i;
-			minY = poly[i].y();
+			maxIdx = i;
+			maxY = poly[i].y();
 		}
 	}
-	return minIdx;
+	return maxIdx;
 }
 
 // Return the index of the point in the polygon closest to p.
@@ -90,7 +90,8 @@ int closestIndex(const QPolygonF& poly, QPointF p)
 	return minIdx;
 }
 
-
+// Sort paths by increasing Y... but ... well, +Y is down so this actually sorts
+// them by decreasing Y coordinate.
 QList<QPolygonF> sortPathsIncreasingY(const QList<QPolygonF>& paths,
 		                              QPointF startingPoint)
 {
@@ -102,7 +103,7 @@ QList<QPolygonF> sortPathsIncreasingY(const QList<QPolygonF>& paths,
 	{
 		// Index of the path in `paths`
 		int pathIndex;
-		// Index of the point in the path with the lowest Y coordinate.
+		// Index of the point in the path with the down-most Y coordinate.
 		int bottomIndex;
 	};
 	
@@ -111,11 +112,11 @@ QList<QPolygonF> sortPathsIncreasingY(const QList<QPolygonF>& paths,
 	indices.reserve(paths.size());
 	
 	for (int i = 0; i < paths.size(); ++i)
-		indices.append({i, lowestIndex(paths[i])});
+		indices.append({i, highestIndex(paths[i])});
 	
 	qSort(indices.begin(), indices.end(),
 	      [&](const IndexAndBottom& a, const IndexAndBottom& b) {
-		return paths[a.pathIndex][a.bottomIndex].y() < paths[b.pathIndex][b.bottomIndex].y();
+		return paths[a.pathIndex][a.bottomIndex].y() > paths[b.pathIndex][b.bottomIndex].y();
 	});
 	
 	QList<QPolygonF> sorted;
@@ -218,7 +219,7 @@ QList<QPolygonF> sortPathsGreedy(const QList<QPolygonF>& paths,
 	
 	// To do this vaguely efficiently we create a spatial index of points
 	// where each point records the polygon that it is a part of. We also store
-	// a map from polygin number to the list of points in the spatial index.
+	// a map from polygon number to the list of points in the spatial index.
 	//
 	// We search for the nearest point, then add that polygon and remove all of
 	// its points from the spatial index.
