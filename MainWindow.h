@@ -86,13 +86,18 @@ private:
 	QString lastOpenDir;
 
 	// Timer for the cutting animation.
-	QTimer* animationTimer;
+	QTimer* animationTimer = nullptr;
 	// The circle that marks where the cutter blade is.
 	QGraphicsItem* cutMarker = nullptr;
-	// Cut marker progress, for animation.
-	int cutMarkerPath; // Current path.
-	int cutMarkerLine; // Current line in path
-	double cutMarkerDistance; // Current distance along edge.
+	// Current polygon (or polyline), or gap between them. E.g. if there are two shapes:
+	// 0 is the line from the start position to the first shape.
+	// 1 is the first shape.
+	// 2 is the line from the first shape to the second shape.
+	// 3 is the second shape.
+	// 4 is the line from the second shape back to the start position.
+	int cutMarkerPoly = 0;
+	int cutMarkerLine = 0; // Current line in the polygon/line that is being cut.
+	double cutMarkerDistance = 0.0; // Current distance along line.
 	
 	// The lines that show the path the cutter takes.
 	QGraphicsItemGroup* cutterPathItem = nullptr;

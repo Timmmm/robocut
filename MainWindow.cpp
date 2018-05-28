@@ -305,6 +305,7 @@ void MainWindow::loadFile(QString filename)
 	// Redraw. Probably not necessary.
 	update();
 	
+	// TODO: What do I want to do here?
 //	if (clipped)
 //		QMessageBox::warning(this, "Paths clipped", "<b>WARNING!</b><br><br>Some paths lay outside the 210&times;297&thinsp;mm A4 area. These have been squeezed back onto the page in a most ugly fashion, so cutting will almost certainly not do what you want.");
 
@@ -377,7 +378,7 @@ void MainWindow::on_actionAnimate_toggled(bool animate)
 			cutMarker->show();
 		}
 
-		cutMarkerPath = 0;
+		cutMarkerPoly = 0;
 		cutMarkerLine = 0;
 		cutMarkerDistance = 0.0;
 	}
@@ -407,65 +408,89 @@ void MainWindow::on_actionZoom_Out_triggered()
 
 void MainWindow::animate()
 {
+	// TODO: This method is a bit of a mess - could do with moving the
+	// iteration stuff into a separate iterator class.
+	
 	if (!cutMarker)
 		return;
 
 	// Make sure the current position is sane.
-	if (cutMarkerPath >= paths.size() || cutMarkerLine >= paths[cutMarkerPath].size())
+	if (cutMarkerPoly >= paths.size()*2+1)
 	{
 		// If not, reset it.
-		cutMarkerPath = 0;
+		cutMarkerPoly = 0;
 		cutMarkerLine = 0;
 		cutMarkerDistance = 0.0;
 		return;
 	}
 	// Get the ends of the segment/edge we are currently on.
 
-	QPointF a = paths[cutMarkerPath][cutMarkerLine];
-	QPointF b;
-	if (cutMarkerLine >= paths[cutMarkerPath].size()-1)
-	{
-		// We are moving between paths, and not cutting.
-		b = paths[(cutMarkerPath+1) % paths.size()][0];
-		cutMarker->setOpacity(0.2);
-	}
-	else
-	{
-		// We are cutting on a path.
-		b = paths[cutMarkerPath][cutMarkerLine+1];
-		cutMarker->setOpacity(1.0);
-	}
-
-	QPointF r = b-a;
-	double h = hypot(r.x(), r.y());
-	if (h > 0.0)
-		r /= h;
+	QPointF startingPoint(0.0, mediaSize.height());
 	
-	// TODO: The speed isn't correct if there are a lot of small lines,
-	// e.g. from a Bezier.
-
-	// The current position of the marker.
-	QPointF p = a + r * cutMarkerDistance;
-
-	cutMarker->setPos(p);
-
-	// Advance the position of the marker for the next time this function is called.
-	cutMarkerDistance += 2.0;
-	if (cutMarkerDistance > h)
+	// How far to travel each "frame". This controls the animation speed.
+	double distanceRemaining = 2.0;
+	
+	while (true)
 	{
-		cutMarkerDistance = 0.0;
-		if (++cutMarkerLine >= paths[cutMarkerPath].size())
+		// Start and end points of the current line.
+		QPointF a;
+		QPointF b;
+		
+		if (cutMarkerPoly % 2 == 0)
 		{
-			cutMarkerLine = 0;
-			if (++cutMarkerPath >= paths.size())
-			{
-				cutMarkerPath = 0;
+			// We are moving between paths, and not cutting.
+			if (cutMarkerPoly == 0)
+				a = startingPoint;
+			else
+				a = paths[(cutMarkerPoly / 2)-1].back();
+			
+			if (cutMarkerPoly >= paths.size()*2)
+				b = startingPoint;
+			else
+				b = paths[(cutMarkerPoly / 2)].front();
 
-				// Also stop the animation...
-				ui->actionAnimate->setChecked(false);
-
-			}
+			cutMarker->setOpacity(0.2);
 		}
+		else
+		{
+			auto pathIndex = (cutMarkerPoly - 1) / 2;
+			a = paths[pathIndex][cutMarkerLine];
+			b = paths[pathIndex][cutMarkerLine+1];
+			cutMarker->setOpacity(1.0);			
+		}
+		
+		QLineF ln(a, b);
+		
+		// If the cutter shouldn't be in this line, go to the next one.
+		if ((ln.length() - cutMarkerDistance) < distanceRemaining)
+		{
+			distanceRemaining -= (ln.length() - cutMarkerDistance);
+			cutMarkerDistance = 0.0;
+			if (cutMarkerPoly % 2 != 0 && cutMarkerLine < paths[(cutMarkerPoly - 1) / 2].size()-2)
+			{
+				++cutMarkerLine;
+			}
+			else
+			{
+				cutMarkerPoly = (cutMarkerPoly + 1) % (paths.size() * 2 + 1);
+				cutMarkerLine = 0;
+			}
+			continue;
+		}
+		
+		cutMarkerDistance += distanceRemaining;
+		
+		// Get a vector along the current line.
+		QPointF r = b-a;
+		double h = hypot(r.x(), r.y());
+		if (h > 0.0)
+			r /= h;
+		
+		// The current position of the marker.
+		QPointF p = a + r * cutMarkerDistance;
+	
+		cutMarker->setPos(p);
+		break;
 	}
 }
 void MainWindow::setFileLoaded(QString filename)
