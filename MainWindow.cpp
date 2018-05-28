@@ -115,6 +115,7 @@ MainWindow::~MainWindow()
 	settings.setValue("gridEnabled", gridEnabled);
 	settings.setValue("dimensionsEnabled", dimensionsEnabled);
 	settings.setValue("rulersEnabled", rulersEnabled);
+	settings.setValue("cutterPathEnabled", cutterPathEnabled);
 }
 
 void MainWindow::on_actionOpen_triggered()
