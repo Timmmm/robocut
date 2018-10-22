@@ -27,9 +27,9 @@ const int VENDOR_ID_GRAPHTEC = 0x0b4d;
 
 // Map from product ID to product name.
 const map<int, string> PRODUCT_ID_LIST = {
-    { 0x110a, "CC200 20" },
-    { 0x111a, "CC300 20" },
-    { 0x111c, "Silhouette SD" },
+    { 0x110a, "CC200-20" },
+    { 0x111a, "CC300-20" },
+    { 0x111c, "Silhouette SD / CC220-30" },
     { 0x111d, "Silhouette SD 2" },
     { 0x1121, "Silhouette Cameo" },
     { 0x112f, "Silhouette Cameo 3" },
