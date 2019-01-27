@@ -8,7 +8,7 @@ project(Robocut
 # Set the CMAKE_PREFIX_PATH environment variable to (e.g) ~/Qt/5.8/clang_64 so it can find Qt.
 find_package(Qt5 COMPONENTS Core Widgets Svg REQUIRED)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
 add_subdirectory(libusb)
