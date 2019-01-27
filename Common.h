@@ -12,72 +12,22 @@ template<typename R>
 using Result = std::variant<R, std::string>;
 
 // Integer to string.
-inline std::string ItoS(int I)
-{
-	std::stringstream S;
-	S << I;
-	return S.str();
-}
+std::string ItoS(int i);
 
 // Unsigned integer to string.
-inline std::string UItoS(unsigned int I)
-{
-	std::stringstream S;
-	S << I;
-	return S.str();
-}
+std::string UItoS(unsigned int i);
 
 // Unsigned long long to string.
-inline std::string ULLtoS(unsigned long long I)
-{
-	char out[128];
-	sprintf(out, "%lld", I);
-	return out;
-}
+std::string ULLtoS(unsigned long long i);
 
 // String to integer.
-inline Result<int> StoI(const std::string& S)
-{
-	char* EP;
-	const char* P = S.c_str();
-	auto R = strtol(P, &EP, 0);
-	if (EP == P)
-		return "Couldn't convert string to integer: " + S;
-	if (R < std::numeric_limits<int>::lowest() ||
-	    R > std::numeric_limits<int>::max())
-		return "Integer out of range: " + S;
-	return static_cast<int>(R);
-}
+Result<int> StoI(std::string_view s);
 
 // String to unsigned integer, returns Fail on fail.
-inline Result<unsigned int> StoUI(const std::string& S)
-{
-	char* EP;
-	const char* P = S.c_str();
-	auto R = strtoul(P, &EP, 0);
-	if (EP == P)
-		return "Couldn't convert string to integer: " + S;
-	if (R > std::numeric_limits<unsigned int>::max())
-		return "Integer out of range: " + S;
-	return static_cast<unsigned int>(R);
-}
+Result<unsigned int> StoUI(std::string_view s);
 
 // String to unsigned long long, returns Fail on fail.
-inline Result<unsigned long long> StoULL(const std::string& S)
-{
-	char* EP;
-	const char* P = S.c_str();
-	auto R = strtoull(P, &EP, 0);
-	if (EP == P)
-		return "Couldn't convert string to integer: " + S;
-	return R;
-}
+Result<unsigned long long> StoULL(std::string_view s);
 
 // Get an environmental variable.
-inline std::string GetEnv(const std::string& Var)
-{
-	char* V = getenv(Var.c_str());
-	if (!V)
-		return "";
-	return V;
-}
+std::string GetEnv(std::string_view var);
