@@ -418,8 +418,8 @@ Error Cut(CutParams p)
 		// Page size: height,width in 20ths of a mm minus a margin. This is for A4. TODO: Find maximum and use that.
 		stringstream page;
 
-		int width = lroundl(p.mediawidth * 20.0);
-		int height = lroundl(p.mediaheight * 20.0);
+		int width = lround(p.mediawidth * 20.0);
+		int height = lround(p.mediaheight * 20.0);
 
 		int margintop = 0;//ProgramOptions::Instance().getMarginTop();
 		int marginright = 0;//ProgramOptions::Instance().getMarginRight();
@@ -434,8 +434,8 @@ Error Cut(CutParams p)
 			stringstream regmarkstr;
 			regmarkstr.precision(0);
 			string searchregchar = "23,";
-			int regw = lroundl(p.regwidth * 20.0);
-			int regl = lroundl(p.regheight * 20.0);
+			int regw = lround(p.regwidth * 20.0);
+			int regl = lround(p.regheight * 20.0);
 			e = UsbSend(handle, "TB50,381\x03"); //only with registration (it was TB50,1) ???
 			if (!e) goto error;
 			
