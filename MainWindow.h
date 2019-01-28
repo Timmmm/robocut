@@ -7,6 +7,7 @@
 #include <QGraphicsItem>
 
 #include "CutDialog.h"
+#include "FileData.h"
 #include "SvgPreviewModel.h"
 #include "PathSorter.h"
 
@@ -20,9 +21,8 @@ class MainWindow : public QMainWindow
 	Q_OBJECT
 
 public:
-	MainWindow(QWidget *parent = nullptr);
+	explicit MainWindow(QWidget *parent = nullptr);
 	~MainWindow();
-	
 	
 private slots:
 	void on_actionAbout_triggered();
@@ -65,7 +65,7 @@ private:
 	Ui::MainWindow *ui;
 
 	// The cutting paths that were loaded from the SVG.
-	QList<QPolygonF> paths;
+	FileData data;
 
 	// The graphics scene which holds the cuts, the grid, the dimensions, etc.
 	QGraphicsScene* scene;
@@ -96,15 +96,14 @@ private:
 	// 3 is the second shape.
 	// 4 is the line from the second shape back to the start position.
 	int cutMarkerPoly = 0;
-	int cutMarkerLine = 0; // Current line in the polygon/line that is being cut.
-	double cutMarkerDistance = 0.0; // Current distance along line.
+	// Current line in the polygon/line that is being cut.
+	int cutMarkerLine = 0;
+	// Current distance along line.
+	double cutMarkerDistance = 0.0;
 	
 	// The lines that show the path the cutter takes.
 	QGraphicsItemGroup* cutterPathItem = nullptr;
 
-	// The page size in mm.
-	QSizeF mediaSize;
-	
 	// The currently loaded file. Empty if there isn't one.
 	QString currentFilename;
 	

@@ -30,6 +30,8 @@ set(src_files
 	"CuttingDialog.ui"
 	"CuttingThread.cpp"
 	"CuttingThread.h"
+	"FileData.cpp"
+	"FileData.h"
 	"MainWindow.cpp"
 	"MainWindow.h"
 	"MainWindow.ui"

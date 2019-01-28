@@ -177,22 +177,20 @@ void MainWindow::loadFile(QString filename)
 		                     "is not supported in SVG Tiny. Text may be rendered incorrectly. "
 		                     "The easiest workaround is to convert the text to paths.");
 	}
-	
-	// TODO: Use the width and height attributes.
-		
+
 	// See https://code.woboq.org/qt5/qtsvg/src/svg/qsvghandler.cpp.html#_ZL15convertToPixelsdbN11QSvgHandler10LengthTypeE
 	// The default size is derived from the width="" height="" svg attribute tags
-	// assuming 90 DPI
-	mediaSize = render.viewBox.size();
+	// assuming 90 DPI.
+	data.mediaSize = render.viewBox.size();
 	
-	QRectF pageRect(0.0, 0.0, mediaSize.width(), mediaSize.height());
+	QRectF pageRect(0.0, 0.0, data.mediaSize.width(), data.mediaSize.height());
 		
 	auto viewSize = ui->centralWidget->size();
 	
-	defaultZoom = 0.8 * std::min(viewSize.width() / mediaSize.width(),
-	                             viewSize.height() / mediaSize.height());
+	defaultZoom = 0.8 * std::min(viewSize.width() / data.mediaSize.width(),
+	                             viewSize.height() / data.mediaSize.height());
 
-	QPointF startingPoint(0.0, mediaSize.height());
+	QPointF startingPoint(0.0, data.mediaSize.height());
 
 	// Sort the paths with the following goals:
 	//
@@ -205,7 +203,7 @@ void MainWindow::loadFile(QString filename)
 	                             startingPoint);
 	
 	// Save the paths for the animation.
-	paths = sortedPaths;
+	data.paths = sortedPaths;
 	
 	// Clear the scene.
 	scene->clear();
@@ -219,10 +217,10 @@ void MainWindow::loadFile(QString filename)
 	scene->addRect(pageRect, Qt::NoPen, QBrush(Qt::white));
 	
 	// Add the dimensions test.
-	dimensionsItem = scene->addText(QString::number(mediaSize.width()) + " × " +
-	                                QString::number(mediaSize.height()) + " mm",
+	dimensionsItem = scene->addText(QString::number(data.mediaSize.width()) + " × " +
+	                                QString::number(data.mediaSize.height()) + " mm",
 	                                QFont("Helvetica", 10));
-	dimensionsItem->setPos(0.0, mediaSize.height());
+	dimensionsItem->setPos(0.0, data.mediaSize.height());
 	dimensionsItem->setVisible(dimensionsEnabled);
 	
 	// Add the rulers.
@@ -231,14 +229,14 @@ void MainWindow::loadFile(QString filename)
 	QList<QGraphicsItem*> gridSquares;
 	
 	// Add the centimetre grid.
-	for (int x = 0; x < mediaSize.width() / 10; ++x)
+	for (int x = 0; x < data.mediaSize.width() / 10; ++x)
 	{
-		for (int y = x % 2; y < mediaSize.height() / 10; y += 2)
+		for (int y = x % 2; y < data.mediaSize.height() / 10; y += 2)
 		{
-			int w = std::min(10.0, mediaSize.width() - x * 10.0);
-			int h = std::min(10.0, mediaSize.height() - y * 10.0);
+			int w = std::min(10.0, data.mediaSize.width() - x * 10.0);
+			int h = std::min(10.0, data.mediaSize.height() - y * 10.0);
 			gridSquares.append(
-			            scene->addRect(x*10, mediaSize.height() - y*10 - h, w, h,
+			            scene->addRect(x*10, data.mediaSize.height() - y*10 - h, w, h,
 						               Qt::NoPen, QBrush(QColor::fromRgb(240, 240, 240)))
 			        );
 		}
@@ -256,7 +254,7 @@ void MainWindow::loadFile(QString filename)
 	double hue = 0.0;
 	const double golden = 0.5 * (1.0 + sqrt(5.0));
 	
-	for (const auto& path : paths)
+	for (const auto& path : data.paths)
 	{
 		QPen pen(QColor::fromHsvF(hue, 1.0, 0.7));
 		
@@ -282,7 +280,7 @@ void MainWindow::loadFile(QString filename)
 	// Don't change the pen width with zoom.
 	pen.setCosmetic(true);
 	pen.setWidthF(3.0);
-	for (const auto& path : paths)
+	for (const auto& path : data.paths)
 	{
 		cutterPathLines.append(scene->addLine(QLineF(currentPoint, path.first()), pen));
 		currentPoint = path.last();
@@ -348,9 +346,9 @@ void MainWindow::on_actionCut_triggered()
 	CuttingDialog* cuttingDlg = new CuttingDialog(this);
 
 	CutParams params;
-	params.cuts = paths;
-	params.mediawidth = mediaSize.width();
-	params.mediaheight = mediaSize.height();
+	params.cuts = data.paths;
+	params.mediawidth = data.mediaSize.width();
+	params.mediaheight = data.mediaSize.height();
 	params.media = cutDialog->media();
 	params.pressure = cutDialog->pressure();
 	params.regwidth = cutDialog->regWidth();
@@ -417,7 +415,7 @@ void MainWindow::animate()
 		return;
 
 	// Make sure the current position is sane.
-	if (cutMarkerPoly >= paths.size()*2+1)
+	if (cutMarkerPoly >= data.paths.size()*2+1)
 	{
 		// If not, reset it.
 		cutMarkerPoly = 0;
@@ -427,7 +425,7 @@ void MainWindow::animate()
 	}
 	// Get the ends of the segment/edge we are currently on.
 
-	QPointF startingPoint(0.0, mediaSize.height());
+	QPointF startingPoint(0.0, data.mediaSize.height());
 	
 	// How far to travel each "frame". This controls the animation speed.
 	double distanceRemaining = 2.0;
@@ -444,20 +442,20 @@ void MainWindow::animate()
 			if (cutMarkerPoly == 0)
 				a = startingPoint;
 			else
-				a = paths[(cutMarkerPoly / 2)-1].back();
+				a = data.paths[(cutMarkerPoly / 2)-1].back();
 			
-			if (cutMarkerPoly >= paths.size()*2)
+			if (cutMarkerPoly >= data.paths.size()*2)
 				b = startingPoint;
 			else
-				b = paths[(cutMarkerPoly / 2)].front();
+				b = data.paths[(cutMarkerPoly / 2)].front();
 
 			cutMarker->setOpacity(0.2);
 		}
 		else
 		{
 			auto pathIndex = (cutMarkerPoly - 1) / 2;
-			a = paths[pathIndex][cutMarkerLine];
-			b = paths[pathIndex][cutMarkerLine+1];
+			a = data.paths[pathIndex][cutMarkerLine];
+			b = data.paths[pathIndex][cutMarkerLine+1];
 			cutMarker->setOpacity(1.0);			
 		}
 		
@@ -468,13 +466,13 @@ void MainWindow::animate()
 		{
 			distanceRemaining -= (ln.length() - cutMarkerDistance);
 			cutMarkerDistance = 0.0;
-			if (cutMarkerPoly % 2 != 0 && cutMarkerLine < paths[(cutMarkerPoly - 1) / 2].size()-2)
+			if (cutMarkerPoly % 2 != 0 && cutMarkerLine < data.paths[(cutMarkerPoly - 1) / 2].size()-2)
 			{
 				++cutMarkerLine;
 			}
 			else
 			{
-				cutMarkerPoly = (cutMarkerPoly + 1) % (paths.size() * 2 + 1);
+				cutMarkerPoly = (cutMarkerPoly + 1) % (data.paths.size() * 2 + 1);
 				cutMarkerLine = 0;
 			}
 			continue;
