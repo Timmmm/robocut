@@ -181,14 +181,21 @@ void MainWindow::loadFile(QString filename)
 	// See https://code.woboq.org/qt5/qtsvg/src/svg/qsvghandler.cpp.html#_ZL15convertToPixelsdbN11QSvgHandler10LengthTypeE
 	// The default size is derived from the width="" height="" svg attribute tags
 	// assuming 90 DPI.
-	data.mediaSize = render.viewBox.size();
-	
-	QRectF pageRect(0.0, 0.0, data.mediaSize.width(), data.mediaSize.height());
-		
-	auto viewSize = ui->centralWidget->size();
-	
-	defaultZoom = 0.8 * std::min(viewSize.width() / data.mediaSize.width(),
-	                             viewSize.height() / data.mediaSize.height());
+	data.mediaSize = QSizeF(render.widthMm, render.heightMm);
+
+	data.paths = render.paths;
+
+	// Transform the paths from user units to mm.
+	for (auto& path : data.paths)
+	{
+		for (auto& vertex : path) {
+			vertex = QPointF(
+			             (vertex.x() - render.viewBox.x()) * render.widthMm / render.viewBox.width(),
+			             (vertex.y() - render.viewBox.y()) * render.heightMm / render.viewBox.height()
+			         );
+		}
+	}
+
 
 	QPointF startingPoint(0.0, data.mediaSize.height());
 
@@ -198,20 +205,25 @@ void MainWindow::loadFile(QString filename)
 	// 2. Try to cut inside shapes before outside shapes.
 	// 3. Try not to travel too much in the Y direction (it can lead to accumulation of
 	//    errors due to the vinyl slipping in the rollers).
-	auto sortedPaths = sortPaths(render.paths,
-	                             sortMethod,
-	                             startingPoint);
-	
-	// Save the paths for the animation.
-	data.paths = sortedPaths;
-	
+	//
+	sortedPaths = sortPaths(data.paths,
+	                        sortMethod,
+	                        startingPoint);
+
+	// Set the default zoom.
+	auto viewSize = ui->centralWidget->size();
+	defaultZoom = 0.8 * std::min(viewSize.width() / data.mediaSize.width(),
+	                             viewSize.height() / data.mediaSize.height());
+
 	// Clear the scene.
-	scene->clear();
+	clearScene();
+
+	QRectF pageRect(0.0, 0.0, data.mediaSize.width(), data.mediaSize.height());
+
 	// And reset the sceneRect, which it doesn't do by default.
 	scene->setSceneRect(pageRect.adjusted(-20, -20, 20, 20));
 	
 	scene->setBackgroundBrush(QBrush(Qt::lightGray));
-	
 
 	// Add the page background
 	scene->addRect(pageRect, Qt::NoPen, QBrush(Qt::white));
@@ -249,45 +261,8 @@ void MainWindow::loadFile(QString filename)
 	QPen pageOutlinePen;
 	pageOutlinePen.setCosmetic(true);
 	scene->addRect(pageRect, pageOutlinePen, Qt::NoBrush);
-	        
-	// Add all the paths.
-	double hue = 0.0;
-	const double golden = 0.5 * (1.0 + sqrt(5.0));
-	
-	for (const auto& path : data.paths)
-	{
-		QPen pen(QColor::fromHsvF(hue, 1.0, 0.7));
-		
-		// Don't change the pen width with zoom.
-		pen.setCosmetic(true);
-		pen.setWidthF(3.0);
-		
-		// Add the path to the painter path, but offset to account for the viewBox position.
-		QPainterPath pp;
-        pp.addPolygon(path.translated(-render.viewBox.top(), -render.viewBox.left()));
-		// addPath() is used rather than addPolygon() because addPolygon() is always closed.
-        scene->addPath(pp, pen);
-				
-		hue += golden;
-		hue -= trunc(hue);
-	}
-	
-	// Add the lines that show where the cutter goes between shapes in light grey.
-	QList<QGraphicsItem*> cutterPathLines;
-	
-	QPointF currentPoint = startingPoint;
-	QPen pen(QColor::fromHsvF(0.0, 0.0, 0.8));
-	// Don't change the pen width with zoom.
-	pen.setCosmetic(true);
-	pen.setWidthF(3.0);
-	for (const auto& path : data.paths)
-	{
-		cutterPathLines.append(scene->addLine(QLineF(currentPoint, path.first()), pen));
-		currentPoint = path.last();
-	}
-	
-	cutterPathItem = scene->createItemGroup(cutterPathLines);
-	cutterPathItem->setVisible(cutterPathEnabled);	
+
+	addPathItemsToScene();
 
 	// Handle the animation. I.e. stop it.
 	// The old one was deleted when we cleared the scene.
@@ -346,7 +321,7 @@ void MainWindow::on_actionCut_triggered()
 	CuttingDialog* cuttingDlg = new CuttingDialog(this);
 
 	CutParams params;
-	params.cuts = data.paths;
+	params.cuts = sortedPaths;
 	params.mediawidth = data.mediaSize.width();
 	params.mediaheight = data.mediaSize.height();
 	params.media = cutDialog->media();
@@ -369,6 +344,10 @@ void MainWindow::on_actionManual_triggered()
 
 void MainWindow::on_actionAnimate_toggled(bool animate)
 {
+	cutMarkerPoly = 0;
+	cutMarkerLine = 0;
+	cutMarkerDistance = 0.0;
+
 	if (animate)
 	{
 		animationTimer->start(30);
@@ -377,10 +356,6 @@ void MainWindow::on_actionAnimate_toggled(bool animate)
 			cutMarker->setPos(0, 0);
 			cutMarker->show();
 		}
-
-		cutMarkerPoly = 0;
-		cutMarkerLine = 0;
-		cutMarkerDistance = 0.0;
 	}
 	else
 	{
@@ -415,7 +390,7 @@ void MainWindow::animate()
 		return;
 
 	// Make sure the current position is sane.
-	if (cutMarkerPoly >= data.paths.size()*2+1)
+	if (cutMarkerPoly >= sortedPaths.size()*2+1)
 	{
 		// If not, reset it.
 		cutMarkerPoly = 0;
@@ -442,20 +417,20 @@ void MainWindow::animate()
 			if (cutMarkerPoly == 0)
 				a = startingPoint;
 			else
-				a = data.paths[(cutMarkerPoly / 2)-1].back();
+				a = sortedPaths[(cutMarkerPoly / 2)-1].back();
 			
-			if (cutMarkerPoly >= data.paths.size()*2)
+			if (cutMarkerPoly >= sortedPaths.size()*2)
 				b = startingPoint;
 			else
-				b = data.paths[(cutMarkerPoly / 2)].front();
+				b = sortedPaths[(cutMarkerPoly / 2)].front();
 
 			cutMarker->setOpacity(0.2);
 		}
 		else
 		{
 			auto pathIndex = (cutMarkerPoly - 1) / 2;
-			a = data.paths[pathIndex][cutMarkerLine];
-			b = data.paths[pathIndex][cutMarkerLine+1];
+			a = sortedPaths[pathIndex][cutMarkerLine];
+			b = sortedPaths[pathIndex][cutMarkerLine+1];
 			cutMarker->setOpacity(1.0);			
 		}
 		
@@ -466,13 +441,13 @@ void MainWindow::animate()
 		{
 			distanceRemaining -= (ln.length() - cutMarkerDistance);
 			cutMarkerDistance = 0.0;
-			if (cutMarkerPoly % 2 != 0 && cutMarkerLine < data.paths[(cutMarkerPoly - 1) / 2].size()-2)
+			if (cutMarkerPoly % 2 != 0 && cutMarkerLine < sortedPaths[(cutMarkerPoly - 1) / 2].size()-2)
 			{
 				++cutMarkerLine;
 			}
 			else
 			{
-				cutMarkerPoly = (cutMarkerPoly + 1) % (data.paths.size() * 2 + 1);
+				cutMarkerPoly = (cutMarkerPoly + 1) % (sortedPaths.size() * 2 + 1);
 				cutMarkerLine = 0;
 			}
 			continue;
@@ -521,6 +496,77 @@ void MainWindow::setFileLoaded(QString filename)
 	currentFilename = filename;
 }
 
+void MainWindow::addPathItemsToScene()
+{
+	if (pathsItem != nullptr) {
+		delete pathsItem;
+		pathsItem = nullptr;
+	}
+	if (cutterPathItem != nullptr) {
+		delete cutterPathItem;
+		cutterPathItem = nullptr;
+	}
+
+	// Add lines for the actual shapes to be cut out. These are always shown.
+	double hue = 0.0;
+	const double golden = 0.5 * (1.0 + sqrt(5.0));
+
+	QList<QGraphicsItem*> pathLines;
+
+	for (const auto& path : sortedPaths)
+	{
+		QPen pen(QColor::fromHsvF(hue, 1.0, 0.7));
+
+		// Don't change the pen width with zoom.
+		pen.setCosmetic(true);
+		pen.setWidthF(3.0);
+
+		// Add the path to the painter path, but offset to account for the viewBox position.
+		QPainterPath pp;
+		pp.addPolygon(path);
+		// addPath() is used rather than addPolygon() because addPolygon() is always closed.
+		pathLines.append(scene->addPath(pp, pen));
+
+		hue += golden;
+		hue -= trunc(hue);
+	}
+
+	pathsItem = scene->createItemGroup(pathLines);
+
+	// Add the lines that show where the cutter goes between shapes in light grey.
+	// These can be hidden.
+	QList<QGraphicsItem*> cutterPathLines;
+
+	QPointF startingPoint(0.0, data.mediaSize.height());
+
+	QPointF currentPoint = startingPoint;
+	QPen pen(QColor::fromHsvF(0.0, 0.0, 0.8));
+	// Don't change the pen width with zoom.
+	pen.setCosmetic(true);
+	pen.setWidthF(3.0);
+	for (const auto& path : sortedPaths)
+	{
+		cutterPathLines.append(scene->addLine(QLineF(currentPoint, path.first()), pen));
+		currentPoint = path.last();
+	}
+
+	cutterPathItem = scene->createItemGroup(cutterPathLines);
+	cutterPathItem->setVisible(cutterPathEnabled);
+}
+
+void MainWindow::clearScene()
+{
+	scene->clear();
+
+	// The following items are all deleted by clearing the scene,
+	// so set them to null.
+	dimensionsItem = nullptr;
+	gridItem = nullptr;
+	cutMarker = nullptr;
+	cutterPathItem = nullptr;
+	pathsItem = nullptr;
+}
+
 void MainWindow::on_openSvgButton_clicked()
 {
 	on_actionOpen_triggered();
@@ -529,7 +575,9 @@ void MainWindow::on_openSvgButton_clicked()
 void MainWindow::on_actionClose_triggered()
 {
 	setFileLoaded("");
-	scene->clear();
+
+	clearScene();
+
 	ui->stackedWidget->setCurrentIndex(0);
 	// Update the recent files - a new one may have been loaded. Unfortunately
 	// this re-renders them all, but eh.
@@ -564,10 +612,17 @@ void MainWindow::onSortMethodTriggered(QAction* action)
 		sortMethod = PathSortMethod::Best;
 	else if (action == ui->actionSortNone)
 		sortMethod = PathSortMethod::None;
+	else
+		return;
 	
-	// TODO: This resets the view. It would be nice if it didn't need to actually reload the
-	// whole file and we just resorted the polygons.
-	on_actionReload_triggered();
+	// Resort the paths.
+	QPointF startingPoint(0.0, data.mediaSize.height());
+	sortedPaths = sortPaths(data.paths,
+	                        sortMethod,
+	                        startingPoint);
+
+	// Remove the path items and re-add them.
+	addPathItemsToScene();
 }
 
 
@@ -604,5 +659,4 @@ void MainWindow::on_actionCutter_Path_toggled(bool enabled)
 	cutterPathEnabled = enabled;
 	if (cutterPathItem != nullptr)
 		cutterPathItem->setVisible(cutterPathEnabled);
-    
 }

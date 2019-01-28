@@ -50,7 +50,6 @@ private slots:
 	
 	void onSortMethodTriggered(QAction* action);
 	
-	
 	void on_actionCutter_Path_toggled(bool enabled);
 	
 private:
@@ -61,14 +60,23 @@ private:
 	// Use an empty string to indicate that no file is loaded.
 	void setFileLoaded(QString currentFilename);
 
+	// Add the path items to the graphics scene for `data.paths`.
+	void addPathItemsToScene();
+
+	// Clear the scene and set all scene item pointers to null.
+	void clearScene();
+
 private:
-	Ui::MainWindow *ui;
+	Ui::MainWindow *ui = nullptr;
 
 	// The cutting paths that were loaded from the SVG.
 	FileData data;
 
+	// The sorted paths.
+	QList<QPolygonF> sortedPaths;
+
 	// The graphics scene which holds the cuts, the grid, the dimensions, etc.
-	QGraphicsScene* scene;
+	QGraphicsScene* scene = nullptr;
 
 	// The dialog that asks what settings to use. We keep this around and reuse it as necessary.
 	CutDialog* cutDialog = nullptr;
@@ -104,6 +112,9 @@ private:
 	// The lines that show the path the cutter takes.
 	QGraphicsItemGroup* cutterPathItem = nullptr;
 
+	// The actual cut polygons.
+	QGraphicsItemGroup* pathsItem = nullptr;
+
 	// The currently loaded file. Empty if there isn't one.
 	QString currentFilename;
 	
@@ -111,10 +122,10 @@ private:
 	QStringList recentFiles;
 	
 	// Recently loaded files model.
-	SvgPreviewModel* recentFilesModel;
+	SvgPreviewModel* recentFilesModel = nullptr;
 	
 	// Example files model.
-	SvgPreviewModel* exampleFilesModel;
+	SvgPreviewModel* exampleFilesModel = nullptr;
 	
 	// The current path sort method.
 	PathSortMethod sortMethod = PathSortMethod::Best;
