@@ -2,6 +2,8 @@
 
 #include <QPainter>
 #include <QDebug>
+#include <QApplication>
+#include <QPalette>
 
 #include "PathPaintDevice.h"
 
@@ -192,6 +194,7 @@ SvgRender svgToPaths(const QString& filename, bool searchForTspans)
 
 	renderer.render(&p, render.viewBox);
 	
+	// These are the paths in user units.
 	render.paths = pg.paths();
 	
 	render.success = true;
@@ -208,9 +211,12 @@ SvgRender svgToPaths(const QString& filename, bool searchForTspans)
 
 QPixmap svgToPreviewImage(const QString& filename, QSize dimensions)
 {
+	auto background = QApplication::palette("QWidget").color(QPalette::Base);
+	auto foreground = QApplication::palette("QWidget").color(QPalette::Text);
+
 	QPixmap pix(dimensions);
-	pix.fill();
-		
+	pix.fill(background);
+
 	auto paths = svgToPaths(filename, false);
 	
 	auto viewBox = paths.viewBox;
@@ -242,7 +248,7 @@ QPixmap svgToPreviewImage(const QString& filename, QSize dimensions)
 	
 	QPainter painter(&pix);
 	painter.setBrush(Qt::NoBrush);
-	painter.setPen(QPen(Qt::black));
+	painter.setPen(QPen(foreground));
 	painter.setTransform(transform);
 	
 	// Work out the scaling and offset for the paths.
