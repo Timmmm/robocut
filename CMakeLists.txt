@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.9)
 
+set(CMAKE_OSX_DEPLOYMENT_TARGET 10.14)
+
 project(Robocut
 	VERSION 1.0.11
 	DESCRIPTION "A program to control Graphtec vinyl cutters."
