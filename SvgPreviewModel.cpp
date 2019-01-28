@@ -4,8 +4,8 @@
 
 #include "SvgRenderer.h"
 
-SvgPreviewModel::SvgPreviewModel(int previewSize_, QObject* parent)
-	: QAbstractListModel(parent), previewSize(previewSize_)
+SvgPreviewModel::SvgPreviewModel(QObject* parent)
+    : QAbstractListModel(parent)
 {
 }
 
@@ -64,4 +64,9 @@ void SvgPreviewModel::setFiles(const QStringList& filenames)
 	}
 	
 	endResetModel();
+}
+
+void SvgPreviewModel::setPreviewSize(int px)
+{
+	previewSize = px;
 }

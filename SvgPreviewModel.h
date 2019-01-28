@@ -10,7 +10,7 @@ class SvgPreviewModel : public QAbstractListModel
     Q_OBJECT
 
 public:
-    explicit SvgPreviewModel(int previewSize, QObject* parent = nullptr);
+	explicit SvgPreviewModel(QObject* parent = nullptr);
 
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
     Qt::ItemFlags flags(const QModelIndex& index) const override;
@@ -22,8 +22,11 @@ public:
 	
 	static const int FilenameRole = Qt::UserRole + 0;
 
+	// This only affect subsequent calls to setFiles().
+	void setPreviewSize(int px);
+
 private:
-	int previewSize;
+	int previewSize = 64;
 	
 	struct Entry
 	{

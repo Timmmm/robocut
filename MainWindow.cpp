@@ -74,12 +74,14 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(animationTimer, &QTimer::timeout, this, &MainWindow::animate);
 	
 	removeNonexistentFiles(recentFiles);
-	recentFilesModel = new SvgPreviewModel(64, this);
+	recentFilesModel = new SvgPreviewModel(this);
+	recentFilesModel->setPreviewSize(64);
 	recentFilesModel->setFiles(recentFiles);
 	ui->recentFilesList->setModel(recentFilesModel);
 	
-	exampleFilesModel = new SvgPreviewModel(64, this);
-	
+	exampleFilesModel = new SvgPreviewModel(this);
+	exampleFilesModel->setPreviewSize(64);
+
 	auto exampleFiles = QDir(":/examples").entryList(QDir::Files, QDir::Name);
 	for (auto& f : exampleFiles)
 		f.prepend(":/examples/");
