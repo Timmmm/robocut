@@ -25,7 +25,7 @@ struct SvgRender
 	// The width and height in mm if they have been specified. This is calculated
 	// from the width= and height= attributes, if they have physical units. If they
 	// are in user units then it is assumed to be mm. If they are in % or are not present
-	// then the viewport size is used and is assumed to be in mm.
+	// then the view box size is used and is assumed to be in mm.
 	double widthMm;
 	double heightMm;
 	
