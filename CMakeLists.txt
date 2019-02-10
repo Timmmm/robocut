@@ -39,6 +39,8 @@ set(src_files
 	"PathPaintDevice.h"
 	"PathPaintEngine.cpp"
 	"PathPaintEngine.h"
+	"PathScene.cpp"
+	"PathScene.h"
 	"PathSorter.cpp"
 	"PathSorter.h"
 	"Plotter.cpp"
