@@ -21,7 +21,7 @@ std::string ULLtoS(unsigned long long i)
 	return out;
 }
 
-Result<int> StoI(std::string_view s)
+SResult<int> StoI(std::string_view s)
 {
 	char* EP;
 	const char* P = s.data();
@@ -34,7 +34,7 @@ Result<int> StoI(std::string_view s)
 	return static_cast<int>(R);
 }
 
-Result<unsigned int> StoUI(std::string_view s)
+SResult<unsigned int> StoUI(std::string_view s)
 {
 	char* EP;
 	const char* P = s.data();
@@ -46,7 +46,7 @@ Result<unsigned int> StoUI(std::string_view s)
 	return static_cast<unsigned int>(R);
 }
 
-Result<unsigned long long> StoULL(std::string_view s)
+SResult<unsigned long long> StoULL(std::string_view s)
 {
 	char* EP;
 	const char* P = s.data();

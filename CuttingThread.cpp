@@ -17,10 +17,10 @@ void CuttingThread::setParams(const CutParams& p)
 
 void CuttingThread::run()
 {
-	Error e = Cut(params);
-	if (e)
+	SResult<> e = Cut(params);
+	if (e.is_ok())
 		emit success();
 	else
-		emit error(e.message().c_str());
+		emit error(e.unwrap_err().c_str());
 	exec();
 }

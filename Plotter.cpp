@@ -47,7 +47,7 @@ std::string UsbError(int e)
 }
 
 // Send some data to the USB device.
-Error UsbSend(libusb_device_handle* handle, const string& s, int timeout = 0)
+SResult<> UsbSend(libusb_device_handle* handle, const std::string& s, unsigned int timeout = 0)
 {
 	// The manual for the Silhouette Portrait indicate that some plotters will
 	// produce skewed and distorted results (only really perceptible when you
@@ -69,25 +69,21 @@ Error UsbSend(libusb_device_handle* handle, const string& s, int timeout = 0)
 		                               timeout);
 		if (ret != 0)
 		{
-			cerr << "Error writing to device: " << UsbError(ret) << endl;
-			return Error("Error writing to device: " + UsbError(ret));
+			return Err("Error writing to device: " + UsbError(ret));
 		}
 		if (transferred < 0 || static_cast<std::size_t>(transferred) != data.length())
 		{
-			cerr << "Warning, some data not transferred correctly." << endl;
 			return Err("Some data not transfered. Attempted: " + ULLtoS(data.length()) + " Transferred: " + ItoS(transferred));
 		}
 	}
-	return Success;
+	return Ok();
 }
 
 // Receive some data up to the maximum packet size of 64. Because we use the packet size
 // there can never be overflows, and 64 is ok because none of the craft robo responses are
 // anywhere near that long.
-Error UsbReceive(libusb_device_handle* handle, string& s, int timeout = 0)
+SResult<std::string> UsbReceive(libusb_device_handle* handle, unsigned int timeout = 0)
 {
-	s.clear();
-
 	// A buffer that is one packet long.
 	const int PacketSize = 64;
 	unsigned char buffer[PacketSize];
@@ -96,12 +92,10 @@ Error UsbReceive(libusb_device_handle* handle, string& s, int timeout = 0)
 	int ret = libusb_bulk_transfer(handle, endpoint, buffer, PacketSize, &transferred, timeout);
 	if (ret != 0) // But it could be a timout.
 	{
-		cerr << "Error reading from device: " << UsbError(ret) << endl;
-		return Error("Error reading from device: " + UsbError(ret));
+		return Err("Error reading from device: " + UsbError(ret));
 	}
 
-	s = string(reinterpret_cast<char*>(buffer), transferred);
-	return Success;
+	return Ok(std::string(reinterpret_cast<char*>(buffer), static_cast<std::size_t>(transferred)));
 }
 
 // Send a control message
@@ -118,7 +112,7 @@ libusb_device_handle* UsbOpen(CutterId* id)
 	ssize_t cnt = libusb_get_device_list(nullptr, &list);
 	if (cnt < 1)
 	{
-		id->msg = Error("Couldn't get usb device list.");
+		id->msg = "Couldn't get usb device list.";
 		return nullptr;
 	}
 
@@ -148,9 +142,9 @@ libusb_device_handle* UsbOpen(CutterId* id)
 	if (!found)
 	{
 		libusb_free_device_list(list, 1);
-		id->msg = Error("Couldn't find supported device. Is it connected to the system and powered "
-		                "on? The current list of supported devices includes the CC200, CC300, "
-		                "Silhouette SD 1, SD 2, Cameo, Cameo 3 and Portrait.");
+		id->msg = "Couldn't find supported device. Is it connected to the system and powered "
+		          "on? The current list of supported devices includes the CC200, CC300, "
+		          "Silhouette SD 1, SD 2, Cameo, Cameo 3 and Portrait.";
 		return nullptr;
 	}
 
@@ -160,7 +154,8 @@ libusb_device_handle* UsbOpen(CutterId* id)
 	if (err != 0)
 	{
 		libusb_free_device_list(list, 1);
-		id->msg = Error("Error accessing Craft Robo 2: " + UsbError(err) + ". Do you have permission (on Linux make sure you are in the group 'lp').");
+		id->msg = "Error accessing Craft Robo 2: " + UsbError(err) +
+		          ". Do you have permission (on Linux make sure you are in the group 'lp').";
 		return nullptr;
 	}
 
@@ -185,7 +180,7 @@ libusb_device_handle *UsbInit(struct CutterId *id)
 		if (r != 0)
 		{
 			libusb_close(handle);
-			id->msg = Error("Error detaching kernel USB driver: " + UsbError(r));
+			id->msg = "Error detaching kernel USB driver: " + UsbError(r);
 			return nullptr;
 		}
 	}
@@ -194,7 +189,7 @@ libusb_device_handle *UsbInit(struct CutterId *id)
 	if (r != 0)
 	{
 		libusb_close(handle);
-		id->msg = Error("Error resetting device: " + UsbError(r));
+		id->msg = "Error resetting device: " + UsbError(r);
 		return nullptr;
 	}
 
@@ -271,7 +266,7 @@ QList<QPolygonF> Transform_Silhouette_Cameo(QList<QPolygonF> cuts, double *media
 */
 } // anonymous namespace
 
-Error Cut(CutParams p)
+SResult<> Cut(CutParams p)
 {
 	VENDOR_ID = 0;//ProgramOptions::Instance().getVendorUSB_ID();
 	PRODUCT_ID = 0;//ProgramOptions::Instance().getProductUSB_ID();
@@ -308,8 +303,9 @@ Error Cut(CutParams p)
 
 	// TODO: Use Rust-style error handling?
 
-	Error e = Success;
-	string resp;
+	SResult<> e;
+	SResult<std::string> sr;
+	std::string resp;
 
 	// Initialise plotter.
 	e = UsbSend(handle, "\x1b\x04");
@@ -319,17 +315,18 @@ Error Cut(CutParams p)
 	e = UsbSend(handle, "\x1b\x05");
 	if (!e) goto error;
 
-	e = UsbReceive(handle, resp, 5000);
-	if (!e) goto error;
+	sr = UsbReceive(handle, 5000);
+	if (!sr) goto error;
 
+	resp = sr.unwrap();
 	if (resp != "0\x03") // 0 = Ready. 1 = Moving. 2 = Nothing loaded. "  " = ??
 	{
 		if (resp == "1\x03")
-		  e = Error("Moving, please try again.");
+		  e = Err(std::string("Moving, please try again."));
 		else if (resp == "2\x03")
-		  e = Error("Empty tray, please load media.");	// Silhouette Cameo
+		  e = Err(std::string("Empty tray, please load media."));	// Silhouette Cameo
 		else
-		  e = Error("Invalid response from plotter: " + resp);
+		  e = Err(std::string("Invalid response from plotter: ") + resp);
 		goto error;
 	}
 
@@ -342,8 +339,10 @@ Error Cut(CutParams p)
 	if (!e) goto error;
 
 	// Receive the firmware version.
-	e = UsbReceive(handle, resp, 10000); // Large timeout because the plotter moves.
-	if (!e) goto error;
+	sr = UsbReceive(handle, 10000); // Large timeout because the plotter moves.
+	if (!sr) goto error;
+
+	resp = sr.unwrap();
 	// Don't really care about this.
 //	if (resp.length() != 10)
 //	{
@@ -380,12 +379,14 @@ Error Cut(CutParams p)
 	e = UsbSend(handle, "TB71\x03"); // Again, no idea. Maybe something to do with registration marks?
 	if (!e) goto error;
 
-	e = UsbReceive(handle, resp, 10000); // Allow 10s. Seems reasonable.
-	if (!e) goto error;
+	sr = UsbReceive(handle, 10000); // Allow 10s. Seems reasonable.
+	if (!sr) goto error;
+
+	resp = sr.unwrap();
 
 	if (resp != "    0,    0\x03")
 	{
-		e = Error("Invalid response from plotter.");
+		e = Err(std::string("Invalid response from plotter."));
 		goto error;
 	}
 
@@ -434,30 +435,36 @@ Error Cut(CutParams p)
 			e = UsbSend(handle, "FQ5\x03"); // only with registration ???
 			if (!e) goto error; 
 
-			e = UsbReceive(handle, resp, 40000); // Allow 20s for reply...
-						if (!e) goto error;
+			sr = UsbReceive(handle, 40000); // Allow 40s for reply...
+			if (!sr) goto error;
+
+			resp = sr.unwrap();
 			if (resp != "    0,    0\x03")
 			{
-				e = Error("Couldn't find registration marks.");
 				std::cout << resp << "\n";
+				e = Err(std::string("Couldn't find registration marks."));
 				goto error;
 			}
-// Looks like if the reg marks work it gets 3 messages back (if it fails it times out because it only gets the first message)
-			e = UsbReceive(handle, resp, 40000); // Allow 20s for reply...
-			if (!e) goto error;
+			// Looks like if the reg marks work it gets 3 messages back (if it fails it times out because it only gets the first message)
+			sr = UsbReceive(handle, 40000); // Allow 40s for reply...
+			if (!sr) goto error;
+
+			resp = sr.unwrap();
 			if (resp != "    0\x03")
 			{
-				e = Error("Couldn't find registration marks.");
 				std::cout << resp << "\n";
+				e = Err(std::string("Couldn't find registration marks."));
 				goto error;
 			}
 
-			e = UsbReceive(handle, resp, 40000); // Allow 20s for reply...
-			if (!e) goto error;
+			sr = UsbReceive(handle, 40000); // Allow 40s for reply...
+			if (!sr) goto error;
+
+			resp = sr.unwrap();
 			if (resp != "    1\x03")
 			{
-				e = Error("Couldn't find registration marks.");
 				std::cout << resp << "\n";
+				e = Err(std::string("Couldn't find registration marks."));
 				goto error;
 			}
 		}
@@ -559,13 +566,33 @@ Error Cut(CutParams p)
 	libusb_release_interface(handle, 0);
 	libusb_close(handle);
 
-	return Success;
+	return Ok();
 
 error: // Hey, this is basically C and I can't be bothered to properly C++-ify it. TODO: Use exceptions.
-	cout << "Error: " << e << endl;
 	libusb_release_interface(handle, 0);
 	libusb_close(handle);
 	return e;
 
+}
+
+
+CutterId DetectDevices()
+{
+	CutterId id = { "?", 0, 0 };
+	libusb_device_handle *handle;
+
+//	if (1) // TODO: ???
+//	{
+	    handle = UsbOpen(&id);
+		if (handle)
+			libusb_close(handle);
+		else
+			id.msg = "no device found";
+//	}
+//	else
+//	{
+//		id.msg = "Cannot Identify while cut thread is running";
+//	}
+	return id;
 }
 

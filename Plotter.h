@@ -19,7 +19,7 @@
 // regwidth/height: Distance between the registration marks.
 //
 // TODO: Apparently you can change the number of registration marks?
-Error Cut(CutParams p);
+SResult<> Cut(CutParams p);
 
 const int VENDOR_ID_GRAPHTEC = 0x0b4d;
 

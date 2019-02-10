@@ -48,6 +48,7 @@ set(src_files
 	"Plotter.cpp"
 	"Plotter.h"
 	"Resources.qrc"
+	"Result.h"
 	"SvgPreviewModel.cpp"
 	"SvgPreviewModel.h"
 	"SvgRenderer.cpp"
