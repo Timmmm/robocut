@@ -62,13 +62,12 @@ MainWindow::MainWindow(QWidget *parent)
 	ui->actionCutter_Path->setChecked(cutterPathEnabled);
 	
 	// TODO: Implement this.
-	ui->menuEdit->hide();
+//	ui->menuEdit->hide();
 
-	scene = new QGraphicsScene(this);
+	scene = new PathScene(this);
 	
 	ui->graphicsView->setScene(scene);
 	ui->graphicsView->scale(defaultZoom, defaultZoom);
-	ui->graphicsView->viewport()->installEventFilter(this);
 
 	animationTimer = new QTimer(this);
 	connect(animationTimer, &QTimer::timeout, this, &MainWindow::animate);
@@ -94,6 +93,12 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(zoom_in, &QShortcut::activated, this, &MainWindow::on_actionZoom_In_triggered);
 	QShortcut* zoom_out = new QShortcut(QKeySequence("Z"), this);
 	connect(zoom_out, &QShortcut::activated, this, &MainWindow::on_actionZoom_Out_triggered);
+
+	auto toolGroup = new QActionGroup(this);
+	toolGroup->addAction(ui->actionPan);
+	toolGroup->addAction(ui->actionMeasure);
+
+	connect(toolGroup, &QActionGroup::triggered, this, &MainWindow::onToolTriggered);
 	
 	auto sortMethodGroup = new QActionGroup(this);
 	sortMethodGroup->addAction(ui->actionSortShortest);
@@ -104,7 +109,52 @@ MainWindow::MainWindow(QWidget *parent)
 	
 	connect(sortMethodGroup, &QActionGroup::triggered, this, &MainWindow::onSortMethodTriggered);
 
-	show();	
+	// Initialise icons.
+	// Dark icons generated with:
+	//
+	//   for FILE in *.svg ; do cat $FILE | sed -e 's/path/path fill="white"/g' > dark_$FILE ; done
+	//
+
+	auto background = QApplication::palette("QWidget").color(QPalette::Base);
+	auto foreground = QApplication::palette("QWidget").color(QPalette::Text);
+
+	bool isDarkMode = foreground.lightness() > background.lightness();
+
+	auto assignIcon = [&](QAction* action, QString on, QString off = "") {
+		QIcon icon;
+		if (off.isEmpty())
+		{
+			icon.addFile((isDarkMode ? ":icons/dark_ic_" : ":icons/ic_") + on + "_48px.svg");
+		}
+		else
+		{
+			icon.addFile((isDarkMode ? ":icons/dark_ic_" : ":icons/ic_") + on + "_48px.svg",
+			             QSize(),
+			             QIcon::Normal,
+			             QIcon::On);
+			icon.addFile((isDarkMode ? ":icons/dark_ic_" : ":icons/ic_") + off + "_48px.svg",
+			             QSize(),
+			             QIcon::Normal,
+			             QIcon::Off);
+			// TODO: Probably need to add it for disabled, etc. too.
+		}
+		icon.setIsMask(true);
+		action->setIcon(icon);
+	};
+
+	assignIcon(ui->actionOpen, "folder_open");
+	assignIcon(ui->actionCut, "print");
+	assignIcon(ui->actionClose, "close");
+	assignIcon(ui->actionGrid, "grid_on", "grid_off");
+	assignIcon(ui->actionCutter_Path, "timeline", "timeline_off");
+	assignIcon(ui->actionAnimate, "play_arrow");
+	assignIcon(ui->actionPan, "pan_tool");
+	assignIcon(ui->actionMeasure, "straighten");
+
+	// Receive mouse move events because in "measure" mode we move the measure item
+	// to follow the mouse (with snapping).
+	connect(scene, &PathScene::mouseMoved, this, &MainWindow::onMouseMoved);
+	connect(scene, &PathScene::mousePressed, this, &MainWindow::onMousePressed);
 }
 
 MainWindow::~MainWindow()
@@ -237,6 +287,12 @@ void MainWindow::loadFile(QString filename)
 	
 	// Add the rulers.
 //	addRulers(scene);
+
+	// Add the measuring tape and hide it.
+	measureItem = new MeasureItem();
+	measureItem->setZValue(10);
+	measureItem->hide();
+	scene->addItem(measureItem);
 	
 	QList<QGraphicsItem*> gridSquares;
 	
@@ -245,8 +301,8 @@ void MainWindow::loadFile(QString filename)
 	{
 		for (int y = x % 2; y < data.mediaSize.height() / 10; y += 2)
 		{
-			int w = std::min(10.0, data.mediaSize.width() - x * 10.0);
-			int h = std::min(10.0, data.mediaSize.height() - y * 10.0);
+			int w = static_cast<int>(std::min(10.0, data.mediaSize.width() - x * 10.0));
+			int h = static_cast<int>(std::min(10.0, data.mediaSize.height() - y * 10.0));
 			gridSquares.append(
 			            scene->addRect(x*10, data.mediaSize.height() - y*10 - h, w, h,
 						               Qt::NoPen, QBrush(QColor::fromRgb(240, 240, 240)))
@@ -483,6 +539,10 @@ void MainWindow::setFileLoaded(QString filename)
 	ui->actionCut->setEnabled(e);
 	ui->actionReload->setEnabled(e);
 	ui->actionClose->setEnabled(e);
+	ui->actionGrid->setEnabled(e);
+	ui->actionCutter_Path->setEnabled(e);
+	ui->actionPan->setEnabled(e);
+	ui->actionMeasure->setEnabled(e);
 	
 	// Update the recent files list. Also ignore files that start
 	// with a colon - those are examples.
@@ -565,6 +625,7 @@ void MainWindow::clearScene()
 	cutMarker = nullptr;
 	cutterPathItem = nullptr;
 	pathsItem = nullptr;
+	measureItem = nullptr;
 }
 
 void MainWindow::on_openSvgButton_clicked()
@@ -625,6 +686,37 @@ void MainWindow::onSortMethodTriggered(QAction* action)
 	addPathItemsToScene();
 }
 
+void MainWindow::onToolTriggered(QAction* action)
+{
+	if (action == ui->actionPan)
+	{
+		tool = Tool::Pan;
+
+		// Change the cursor. TODO: https://stackoverflow.com/a/10953718/265521
+		ui->graphicsView->setDragMode(QGraphicsView::ScrollHandDrag);
+		ui->graphicsView->setCursor(Qt::OpenHandCursor);
+
+		// Hide the measuring tape item
+		if (measureItem != nullptr)
+		{
+			measureItem->hide();
+		}
+	}
+	else if (action == ui->actionMeasure)
+	{
+		tool = Tool::Measure;
+
+		// Change the cursor. TODO: https://stackoverflow.com/a/10953718/265521
+		ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
+		ui->graphicsView->setCursor(Qt::CrossCursor);
+		if (measureItem != nullptr)
+		{
+			measureItem->setState(MeasureItem::State::Free);
+			measureItem->setPos(QPointF());
+			measureItem->setVec(QPointF());
+		}
+	}
+}
 
 void MainWindow::on_actionRulers_toggled(bool enabled)
 {
@@ -646,17 +738,65 @@ void MainWindow::on_actionDimensions_toggled(bool enabled)
 		dimensionsItem->setVisible(dimensionsEnabled);
 }
 
-void MainWindow::on_actionVerify_Adjust_Scale_triggered()
-{
-    // TODO: Allow the user to select two vertices (snap-to-vertex) and
-	// then a dialog will open saying the distance between those points and
-	// giving the option to specify what the distance *should* be, thereby
-	// scaling the entire thing.
-}
-
 void MainWindow::on_actionCutter_Path_toggled(bool enabled)
 {
 	cutterPathEnabled = enabled;
 	if (cutterPathItem != nullptr)
 		cutterPathItem->setVisible(cutterPathEnabled);
+}
+
+void MainWindow::onMouseMoved(QPointF pos)
+{
+	if (tool == Tool::Measure)
+	{
+		if (measureItem != nullptr)
+		{
+			// Show the measure item.
+			measureItem->show();
+			switch (measureItem->state())
+			{
+			case MeasureItem::State::Free:
+				measureItem->setPos(pos);
+				measureItem->setVec(QPointF(30.0, 0.0));
+				scene->update();
+				break;
+			case MeasureItem::State::OneEndAttached:
+				measureItem->setVec(pos - measureItem->pos());
+				scene->update();
+				break;
+			case MeasureItem::State::BothEndsAttached:
+				break;
+			}
+		}
+	}
+}
+
+void MainWindow::onMousePressed(QPointF pos)
+{
+	if (tool == Tool::Measure)
+	{
+		if (measureItem != nullptr)
+		{
+			switch (measureItem->state())
+			{
+			case MeasureItem::State::Free:
+				qDebug() << "Setting OneEndAttached";
+				measureItem->setState(MeasureItem::State::OneEndAttached);
+				measureItem->setPos(pos);
+				measureItem->setVec(QPointF());
+				break;
+			case MeasureItem::State::OneEndAttached:
+				qDebug() << "Setting BothEndsAttached";
+				measureItem->setState(MeasureItem::State::BothEndsAttached);
+				measureItem->setVec(pos - measureItem->pos());
+				break;
+			case MeasureItem::State::BothEndsAttached:
+				qDebug() << "Setting Free";
+				measureItem->setState(MeasureItem::State::Free);
+				measureItem->setPos(pos);
+				measureItem->setVec(QPointF(30.0, 0.0));
+				break;
+			}
+		}
+	}
 }

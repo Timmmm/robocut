@@ -10,6 +10,8 @@
 #include "FileData.h"
 #include "SvgPreviewModel.h"
 #include "PathSorter.h"
+#include "MeasureItem.h"
+#include "PathScene.h"
 
 namespace Ui
 {
@@ -38,7 +40,6 @@ private slots:
 	void on_actionReload_triggered();
 	void on_actionReset_triggered();
 	void on_actionRulers_toggled(bool enabled);
-	void on_actionVerify_Adjust_Scale_triggered();
 	void on_actionZoom_In_triggered();
 	void on_actionZoom_Out_triggered();
 	void on_examplesList_activated(const QModelIndex &index);
@@ -49,9 +50,13 @@ private slots:
 	void animate();
 	
 	void onSortMethodTriggered(QAction* action);
-	
+	void onToolTriggered(QAction* action);
+
 	void on_actionCutter_Path_toggled(bool enabled);
-	
+
+	void onMouseMoved(QPointF pos);
+	void onMousePressed(QPointF pos);
+
 private:
 	// Attempt to load the given file.
 	void loadFile(QString currentFilename);
@@ -76,7 +81,7 @@ private:
 	QList<QPolygonF> sortedPaths;
 
 	// The graphics scene which holds the cuts, the grid, the dimensions, etc.
-	QGraphicsScene* scene = nullptr;
+	PathScene* scene = nullptr;
 
 	// The dialog that asks what settings to use. We keep this around and reuse it as necessary.
 	CutDialog* cutDialog = nullptr;
@@ -115,6 +120,9 @@ private:
 	// The actual cut polygons.
 	QGraphicsItemGroup* pathsItem = nullptr;
 
+	// Tape measure item
+	MeasureItem* measureItem = nullptr;
+
 	// The currently loaded file. Empty if there isn't one.
 	QString currentFilename;
 	
@@ -138,4 +146,8 @@ private:
 	// The default zoom for the current document, which is based on its size.
 	double defaultZoom = 1.0;
 
+	enum class Tool {
+		Pan,
+		Measure,
+	} tool = Tool::Pan;
 };
