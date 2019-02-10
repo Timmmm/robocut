@@ -17,6 +17,10 @@ int main(int argc, char *argv[])
 	QCoreApplication::setOrganizationName("Robocut");
     QCoreApplication::setOrganizationDomain("robocut.com");
     QCoreApplication::setApplicationName("Robocut");
+
+	// Smoooth
+	QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling, true);
+	QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps, true);
 	
 	int err = libusb_init(nullptr);
 	if (err != LIBUSB_SUCCESS)
@@ -30,12 +34,15 @@ int main(int argc, char *argv[])
 
 	// Code block to ensure usb devices are closed. Maybe.
 	{
-		QApplication a(argc, argv);
+		QApplication app(argc, argv);
+		// Don't show icons in menus, as was the fashion at the time.
+		app.setAttribute(Qt::AA_DontShowIconsInMenus);
 		
 //		processCommandLineOptions(a, argc, argv);
 		
-		MainWindow w; 
-		ret = a.exec();
+		MainWindow w;
+		w.show();
+		ret = app.exec();
 	}
 
 	libusb_exit(nullptr);
