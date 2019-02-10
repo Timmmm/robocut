@@ -60,25 +60,25 @@ int PathPaintDevice::metric(PaintDeviceMetric metric) const
 	{
 	// Width in pixels.
 	case PdmWidth:
-		return width * ppm;
+		return static_cast<int>(width * ppm);
 	case PdmHeight:
-		return height * ppm;
+		return static_cast<int>(height * ppm);
 	case PdmWidthMM:
-		return width;
+		return static_cast<int>(width);
 	case PdmHeightMM:
-		return height;
+		return static_cast<int>(height);
 	case PdmNumColors:
 		return 2;
 	case PdmDepth:
 		return 1;
 	case PdmDpiX:
-		return 25.4 * ppm; // Convert to inches.
+		return static_cast<int>(25.4 * ppm); // Convert to inches.
 	case PdmDpiY:
-		return 25.4 * ppm;
+		return static_cast<int>(25.4 * ppm);
 	case PdmPhysicalDpiX:
-		return 25.4 * ppm;
+		return static_cast<int>(25.4 * ppm);
 	case PdmPhysicalDpiY:
-		return 25.4 * ppm;
+		return static_cast<int>(25.4 * ppm);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 6, 0))
 	case PdmDevicePixelRatio:
 		return 1;

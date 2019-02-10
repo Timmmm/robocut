@@ -47,6 +47,7 @@ bool ZoomableGraphicsView::gestureEvent(QGestureEvent* event)
 
 void ZoomableGraphicsView::panTriggered(QPanGesture* gesture)
 {
+	(void)gesture;
 }
 
 void ZoomableGraphicsView::pinchTriggered(QPinchGesture* gesture)

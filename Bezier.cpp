@@ -35,7 +35,7 @@ void addBezierToPolygon(QPolygonF& poly,
                         const QPointF& p2, const QPointF& p3,
                         qreal fineness)
 {
-	int N = (curvinessness(p0, p1, p2, p3) * fineness);
+	int N = static_cast<int>(curvinessness(p0, p1, p2, p3) * fineness);
 	
 	// Add reasonable bounds.
 	if (N < 4)

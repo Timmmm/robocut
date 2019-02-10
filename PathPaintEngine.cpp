@@ -109,7 +109,7 @@ namespace {
 				break;
 			}
 			case QPainterPath::CurveToDataElement:
-				Q_ASSERT(!"QPainterPath::toSubpathPolygons(), bad element type");
+				Q_ASSERT(false && "QPainterPath::toSubpathPolygons(), bad element type");
 				break;
 			}
 		}

@@ -10,7 +10,7 @@ public:
 	explicit ZoomableGraphicsView(QWidget* parent = nullptr);
 	ZoomableGraphicsView(QGraphicsScene* scene, QWidget* parent);
 	
-	~ZoomableGraphicsView();
+	~ZoomableGraphicsView() override;
 	
 protected:
 	bool event(QEvent* event) override;

@@ -7,6 +7,9 @@
 
 #include <QSvgRenderer>
 
+namespace
+{
+
 // Return the distance travelled by the cutter when it isn't
 // cutting paths.
 double pathSortDistance(const QList<QPolygonF>& paths,
@@ -48,7 +51,7 @@ QPolygonF rotatePolygonStart(const QPolygonF& poly, int newStart)
 	// It's a closed polygon. Wrap the points ignoring the last repeated point.
 	QPolygonF rotated(poly.size());
 	
-	for (std::size_t i = 0; i < poly.size()-1; ++i)
+	for (int i = 0; i < poly.size()-1; ++i)
 		rotated[i] = poly[(i + newStart) % (poly.size() - 1)];
 	
 	// And then set the repeated point.
@@ -62,7 +65,7 @@ int highestIndex(const QPolygonF& poly)
 {
 	int maxIdx = 0;
 	qreal maxY = std::numeric_limits<qreal>::lowest();
-	for (std::size_t i = 0; i < poly.size(); ++i)
+	for (int i = 0; i < poly.size(); ++i)
 	{
 		if (poly[i].y() > maxY)
 		{
@@ -78,7 +81,7 @@ int closestIndex(const QPolygonF& poly, QPointF p)
 {
 	int minIdx = 0;
 	qreal minDist = std::numeric_limits<qreal>::max();
-	for (std::size_t i = 0; i < poly.size(); ++i)
+	for (int i = 0; i < poly.size(); ++i)
 	{
 		auto dist = QLineF(poly[i], p).length();
 		if (dist < minDist)
@@ -281,13 +284,17 @@ QList<QPolygonF> sortPathsGreedy(const QList<QPolygonF>& paths,
 		for (int i = pathOffset[closest.polygon];
 		     i < pathOffset[closest.polygon] + paths[closest.polygon].size();
 		     ++i)
-			index.removePoint(i);
+		{
+			index.removePoint(static_cast<std::size_t>(i));
+		}
 		
 		startingPoint = sorted.back().back();
 	}
 	
 	return sorted;
 }
+
+} // anonymous namespace
 
 QList<QPolygonF> sortPaths(const QList<QPolygonF>& paths,
                            PathSortMethod method,
@@ -313,7 +320,7 @@ QList<QPolygonF> sortPaths(const QList<QPolygonF>& paths,
 		auto bestIdx = std::distance(qualities.begin(),
 		                             std::max_element(qualities.begin(), qualities.end()));
 		
-		return pathsSorted[bestIdx];
+		return pathsSorted[static_cast<int>(bestIdx)];
 	}
 	
 	case PathSortMethod::IncreasingY:

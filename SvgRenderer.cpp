@@ -9,68 +9,67 @@
 
 namespace
 {
-	// Parse a width or height attribute, and try to return its size in mm.
-	// If no units are given it is assumed to be mm.
-	// If the unit is percent, then it returns 0.
-	// length ::= number ("em" | "ex" | "px" | "in" | "cm" | "mm" | "pt" | "pc" | "%")?
-	double sizeAttributeToMm(const QString& attr)
+// Parse a width or height attribute, and try to return its size in mm.
+// If no units are given it is assumed to be mm.
+// If the unit is percent, then it returns 0.
+// length ::= number ("em" | "ex" | "px" | "in" | "cm" | "mm" | "pt" | "pc" | "%")?
+double sizeAttributeToMm(const QString& attr)
+{
+	double multiplier = 1.0;
+
+	auto a = attr.trimmed();
+
+	if (a.endsWith("em"))
 	{
-		double multiplier = 1.0;
-	
-		auto a = attr.trimmed();
-		
-		if (a.endsWith("em"))
-		{
-			multiplier = 1.0;
-			a.chop(2);
-		}
-		else if (a.endsWith("ex"))
-		{
-			multiplier = 1.0;
-			a.chop(2);
-		}
-		else if (a.endsWith("px"))
-		{
-			multiplier = 1.0;
-			a.chop(2);
-		}
-		else if (a.endsWith("in"))
-		{
-			multiplier = 1.0;
-			a.chop(2);
-		}
-		else if (a.endsWith("cm"))
-		{
-			multiplier = 1.0;
-			a.chop(2);
-		}
-		else if (a.endsWith("mm"))
-		{
-			multiplier = 1.0;
-			a.chop(2);
-		}
-		else if (a.endsWith("pt"))
-		{
-			multiplier = 1.0;
-			a.chop(2);
-		}
-		else if (a.endsWith("pc"))
-		{
-			multiplier = 1.0;
-			a.chop(2);
-		}
-		else if (a.endsWith("%"))
-		{
-			return 0.0;
-		}
-		
-		bool ok = false;
-		double len = a.toDouble(&ok);
-		if (!ok)
-			return 0.0;
-		
-		return len * multiplier;
+		multiplier = 1.0;
+		a.chop(2);
 	}
+	else if (a.endsWith("ex"))
+	{
+		multiplier = 1.0;
+		a.chop(2);
+	}
+	else if (a.endsWith("px"))
+	{
+		multiplier = 1.0;
+		a.chop(2);
+	}
+	else if (a.endsWith("in"))
+	{
+		multiplier = 1.0;
+		a.chop(2);
+	}
+	else if (a.endsWith("cm"))
+	{
+		multiplier = 1.0;
+		a.chop(2);
+	}
+	else if (a.endsWith("mm"))
+	{
+		multiplier = 1.0;
+		a.chop(2);
+	}
+	else if (a.endsWith("pt"))
+	{
+		multiplier = 1.0;
+		a.chop(2);
+	}
+	else if (a.endsWith("pc"))
+	{
+		multiplier = 1.0;
+		a.chop(2);
+	}
+	else if (a.endsWith("%"))
+	{
+		return 0.0;
+	}
+
+	bool ok = false;
+	double len = a.toDouble(&ok);
+	if (!ok)
+		return 0.0;
+
+	return len * multiplier;
 }
 
 struct SvgXmlData
@@ -142,6 +141,8 @@ SvgXmlData scanSvgElements(const QByteArray& svgContents, bool searchForTspans)
 	}
 	return data;
 }
+
+} // anonymous namespace
 
 SvgRender svgToPaths(const QString& filename, bool searchForTspans)
 {

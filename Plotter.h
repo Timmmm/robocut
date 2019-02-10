@@ -4,8 +4,6 @@
 #include <QPolygonF>
 #include "Common.h"
 
-using namespace std;
-
 #include "CuttingThread.h"
 
 // Perform the cut. Returns error state. Note that this just sends the data, it has no way of knowing whether it really
@@ -26,7 +24,7 @@ Error Cut(CutParams p);
 const int VENDOR_ID_GRAPHTEC = 0x0b4d;
 
 // Map from product ID to product name.
-const map<int, string> PRODUCT_ID_LIST = {
+const std::map<int, std::string> PRODUCT_ID_LIST = {
     { 0x110a, "CC200-20" },
     { 0x111a, "CC300-20" },
     { 0x111c, "Silhouette SD / CC220-30" },
@@ -38,7 +36,7 @@ const map<int, string> PRODUCT_ID_LIST = {
 
 struct CutterId
 {
-  string msg;
+  std::string msg;
   int usb_vendor_id;
   int usb_product_id;
 };
