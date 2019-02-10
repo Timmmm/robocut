@@ -91,6 +91,26 @@ target_include_directories(Robocut
 )
 
 target_compile_definitions(Robocut PRIVATE "-DROBOCUT_VERSION=\"${PROJECT_VERSION}\"")
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+	# More sensible warnings/errors.
+	target_compile_options(${PROJECT_NAME} PRIVATE
+		-Weverything
+		-Werror
+		-pedantic
+		-Wno-c++98-compat
+		-Wno-c++98-compat-pedantic
+
+		# These are too noisy.
+		-Wno-padded
+		-Wno-switch-enum
+		-Wno-exit-time-destructors
+		-Wno-global-constructors
+		-Wno-shadow-field-in-constructor
+
+		# Moc causes these.
+		-Wno-redundant-parens
+		)
+endif ()
 
 # A custom Info.plist is used to enable high dpi on OSX.
 set_target_properties(Robocut
