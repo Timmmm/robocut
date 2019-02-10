@@ -32,6 +32,8 @@ set(src_files
 	"CuttingThread.h"
 	"FileData.cpp"
 	"FileData.h"
+	"MeasureItem.cpp"
+	"MeasureItem.h"
 	"MainWindow.cpp"
 	"MainWindow.h"
 	"MainWindow.ui"
