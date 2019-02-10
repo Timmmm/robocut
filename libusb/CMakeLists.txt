@@ -57,10 +57,8 @@ add_library(libusb STATIC
 	${src_files}
 )
 
-target_include_directories(libusb
-	PUBLIC "libusb"
-	PRIVATE "libusb/libusb"
-)
+target_include_directories(libusb SYSTEM PUBLIC "libusb")
+target_include_directories(libusb PRIVATE "libusb/libusb")
 
 # For config.h
 if (WIN32)
