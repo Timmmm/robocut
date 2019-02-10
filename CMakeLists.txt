@@ -60,10 +60,10 @@ if (WIN32)
 elseif (APPLE)
 	# OSX Icon
 	# This is the property added to Info.plist
-	set(MACOSX_BUNDLE_ICON_FILE "Robocut.icns")
+	set(MACOSX_BUNDLE_ICON_FILE "${PROJECT_NAME}.icns")
 
 	# Add the file to the source.
-	set(osx_icon_file "${CMAKE_SOURCE_DIR}/icon/Robocut.icns")
+	set(osx_icon_file "${CMAKE_SOURCE_DIR}/icon/${PROJECT_NAME}.icns")
 	set_source_files_properties("${osx_icon_file}" PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 
 	list(APPEND src_files "${osx_icon_file}")
@@ -74,23 +74,21 @@ set(CMAKE_AUTOMOC TRUE)
 set(CMAKE_AUTOUIC TRUE)
 set(CMAKE_AUTORCC TRUE)
 
-add_executable(Robocut MACOSX_BUNDLE WIN32
+add_executable(${PROJECT_NAME} MACOSX_BUNDLE WIN32
 	${src_files}
 )
 
-target_link_libraries(Robocut
+target_link_libraries(${PROJECT_NAME}
 	Qt5::Widgets
 	Qt5::Svg
 	libusb
 )
 
-target_include_directories(Robocut
-	PRIVATE
-		"."
-		"nanoflann/include"
-)
+target_include_directories(${PROJECT_NAME} PRIVATE ".")
+target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE "nanoflann/include")
 
-target_compile_definitions(Robocut PRIVATE "-DROBOCUT_VERSION=\"${PROJECT_VERSION}\"")
+target_compile_definitions(${PROJECT_NAME} PRIVATE "-D${PROJECT_NAME}_VERSION=\"${PROJECT_VERSION}\"")
+
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	# More sensible warnings/errors.
 	target_compile_options(${PROJECT_NAME} PRIVATE
@@ -113,33 +111,33 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif ()
 
 # A custom Info.plist is used to enable high dpi on OSX.
-set_target_properties(Robocut
+set_target_properties(${PROJECT_NAME}
 	PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/MacOSXBundleInfo.plist.in")
 
 # Packaging
 if (WIN32)
 	add_custom_target(pack
 		# Make a temporary directory for the zip.
-		COMMAND "${CMAKE_COMMAND}" "-E" "make_directory" "${CMAKE_BINARY_DIR}/Zip/Robocut"
+		COMMAND "${CMAKE_COMMAND}" "-E" "make_directory" "${CMAKE_BINARY_DIR}/Zip/${PROJECT_NAME}"
 
 		# Copy the EXE there.
-		COMMAND "${CMAKE_COMMAND}" "-E" "copy" "$<TARGET_FILE:Robocut>"
-			"${CMAKE_BINARY_DIR}/Zip/Robocut/Robocut.exe"
+		COMMAND "${CMAKE_COMMAND}" "-E" "copy" "$<TARGET_FILE:${PROJECT_NAME}>"
+		    "${CMAKE_BINARY_DIR}/Zip/${PROJECT_NAME}/${PROJECT_NAME}.exe"
 
 		# Deploy Qt to that directory. All the options are to save space.
 		COMMAND "${_qt5Core_install_prefix}/bin/windeployqt.exe" "--release" "--compiler-runtime"
 			"--no-angle" "--no-opengl-sw" "--no-translations" "--no-system-d3d-compiler"
-			"${CMAKE_BINARY_DIR}/Zip/Robocut/Robocut.exe"
+			"${CMAKE_BINARY_DIR}/Zip/${PROJECT_NAME}/${PROJECT_NAME}.exe"
 
-		DEPENDS Robocut
+		DEPENDS ${PROJECT_NAME}
 		COMMENT "Deploying Qt"
 		VERBATIM
 	)
 
 	# Zip the result
 	add_custom_target(artefact
-		COMMAND 7z a "${CMAKE_BINARY_DIR}/Robocut-${PROJECT_VERSION}.zip"
-			"${CMAKE_BINARY_DIR}/Zip/Robocut"
+		COMMAND 7z a "${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${PROJECT_VERSION}.zip"
+		    "${CMAKE_BINARY_DIR}/Zip/${PROJECT_NAME}"
 		DEPENDS pack
 		COMMENT "Creating Zip"
 		VERBATIM
@@ -149,10 +147,10 @@ elseif (APPLE)
 	# Note there is a slight bug (https://bugreports.qt.io/browse/QTBUG-60324) in macdeployqt
 	# which means we really want the working directory to be the place where the dmg is generated.
 	add_custom_target(artefact
-		COMMAND "${_qt5Core_install_prefix}/bin/macdeployqt" "Robocut.app" "-dmg"
-		COMMAND "${CMAKE_COMMAND}" "-E" "rename" "${CMAKE_BINARY_DIR}/Robocut.dmg"
-			"${CMAKE_BINARY_DIR}/Robocut-${PROJECT_VERSION}.dmg"
-		DEPENDS Robocut
+		COMMAND "${_qt5Core_install_prefix}/bin/macdeployqt" "${PROJECT_NAME}.app" "-dmg"
+		COMMAND "${CMAKE_COMMAND}" "-E" "rename" "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.dmg"
+		    "${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${PROJECT_VERSION}.dmg"
+		DEPENDS ${PROJECT_NAME}
 		WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 		COMMENT "Creating DMG"
 		VERBATIM
@@ -160,12 +158,12 @@ elseif (APPLE)
 else ()
 	# This is just here for consistency with platforms that don't produce zip or dmg.
 	add_custom_Target(artefact
-		DEPENDS Robocut
+		DEPENDS ${PROJECT_NAME}
 		COMMENT "Not generating build artefact"
 		VERBATIM
 	)
 
-	install(TARGETS Robocut
+    install(TARGETS ${PROJECT_NAME}
 		RUNTIME DESTINATION bin)
 
 endif ()
