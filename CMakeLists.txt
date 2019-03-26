@@ -92,7 +92,7 @@ target_link_libraries(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME} PRIVATE ".")
 target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE "nanoflann/include")
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE "-D${PROJECT_NAME}_VERSION=\"${PROJECT_VERSION}\"")
+target_compile_definitions(${PROJECT_NAME} PRIVATE "-DPROJECT_VERSION=\"${PROJECT_VERSION}\"")
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	# More sensible warnings/errors.
