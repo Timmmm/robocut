@@ -1,4 +1,4 @@
-[![Travis Build Status](https://travis-ci.org/travis-ci/travis-web.svg?branch=master)](https://travis-ci.org/travis-ci/travis-web)
+[![Travis Build Status](https://travis-ci.org/Timmmm/robocut.svg?branch=master)](https://travis-ci.org/Timmmm/robocut)
 [![Appveyor Build Status](https://ci.appveyor.com/api/projects/status/7xiee78m0i3rwqhq/branch/master?svg=true)](https://ci.appveyor.com/project/Timmmm/robocut/branch/master)
 
 # Robocut
