@@ -3,21 +3,22 @@ os:
 
 language: cpp
 
-dist: trusty
+dist: xenial
+osx_image: xcode10.1
 
 addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
-      - sourceline: "ppa:beineri/opt-qt-5.10.1-trusty"
+      - sourceline: "ppa:beineri/opt-qt-5.12.1-xenial"
       - sourceline: "ppa:snappy-dev/snapcraft-daily"
     packages:
       - gcc-7
       - g++-7
-      - qt510-meta-minimal
-      - qt510svg
-      - qt510imageformats
-      - qt510tools
+      - qt512-meta-minimal
+      - qt512svg
+      - qt512imageformats
+      - qt512tools
       - snapcraft
       - libudev-dev
 
@@ -31,7 +32,7 @@ script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       export CC=gcc-7 ;
       export CXX=g++-7 ;
-      source /opt/qt510/bin/qt510-env.sh ;
+      source /opt/qt512/bin/qt512-env.sh ;
     fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       export CMAKE_PREFIX_PATH=$(brew --prefix qt) ;
