@@ -387,160 +387,130 @@ SResult<> Cut(CutParams p)
 	e = UsbSend(handle, "FA\x03");
 	if (!e) return e;
 
+	// Page size: height,width in 20ths of a mm minus a margin. This is for A4. TODO: Find maximum and use that.
+	std::stringstream page;
 
-	// Block for all the "jump to error crosses initialization" errors. Really need to use exceptions!
+	int width = static_cast<int>(lround(p.mediawidth * 20.0));
+	int height = static_cast<int>(lround(p.mediaheight * 20.0));
+
+	int margintop = 0;//ProgramOptions::Instance().getMarginTop();
+	int marginright = 0;//ProgramOptions::Instance().getMarginRight();
+
+	e = UsbSend(handle, "FU" + ItoS(height - margintop) + "," + ItoS(width - marginright) + "\x03");
+	if (!e) return e;
+	e = UsbSend(handle, "FM1\x03"); // ?
+	if (!e) return e;
+
+	if (p.regmark)
 	{
-		// Page size: height,width in 20ths of a mm minus a margin. This is for A4. TODO: Find maximum and use that.
-		std::stringstream page;
-
-		int width = static_cast<int>(lround(p.mediawidth * 20.0));
-		int height = static_cast<int>(lround(p.mediaheight * 20.0));
-
-		int margintop = 0;//ProgramOptions::Instance().getMarginTop();
-		int marginright = 0;//ProgramOptions::Instance().getMarginRight();
-
-		e = UsbSend(handle, "FU" + ItoS(height - margintop) + "," + ItoS(width - marginright) + "\x03");
+		std::stringstream regmarkstr;
+		regmarkstr.precision(0);
+		std::string searchregchar = "23,";
+		int regw = static_cast<int>(lround(p.regwidth * 20.0));
+		int regl = static_cast<int>(lround(p.regheight * 20.0));
+		e = UsbSend(handle, "TB50,381\x03"); //only with registration (it was TB50,1) ???
 		if (!e) return e;
-		e = UsbSend(handle, "FM1\x03"); // ?
+
+		if (p.regsearch)
+			searchregchar ="123,";
+
+		regmarkstr <<  "TB99\x03TB55,1\x03TB" + searchregchar + ItoS(regw) + "," + ItoS(regl) + "\x03";
+
+		std::cout << "Registration mark string: " << regmarkstr.str() << "\n";
+
+		e = UsbSend(handle, regmarkstr.str()); //registration mark test /1-2: 180.0mm / 1-3: 230.0mm (origin 15mmx20mm)
 		if (!e) return e;
+
+		e = UsbSend(handle, "FQ5\x03"); // only with registration ???
+		if (!e) return e;
+
+		sr = UsbReceive(handle, 40000); // Allow 40s for reply...
+		if (!sr) return sr;
+
+		resp = sr.unwrap();
+		if (resp != "    0,    0\x03")
+		{
+			std::cout << resp << "\n";
+			return Err(std::string("Couldn't find registration marks."));
+		}
+		// Looks like if the reg marks work it gets 3 messages back (if it fails it times out because it only gets the first message)
+		sr = UsbReceive(handle, 40000); // Allow 40s for reply...
+		if (!sr) return sr;
+
+		resp = sr.unwrap();
+		if (resp != "    0\x03")
+		{
+			std::cout << resp << "\n";
+			return Err(std::string("Couldn't find registration marks."));
+		}
+
+		sr = UsbReceive(handle, 40000); // Allow 40s for reply...
+		if (!sr) return sr;
+
+		resp = sr.unwrap();
+		if (resp != "    1\x03")
+		{
+			std::cout << resp << "\n";
+			return Err(std::string("Couldn't find registration marks."));
+		}
+	}
+	else
+	{
+		e = UsbSend(handle, "TB50,1\x03"); // ???
+		if (!e) return e;
+	}
+
+	if (!e) return e;
+	// I think this is the feed command. Sometimes it is 5588 - maybe a maximum?
+	e = UsbSend(handle, "FO" + ItoS(height - margintop) + "\x03");
+	if (!e) return e;
+
+	page.flags(std::ios::fixed);
+	page.precision(0);
+	page << "&100,100,100,\\0,0,Z" << ItoS(width) << "," << ItoS(height) << ",L0";
+	for (int i = 0; i < p.cuts.size(); ++i)
+	{
+		if (p.cuts[i].size() < 2)
+			continue;
+
+		double x = p.cuts[i][0].x() * 20.0;
+		double y = p.cuts[i][0].y() * 20.0;
+
+		double xorigin = 0;//ProgramOptions::Instance().getRegOriginWidthMM();
+		double yorigin = 0;//ProgramOptions::Instance().getRegOriginHeightMM();
 
 		if (p.regmark)
 		{
-			std::stringstream regmarkstr;
-			regmarkstr.precision(0);
-			std::string searchregchar = "23,";
-			int regw = static_cast<int>(lround(p.regwidth * 20.0));
-			int regl = static_cast<int>(lround(p.regheight * 20.0));
-			e = UsbSend(handle, "TB50,381\x03"); //only with registration (it was TB50,1) ???
-			if (!e) return e;
-			
-			if (p.regsearch)
-				searchregchar ="123,";
-			
-			regmarkstr <<  "TB99\x03TB55,1\x03TB" + searchregchar + ItoS(regw) + "," + ItoS(regl) + "\x03";
-			
-			std::cout << "Registration mark string: " << regmarkstr.str() << "\n";
-			
-			e = UsbSend(handle, regmarkstr.str()); //registration mark test /1-2: 180.0mm / 1-3: 230.0mm (origin 15mmx20mm)
-			if (!e) return e;
-			
-			e = UsbSend(handle, "FQ5\x03"); // only with registration ???
-			if (!e) return e;
-
-			sr = UsbReceive(handle, 40000); // Allow 40s for reply...
-			if (!sr) return sr;
-
-			resp = sr.unwrap();
-			if (resp != "    0,    0\x03")
-			{
-				std::cout << resp << "\n";
-				return Err(std::string("Couldn't find registration marks."));
-			}
-			// Looks like if the reg marks work it gets 3 messages back (if it fails it times out because it only gets the first message)
-			sr = UsbReceive(handle, 40000); // Allow 40s for reply...
-			if (!sr) return sr;
-
-			resp = sr.unwrap();
-			if (resp != "    0\x03")
-			{
-				std::cout << resp << "\n";
-				return Err(std::string("Couldn't find registration marks."));
-			}
-
-			sr = UsbReceive(handle, 40000); // Allow 40s for reply...
-			if (!sr) return sr;
-
-			resp = sr.unwrap();
-			if (resp != "    1\x03")
-			{
-				std::cout << resp << "\n";
-				return Err(std::string("Couldn't find registration marks."));
-			}
-		}
-		else
-		{
-			e = UsbSend(handle, "TB50,1\x03"); // ???
-			if (!e) return e;
+			x -= (xorigin * 20.0);
+			y -= (yorigin * 20.0);
 		}
 
-		if (!e) return e;
-		// I think this is the feed command. Sometimes it is 5588 - maybe a maximum?
-		e = UsbSend(handle, "FO" + ItoS(height - margintop) + "\x03");
-		if (!e) return e;
+		// Squash to page boundaries.
+		x = std::min(std::max(x, 0.0), double(width));
+		y = std::min(std::max(y, 0.0), double(height));
 
-		page.flags(std::ios::fixed);
-		page.precision(0);
-		page << "&100,100,100,\\0,0,Z" << ItoS(width) << "," << ItoS(height) << ",L0";
-		for (int i = 0; i < p.cuts.size(); ++i)
+		page << ",M" << x << "," << y;
+		for (int j = 1; j < p.cuts[i].size(); ++j)
 		{
-			if (p.cuts[i].size() < 2)
-				continue;
-
-			double x = p.cuts[i][0].x()*20.0;
-			double y = p.cuts[i][0].y()*20.0;
-
-			double xorigin = 0;//ProgramOptions::Instance().getRegOriginWidthMM();
-			double yorigin = 0;//ProgramOptions::Instance().getRegOriginHeightMM();
+			x = p.cuts[i][j].x() * 20.0;
+			y = p.cuts[i][j].y() * 20.0;
 
 			if (p.regmark)
 			{
-				x = x - (xorigin*20.0);
-				y = y + (yorigin*20.0);
+				x -= (xorigin * 20.0);
+				y -= (yorigin * 20.0);
 			}
 
-			if (x < 0.0) x = 0.0;
-			if (x > width) x = width;
-
-			if (y < 0.0) y = 0.0;
-			if (y > height) y = height;
-
-			page << ",M" << x << "," << height-y;
-			for (int j = 1; j < p.cuts[i].size(); ++j)
-			{
-				x = p.cuts[i][j].x()*20.0;
-				y = p.cuts[i][j].y()*20.0;
-
-				if (p.regmark)
-				{
-					x = x - (xorigin*20.0);
-					y = y + (yorigin*20.0);
-				}
-				
-				bool draw = true;
-				if (x <= 0.0) 
-				{
-					x = 0.0;
-					draw = false;
-				}
-				if (x >= width)
-				{
-					x = width;
-					draw = false;
-				}
-				if (y <= 0.0)
-				{ 
-					y = 0.0;
-					draw = false;
-				}
-				if (y >= height) 
-				{
-					y = height;
-					draw = false;
-				}
-				
-				if (draw) page << ",D" << x << "," << height-y;
-				else page << ",M" << x << "," << height-y; // if outside the range just move
-			}
+			page << ",D" << x << "," << y;
 		}
-
-
-		page << "&1,1,1,TB50,0\x03"; // TB maybe .. ah I dunno. Need to experiment. No idea what &1,1,1 does either.
-
-		// std::cout << page.str() << "\n";
-
-		e = UsbSend(handle, page.str());
-		if (!e) return e;
 	}
+
+	page << "&1,1,1,TB50,0\x03"; // TB maybe .. ah I dunno. Need to experiment. No idea what &1,1,1 does either.
+
+	// std::cout << page.str() << "\n";
+
+	e = UsbSend(handle, page.str());
+	if (!e) return e;
 
 	// Feed the page out.
 	e = UsbSend(handle, "FO0\x03");
