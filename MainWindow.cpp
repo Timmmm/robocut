@@ -56,11 +56,13 @@ MainWindow::MainWindow(QWidget *parent)
 	dimensionsEnabled = settings.value("dimensionsEnabled", true).toBool();
 	rulersEnabled = settings.value("rulersEnabled", true).toBool();
 	cutterPathEnabled = settings.value("cutterPathEnabled", false).toBool();
-	
+	vinylCutterEnabled = settings.value("vinylCutterEnabled", true).toBool();
+
 	ui->actionGrid->setChecked(gridEnabled);
 	ui->actionDimensions->setChecked(dimensionsEnabled);
 	ui->actionRulers->setChecked(rulersEnabled);
 	ui->actionCutter_Path->setChecked(cutterPathEnabled);
+	ui->actionVinyl_Cutter->setChecked(vinylCutterEnabled);
 	
 	// TODO: Implement this.
 //	ui->menuEdit->hide();
@@ -169,6 +171,7 @@ MainWindow::~MainWindow()
 	settings.setValue("dimensionsEnabled", dimensionsEnabled);
 	settings.setValue("rulersEnabled", rulersEnabled);
 	settings.setValue("cutterPathEnabled", cutterPathEnabled);
+	settings.setValue("vinylCutterEnabled", vinylCutterEnabled);
 }
 
 void MainWindow::on_actionOpen_triggered()
@@ -318,6 +321,11 @@ void MainWindow::loadFile(QString filename)
 	QPen pageOutlinePen;
 	pageOutlinePen.setCosmetic(true);
 	scene->addRect(pageRect, pageOutlinePen, Qt::NoBrush);
+
+	// Add the vinyl cutter item.
+	vinylCutterItem = new VinylCutterItem();
+	vinylCutterItem->setVisible(vinylCutterEnabled);
+	scene->addItem(vinylCutterItem);
 
 	addPathItemsToScene();
 
@@ -627,6 +635,7 @@ void MainWindow::clearScene()
 	cutterPathItem = nullptr;
 	pathsItem = nullptr;
 	measureItem = nullptr;
+	vinylCutterItem = nullptr;
 }
 
 void MainWindow::on_openSvgButton_clicked()
@@ -745,6 +754,15 @@ void MainWindow::on_actionCutter_Path_toggled(bool enabled)
 	if (cutterPathItem != nullptr)
 		cutterPathItem->setVisible(cutterPathEnabled);
 }
+
+
+void MainWindow::on_actionVinyl_Cutter_toggled(bool enabled)
+{
+	vinylCutterEnabled = enabled;
+	if (vinylCutterItem != nullptr)
+		vinylCutterItem->setVisible(vinylCutterEnabled);
+}
+
 
 void MainWindow::onMouseMoved(QPointF pos)
 {

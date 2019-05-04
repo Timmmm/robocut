@@ -12,6 +12,7 @@
 #include "PathSorter.h"
 #include "MeasureItem.h"
 #include "PathScene.h"
+#include "VinylCutterItem.h"
 
 namespace Ui
 {
@@ -53,9 +54,11 @@ private slots:
 	void onToolTriggered(QAction* action);
 
 	void on_actionCutter_Path_toggled(bool enabled);
+	void on_actionVinyl_Cutter_toggled(bool enabled);
 
 	void onMouseMoved(QPointF pos);
 	void onMousePressed(QPointF pos);
+
 
 private:
 	// Attempt to load the given file.
@@ -94,6 +97,9 @@ private:
 	
 	// The rulers...
 //	QGraphicsItem* 
+
+	// The vinyl cutter, to make it clear where it will cut.
+	VinylCutterItem* vinylCutterItem = nullptr;
 
 	// The directory that the last file was opened from.
 	QString lastOpenDir;
@@ -142,6 +148,7 @@ private:
 	bool gridEnabled = true;
 	bool dimensionsEnabled = true;
 	bool cutterPathEnabled = false;
+	bool vinylCutterEnabled = true;
 	
 	// The default zoom for the current document, which is based on its size.
 	double defaultZoom = 1.0;
