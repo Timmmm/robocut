@@ -146,7 +146,6 @@
     <addaction name="actionReset"/>
     <addaction name="actionZoom_In"/>
     <addaction name="actionZoom_Out"/>
-    <addaction name="actionIdentify"/>
     <addaction name="actionRulers"/>
     <addaction name="actionGrid"/>
     <addaction name="actionDimensions"/>
@@ -307,20 +306,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+L</string>
-   </property>
-  </action>
-  <action name="actionIdentify">
-   <property name="text">
-    <string>Identify devices</string>
-   </property>
-   <property name="toolTip">
-    <string>Identify connected Plotter</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+I</string>
-   </property>
-   <property name="visible">
-    <bool>false</bool>
    </property>
   </action>
   <action name="actionVerify_Adjust_Scale">

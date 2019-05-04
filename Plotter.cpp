@@ -575,24 +575,5 @@ error: // Hey, this is basically C and I can't be bothered to properly C++-ify i
 
 }
 
-
-CutterId DetectDevices()
-{
-	CutterId id = { "?", 0, 0 };
-	libusb_device_handle *handle;
-
-//	if (1) // TODO: ???
-//	{
-	    handle = UsbOpen(&id);
-		if (handle)
-			libusb_close(handle);
-		else
-			id.msg = "no device found";
-//	}
-//	else
-//	{
-//		id.msg = "Cannot Identify while cut thread is running";
-//	}
-	return id;
 }
 

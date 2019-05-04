@@ -41,6 +41,3 @@ struct CutterId
   int usb_product_id;
 };
 
-// Get the connected device.
-// TODO: Do this properly with hotplug, listing multiple devices etc.
-CutterId DetectDevices();

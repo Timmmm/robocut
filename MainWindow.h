@@ -35,7 +35,6 @@ private slots:
 	void on_actionDimensions_toggled(bool enabled);
 	void on_actionExit_triggered();
 	void on_actionGrid_toggled(bool enabled);
-	void on_actionIdentify_triggered();
 	void on_actionManual_triggered();
 	void on_actionOpen_triggered();
 	void on_actionReload_triggered();

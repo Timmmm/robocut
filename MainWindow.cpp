@@ -199,18 +199,6 @@ void MainWindow::on_actionReload_triggered()
 	loadFile(currentFilename);
 }
 
-void MainWindow::on_actionIdentify_triggered()
-{
-	// CAUTION: only call this when not cutting!
-	CutterId id = DetectDevices();
-	cout << "Identify:";
-	if (id.usb_product_id)
-	{
-		cout << " usb=" << id.usb_vendor_id << "/" << id.usb_product_id;
-	}
-	cout << " " << id.msg << endl;
-}
-
 void MainWindow::loadFile(QString filename)
 {
 	qDebug() << "Reading file: " << filename;
