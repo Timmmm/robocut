@@ -10,7 +10,7 @@ steps:
   displayName: 'Upgrade Python nonsense'
 
 - script: |
-    brew install autoconf automake intltool gobject-introspection
+    brew install autoconf automake intltool gobject-introspection  libffi json-c libtool gettext
     which python3
     python3 --version
     pip3 --version
