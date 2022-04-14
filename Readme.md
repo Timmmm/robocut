@@ -15,7 +15,7 @@ Robocut is a simple graphical program to allow you to cut graphics with one of t
 
 It can read SVG Tiny 1.2 files ([details](https://doc.qt.io/qt-5.10/svgrendering.html)). This includes files produced by Inkscape. Unlike the official programs, Robocut can also run on Linux and Mac OS X.
 
-One limitation of SVG Tiny is that it does not support `x` and `y` position attributes in `<tspan>` elements. /Unfortunately this is how Inkscape does multi-line text, so you must convert multi-line text to paths before export.
+One limitation of SVG Tiny is that it does not support `x` and `y` position attributes in `<tspan>` elements. Unfortunately this is how Inkscape does multi-line text, so you must convert multi-line text to paths before export.
 
 ## Authors
 
