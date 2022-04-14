@@ -1,10 +1,12 @@
 #include "PathSorter.h"
 
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 
 #include <nanoflann.hpp>
 
+#include <QLineF>
 #include <QSvgRenderer>
 
 namespace
@@ -117,8 +119,8 @@ QList<QPolygonF> sortPathsIncreasingY(const QList<QPolygonF>& paths,
 	for (int i = 0; i < paths.size(); ++i)
 		indices.append({i, highestIndex(paths[i])});
 	
-	qSort(indices.begin(), indices.end(),
-	      [&](const IndexAndBottom& a, const IndexAndBottom& b) {
+	std::sort(indices.begin(), indices.end(),
+		[&](const IndexAndBottom& a, const IndexAndBottom& b) {
 		return paths[a.pathIndex][a.bottomIndex].y() > paths[b.pathIndex][b.bottomIndex].y();
 	});
 	
@@ -154,8 +156,8 @@ QList<QPolygonF> sortPathsInsideFirst(const QList<QPolygonF>& paths,
 	for (int i = 0; i < paths.size(); ++i)
 		indices.append({i, paths[i].boundingRect()});
 	
-	qSort(indices.begin(), indices.end(),
-	      [&](const IndexAndBB& a, const IndexAndBB& b) {
+	std::sort(indices.begin(), indices.end(),
+		[&](const IndexAndBB& a, const IndexAndBB& b) {
 		if (a.boundingBox.intersects(b.boundingBox))
 			return a.boundingBox.width() + a.boundingBox.height() < b.boundingBox.width() + b.boundingBox.height();
 		

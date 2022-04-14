@@ -17,7 +17,7 @@ std::string UItoS(unsigned int i)
 std::string ULLtoS(unsigned long long i)
 {
 	char out[128];
-	sprintf(out, "%lld", i);
+	snprintf(out, 128, "%lld", i);
 	return out;
 }
 
@@ -59,7 +59,7 @@ SResult<unsigned long long> StoULL(std::string_view s)
 std::string GetEnv(std::string_view var)
 {
 	char* v = getenv(var.data());
-	if (!v)
+	if (v == nullptr)
 		return "";
 	return v;
 }

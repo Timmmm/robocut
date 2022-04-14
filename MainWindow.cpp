@@ -10,6 +10,7 @@
 #include <cmath>
 #include <iostream>
 
+#include <QActionGroup>
 #include <QDebug>
 #include <QDir>
 #include <QEvent>

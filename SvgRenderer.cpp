@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QApplication>
 #include <QPalette>
+#include <QFile>
 
 #include "PathPaintDevice.h"
 
@@ -98,7 +99,7 @@ SvgXmlData scanSvgElements(const QByteArray& svgContents, bool searchForTspans)
 		case QXmlStreamReader::StartElement:
 		{
 			const auto& attr = xml.attributes();
-			if (xml.name() == "svg")
+			if (xml.name() == u"svg")
 			{
 				const auto& width = attr.value("width");
 				const auto& height = attr.value("height");
@@ -115,7 +116,7 @@ SvgXmlData scanSvgElements(const QByteArray& svgContents, bool searchForTspans)
 					return data;
 				}
 			}
-			else if (xml.name() == "tspan")
+			else if (xml.name() == u"tspan")
 			{
 				if (attr.hasAttribute("x") || attr.hasAttribute("y"))
 				{
@@ -153,7 +154,7 @@ SvgRender svgToPaths(const QString& filename, bool searchForTspans)
 	if (!svgFile.open(QIODevice::ReadOnly))
 	{
 		qDebug() << "Couldn't open:" << filename << svgFile.errorString();
-        return render;
+		return render;
 	}
 	
 	// Read the entire contents of the file into memory.

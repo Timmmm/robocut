@@ -1,17 +1,19 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.16)
 
 set(CMAKE_OSX_DEPLOYMENT_TARGET 10.14)
 
 project(Robocut
-	VERSION 1.0.11
+	VERSION 1.1.0
 	DESCRIPTION "A program to control Graphtec vinyl cutters."
 	LANGUAGES C CXX)
 
-# Set the CMAKE_PREFIX_PATH environment variable to (e.g) ~/Qt/5.8/clang_64 so it can find Qt.
-find_package(Qt5 COMPONENTS Core Widgets Svg REQUIRED)
-
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
+
+# Set the CMAKE_PREFIX_PATH environment variable to (e.g) ~/Qt/5.8/clang_64 so it can find Qt.
+find_package(Qt6 REQUIRED COMPONENTS Core Widgets Svg)
+
+qt_standard_project_setup()
 
 add_subdirectory(libusb)
 
@@ -74,18 +76,13 @@ elseif (APPLE)
 	list(APPEND src_files "${osx_icon_file}")
 endif ()
 
-# Automatically generate moc, UI & Resource Files
-set(CMAKE_AUTOMOC TRUE)
-set(CMAKE_AUTOUIC TRUE)
-set(CMAKE_AUTORCC TRUE)
-
 add_executable(${PROJECT_NAME} MACOSX_BUNDLE WIN32
 	${src_files}
 )
 
 target_link_libraries(${PROJECT_NAME}
-	Qt5::Widgets
-	Qt5::Svg
+	Qt6::Widgets
+	Qt6::Svg
 	libusb
 )
 
@@ -130,7 +127,7 @@ if (WIN32)
 		    "${CMAKE_BINARY_DIR}/Zip/${PROJECT_NAME}/${PROJECT_NAME}.exe"
 
 		# Deploy Qt to that directory. All the options are to save space.
-		COMMAND "${_qt5Core_install_prefix}/bin/windeployqt.exe" "--release" "--compiler-runtime"
+		        COMMAND "${_qt6Core_install_prefix}/bin/windeployqt.exe" "--release" "--compiler-runtime"
 			"--no-angle" "--no-opengl-sw" "--no-translations" "--no-system-d3d-compiler"
 			"${CMAKE_BINARY_DIR}/Zip/${PROJECT_NAME}/${PROJECT_NAME}.exe"
 
@@ -152,7 +149,7 @@ elseif (APPLE)
 	# Note there is a slight bug (https://bugreports.qt.io/browse/QTBUG-60324) in macdeployqt
 	# which means we really want the working directory to be the place where the dmg is generated.
 	add_custom_target(artefact
-		COMMAND "${_qt5Core_install_prefix}/bin/macdeployqt" "${PROJECT_NAME}.app" "-dmg"
+		        COMMAND "${_qt6Core_install_prefix}/bin/macdeployqt" "${PROJECT_NAME}.app" "-dmg"
 		COMMAND "${CMAKE_COMMAND}" "-E" "rename" "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.dmg"
 		    "${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${PROJECT_VERSION}.dmg"
 		DEPENDS ${PROJECT_NAME}

@@ -68,7 +68,7 @@ void ZoomableGraphicsView::wheelEvent(QWheelEvent* event)
 	
 	// Anchor under mouse for mouse events.
 	setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-	if (event->delta() <= 0)
+	if (event->pixelDelta().y() <= 0)
 		scale(1.0/1.2, 1.0/1.2);
 	else
 		scale(1.2, 1.2);

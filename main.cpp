@@ -15,12 +15,9 @@ int main(int argc, char *argv[])
 {
 	// For the benefit of QSettings.
 	QCoreApplication::setOrganizationName("Robocut");
-    QCoreApplication::setOrganizationDomain("robocut.com");
-    QCoreApplication::setApplicationName("Robocut");
+	QCoreApplication::setOrganizationDomain("robocut.com");
+	QCoreApplication::setApplicationName("Robocut");
 
-	// Smoooth
-	QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling, true);
-	QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps, true);
 	
 	int err = libusb_init(nullptr);
 	if (err != LIBUSB_SUCCESS)
