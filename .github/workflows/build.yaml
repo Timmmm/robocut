@@ -37,3 +37,6 @@ jobs:
 
       - name: Build
         run: cmake --build '${{github.workspace}}/build'
+
+      - name: Package
+        run: cmake --build '${{github.workspace}}/build' --target artefact
