@@ -24,7 +24,9 @@ jobs:
         with:
           version: '6.3.0'
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
 
       - name: Configure CMake
         run: cmake -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_PREFIX_PATH="${{env.Qt6_Dir}}/lib/cmake/" -B '${{github.workspace}}'/build
