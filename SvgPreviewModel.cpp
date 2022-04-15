@@ -46,7 +46,7 @@ int SvgPreviewModel::rowCount(const QModelIndex& parent) const
 {
 	(void)parent;
 	
-	return entries.size();
+	return static_cast<int>(entries.size());
 }
 
 void SvgPreviewModel::setFiles(const QStringList& filenames)
