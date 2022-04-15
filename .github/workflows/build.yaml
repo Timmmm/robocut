@@ -24,6 +24,10 @@ jobs:
         with:
           version: '6.3.0'
 
+      - name: Install Linux dependencies
+        run: sudo apt-get install -y libudev-dev
+        if: matrix.os == 'ubuntu-latest'
+
       - uses: actions/checkout@v3
         with:
           submodules: 'recursive'
