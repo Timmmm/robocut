@@ -199,14 +199,14 @@ QPaintEngine::Type PathPaintEngine::type() const
 	return QPaintEngine::User;
 }
 
-void PathPaintEngine::updateState(const QPaintEngineState& state)
+void PathPaintEngine::updateState(const QPaintEngineState& s)
 {
-	if (state.state() & DirtyTransform)
-		transform = state.transform();
-	if (state.state() & DirtyPen)
+	if (s.state() & DirtyTransform)
+		transform = s.transform();
+	if (s.state() & DirtyPen)
 	{
-		dashPattern = state.pen().dashPattern();
-		zeroWidthPen = state.pen().widthF() == 0.0;
+		dashPattern = s.pen().dashPattern();
+		zeroWidthPen = s.pen().widthF() == 0.0;
 	}
 }
 

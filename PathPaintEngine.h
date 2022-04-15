@@ -22,7 +22,7 @@ public:
 
 	Type type() const override;
 	
-	void updateState(const QPaintEngineState& state) override;
+	void updateState(const QPaintEngineState& s) override;
 	
 private:
 	PathPaintDevice* dev = nullptr;
