@@ -16,15 +16,15 @@ class CuttingDialog : public QDialog
 
 public:
 	explicit CuttingDialog(QWidget *parent = nullptr);
-	~CuttingDialog();
+	~CuttingDialog() override;
 
 	// Start the cutting thread. Call this only once, before the dialog is shown.
 	// It creates the thread, passes it the cutting details, and runs it.
 	void startCut(const CutParams& params);
 
 protected:
-	void changeEvent(QEvent *e);
-	void closeEvent(QCloseEvent* e);
+	void changeEvent(QEvent *e) override;
+	void closeEvent(QCloseEvent* e) override;
 
 private:
 	Ui::CuttingDialog *ui;
