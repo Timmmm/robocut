@@ -50,7 +50,7 @@ void MeasureItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* optio
   outlinePen.setCosmetic(true);
   painter->setPen(outlinePen);
   painter->setBrush(QBrush(Qt::yellow));
-  painter->drawPolygon(outline.data(), outline.size());
+  painter->drawPolygon(outline.data(), static_cast<int>(outline.size()));
 
   QPen markPen(Qt::darkGray);
   markPen.setCapStyle(Qt::PenCapStyle::FlatCap);
