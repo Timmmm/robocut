@@ -237,9 +237,10 @@ QList<QPolygonF> sortPathsGreedy(const QList<QPolygonF>& paths,
 	VertexCloud vertices;
 	
 	typedef KDTreeSingleIndexDynamicAdaptor<
-		L2_Simple_Adaptor<qreal, VertexCloud>,
+		L2_Simple_Adaptor<qreal, VertexCloud, qreal, size_t>,
 		VertexCloud,
-		2> kd_tree_adapter;
+		2,
+		size_t> kd_tree_adapter;
 	
 	kd_tree_adapter index(2, vertices);
 	
