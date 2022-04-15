@@ -24,8 +24,8 @@ class MainWindow : public QMainWindow
 
 public:
 	explicit MainWindow(QWidget *parent = nullptr);
-	~MainWindow();
-	
+	~MainWindow() override;
+
 private slots:
 	void on_actionAbout_triggered();
 	void on_actionAnimate_toggled(bool animate);

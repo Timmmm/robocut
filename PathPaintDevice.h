@@ -8,7 +8,7 @@
 class PathPaintEngine;
 
 // Needed for QSet<QPolygonF>. Simply concatenates all the coordinates in a QByteArray and hashes that.
-uint qHash(const QPolygonF& key);
+size_t qHash(const QPolygonF& key);
 
 // A paint device that just draws a list of paths in different colours.
 class PathPaintDevice : public QPaintDevice

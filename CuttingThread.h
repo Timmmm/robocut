@@ -47,7 +47,7 @@ public slots:
 protected:
 	// This reads the params, then tries to send the data to the cutter.
 	// When it is done, it runs exec() to send the success() or error() signal.
-	void run();
+	void run() override;
 
 private:
 	CutParams params;

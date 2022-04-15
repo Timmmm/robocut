@@ -13,7 +13,7 @@ class CutDialog : public QDialog
 
 public:
     explicit CutDialog(QWidget *parent = nullptr);
-    ~CutDialog();
+	~CutDialog() override;
 
 	// The media code. See CutDialog.ui for a list.
 	int media() const;
@@ -36,7 +36,7 @@ public:
 	double regHeight() const;
 
 protected:
-	void changeEvent(QEvent *e);
+	void changeEvent(QEvent *e) override;
 
 private slots:
 	// When they change the media selection, update the default speed and pressure.

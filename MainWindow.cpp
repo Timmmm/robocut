@@ -576,7 +576,7 @@ void MainWindow::addPathItemsToScene()
 
 	for (const auto& path : sortedPaths)
 	{
-		QPen pen(QColor::fromHsvF(hue, 1.0, 0.7));
+		QPen pen(QColor::fromHsvF(static_cast<float>(hue), 1.0f, 0.7f));
 
 		// Don't change the pen width with zoom.
 		pen.setCosmetic(true);
@@ -601,7 +601,7 @@ void MainWindow::addPathItemsToScene()
 	QPointF startingPoint(0.0, data.mediaSize.height());
 
 	QPointF currentPoint = startingPoint;
-	QPen pen(QColor::fromHsvF(0.0, 0.0, 0.8));
+	QPen pen(QColor::fromHsvF(0.0f, 0.0f, 0.8f));
 	// Don't change the pen width with zoom.
 	pen.setCosmetic(true);
 	pen.setWidthF(3.0);

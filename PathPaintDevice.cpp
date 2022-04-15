@@ -4,7 +4,7 @@
 
 #include <QDebug>
 
-uint qHash(const QPolygonF& key)
+size_t qHash(const QPolygonF& key)
 {
 	QByteArray repr;
 	for (int i = 0; i < key.size(); ++i)
