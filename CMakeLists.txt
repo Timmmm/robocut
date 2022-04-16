@@ -155,7 +155,7 @@ elseif (APPLE)
 	# which means we really want the working directory to be the place where the dmg is generated.
 	add_custom_target(artefact
 		COMMAND Qt6::macdeployqt "${PROJECT_NAME}.app" "-dmg"
-		COMMAND "${CMAKE_COMMAND}" "-E" "rename" "${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${PROJECT_VERSION}.dmg"
+		COMMAND "${CMAKE_COMMAND}" "-E" "rename" "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.dmg"
 		        "${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${PROJECT_VERSION}.dmg"
 		DEPENDS ${PROJECT_NAME}
 		WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"

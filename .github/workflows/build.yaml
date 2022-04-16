@@ -47,5 +47,5 @@ jobs:
         with:
           name: robocut
           path: |
-            ${{github.workspace}}/build/*.dmg
-            ${{github.workspace}}/build/*.zip
+            ${{github.workspace}}/build/*-*.dmg
+            ${{github.workspace}}/build/*-*.zip
