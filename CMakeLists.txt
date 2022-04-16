@@ -93,6 +93,13 @@ target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE "nanoflann/include")
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE "-DPROJECT_VERSION=\"${PROJECT_VERSION}\"")
 
+set_target_properties(${PROJECT_NAME} PROPERTIES
+	WIN32_EXECUTABLE TRUE
+	MACOSX_BUNDLE TRUE
+	# A custom Info.plist is used to enable high dpi on OSX.
+	MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/MacOSXBundleInfo.plist.in"
+)
+
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	# More sensible warnings/errors.
 	target_compile_options(${PROJECT_NAME} PRIVATE
@@ -111,12 +118,8 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 
 		# Moc causes these.
 		-Wno-redundant-parens
-		)
+	)
 endif ()
-
-# A custom Info.plist is used to enable high dpi on OSX.
-set_target_properties(${PROJECT_NAME}
-	PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/MacOSXBundleInfo.plist.in")
 
 # Packaging
 if (WIN32)
@@ -126,19 +129,19 @@ if (WIN32)
 
 		# Copy the EXE there.
 		COMMAND "${CMAKE_COMMAND}" "-E" "copy" "$<TARGET_FILE:${PROJECT_NAME}>"
-		    "${CMAKE_BINARY_DIR}/Zip/${PROJECT_NAME}/${PROJECT_NAME}.exe"
+		        "${CMAKE_BINARY_DIR}/Zip/${PROJECT_NAME}/${PROJECT_NAME}.exe"
 
 		# Deploy Qt to that directory. All the options are to save space.
-		        COMMAND Qt6::windeployqt "--release" "--compiler-runtime"
-			"--no-opengl-sw" "--no-translations" "--no-system-d3d-compiler"
-			"${CMAKE_BINARY_DIR}/Zip/${PROJECT_NAME}/${PROJECT_NAME}.exe"
+		COMMAND Qt6::windeployqt "--release" "--compiler-runtime"
+		        "--no-opengl-sw" "--no-translations" "--no-system-d3d-compiler"
+				"${CMAKE_BINARY_DIR}/Zip/${PROJECT_NAME}/${PROJECT_NAME}.exe"
 
 		DEPENDS ${PROJECT_NAME}
 		COMMENT "Deploying Qt"
 		VERBATIM
 	)
 
-    # Zip the result.
+	# Zip the result.
 	add_custom_target(artefact
 		COMMAND 7z a "${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${PROJECT_VERSION}.zip"
 		    "${CMAKE_BINARY_DIR}/Zip/${PROJECT_NAME}"
@@ -151,9 +154,9 @@ elseif (APPLE)
 	# Note there is a slight bug (https://bugreports.qt.io/browse/QTBUG-60324) in macdeployqt
 	# which means we really want the working directory to be the place where the dmg is generated.
 	add_custom_target(artefact
-		        COMMAND Qt6::macdeployqt "${PROJECT_NAME}.app" "-dmg"
+		COMMAND Qt6::macdeployqt "${PROJECT_NAME}.app" "-dmg"
 		COMMAND "${CMAKE_COMMAND}" "-E" "rename" "${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${PROJECT_VERSION}.dmg"
-		    "${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${PROJECT_VERSION}.dmg"
+		        "${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${PROJECT_VERSION}.dmg"
 		DEPENDS ${PROJECT_NAME}
 		WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 		COMMENT "Creating DMG"
@@ -167,7 +170,7 @@ else ()
 		VERBATIM
 	)
 
-    install(TARGETS ${PROJECT_NAME}
+	install(TARGETS ${PROJECT_NAME}
 		RUNTIME DESTINATION bin)
 
 endif ()
