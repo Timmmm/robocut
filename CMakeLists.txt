@@ -11,9 +11,11 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
 # Set the CMAKE_PREFIX_PATH environment variable to (e.g) ~/Qt/5.8/clang_64 so it can find Qt.
-find_package(Qt6 REQUIRED COMPONENTS Core Widgets Svg)
+# CoreTools is for win/macdeployqt
+find_package(Qt6 REQUIRED COMPONENTS Core Widgets Svg CoreTools)
 
 qt_standard_project_setup()
+set(CMAKE_AUTORCC TRUE)
 
 add_subdirectory(libusb)
 
@@ -127,8 +129,8 @@ if (WIN32)
 		    "${CMAKE_BINARY_DIR}/Zip/${PROJECT_NAME}/${PROJECT_NAME}.exe"
 
 		# Deploy Qt to that directory. All the options are to save space.
-		        COMMAND "${_qt6Core_install_prefix}/bin/windeployqt.exe" "--release" "--compiler-runtime"
-			"--no-angle" "--no-opengl-sw" "--no-translations" "--no-system-d3d-compiler"
+		        COMMAND Qt6::windeployqt "--release" "--compiler-runtime"
+			"--no-opengl-sw" "--no-translations" "--no-system-d3d-compiler"
 			"${CMAKE_BINARY_DIR}/Zip/${PROJECT_NAME}/${PROJECT_NAME}.exe"
 
 		DEPENDS ${PROJECT_NAME}
@@ -136,7 +138,7 @@ if (WIN32)
 		VERBATIM
 	)
 
-	# Zip the result
+    # Zip the result.
 	add_custom_target(artefact
 		COMMAND 7z a "${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${PROJECT_VERSION}.zip"
 		    "${CMAKE_BINARY_DIR}/Zip/${PROJECT_NAME}"
@@ -149,7 +151,7 @@ elseif (APPLE)
 	# Note there is a slight bug (https://bugreports.qt.io/browse/QTBUG-60324) in macdeployqt
 	# which means we really want the working directory to be the place where the dmg is generated.
 	add_custom_target(artefact
-		        COMMAND "${_qt6Core_install_prefix}/bin/macdeployqt" "${PROJECT_NAME}.app" "-dmg"
+		        COMMAND Qt6::macdeployqt "${PROJECT_NAME}.app" "-dmg"
 		COMMAND "${CMAKE_COMMAND}" "-E" "rename" "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.dmg"
 		    "${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${PROJECT_VERSION}.dmg"
 		DEPENDS ${PROJECT_NAME}
