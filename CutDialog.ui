@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>482</width>
-    <height>340</height>
+    <height>398</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -34,7 +34,7 @@
           <string>Card without Craft Paper Backing</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="Resources.qrc">
            <normaloff>:/images/cap-yellow.png</normaloff>:/images/cap-yellow.png</iconset>
          </property>
         </item>
@@ -43,7 +43,7 @@
           <string>Card with Craft Paper Backing</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="Resources.qrc">
            <normaloff>:/images/cap-yellow.png</normaloff>:/images/cap-yellow.png</iconset>
          </property>
         </item>
@@ -52,7 +52,7 @@
           <string>Vinyl Sticker</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="Resources.qrc">
            <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
          </property>
         </item>
@@ -61,7 +61,7 @@
           <string>Film Labels</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="Resources.qrc">
            <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
          </property>
         </item>
@@ -70,7 +70,7 @@
           <string>Thick Media</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="Resources.qrc">
            <normaloff>:/images/cap-yellow.png</normaloff>:/images/cap-yellow.png</iconset>
          </property>
         </item>
@@ -79,7 +79,7 @@
           <string>Thin Media</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="Resources.qrc">
            <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
          </property>
         </item>
@@ -88,7 +88,7 @@
           <string>Pen</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="Resources.qrc">
            <normaloff>:/images/cap-pen.png</normaloff>:/images/cap-pen.png</iconset>
          </property>
         </item>
@@ -97,7 +97,7 @@
           <string>Bond Paper 13-28 lbs</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="Resources.qrc">
            <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
          </property>
         </item>
@@ -106,7 +106,7 @@
           <string>Bristol Paper 57-67 lbs</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="Resources.qrc">
            <normaloff>:/images/cap-yellow.png</normaloff>:/images/cap-yellow.png</iconset>
          </property>
         </item>
@@ -115,7 +115,7 @@
           <string>Cardstock 40-60 lbs</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="Resources.qrc">
            <normaloff>:/images/cap-yellow.png</normaloff>:/images/cap-yellow.png</iconset>
          </property>
         </item>
@@ -124,7 +124,7 @@
           <string>Cover 40-60 lbs</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="Resources.qrc">
            <normaloff>:/images/cap-yellow.png</normaloff>:/images/cap-yellow.png</iconset>
          </property>
         </item>
@@ -133,7 +133,7 @@
           <string>Film, Double Matte Translucent</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="Resources.qrc">
            <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
          </property>
         </item>
@@ -142,7 +142,7 @@
           <string>Film, Vinyl With Adhesive Back</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="Resources.qrc">
            <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
          </property>
         </item>
@@ -151,7 +151,7 @@
           <string>Film, Window With Kling Adhesive</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="Resources.qrc">
            <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
          </property>
         </item>
@@ -160,7 +160,7 @@
           <string>Index 90 lbs</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="Resources.qrc">
            <normaloff>:/images/cap-red.png</normaloff>:/images/cap-red.png</iconset>
          </property>
         </item>
@@ -169,7 +169,7 @@
           <string>Inkjet Photo Paper 28-44 lbs</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="Resources.qrc">
            <normaloff>:/images/cap-yellow.png</normaloff>:/images/cap-yellow.png</iconset>
          </property>
         </item>
@@ -178,7 +178,7 @@
           <string>Inkjet Photo Paper 45-75 lbs</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="Resources.qrc">
            <normaloff>:/images/cap-red.png</normaloff>:/images/cap-red.png</iconset>
          </property>
         </item>
@@ -187,7 +187,7 @@
           <string>Magnetic Sheet</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="Resources.qrc">
            <normaloff>:/images/cap-red.png</normaloff>:/images/cap-red.png</iconset>
          </property>
         </item>
@@ -196,7 +196,7 @@
           <string>Offset 24-60 lbs</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="Resources.qrc">
            <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
          </property>
         </item>
@@ -205,7 +205,7 @@
           <string>Print Paper Light Weight</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="Resources.qrc">
            <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
          </property>
         </item>
@@ -214,7 +214,7 @@
           <string>Print Paper Medium Weight</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="Resources.qrc">
            <normaloff>:/images/cap-yellow.png</normaloff>:/images/cap-yellow.png</iconset>
          </property>
         </item>
@@ -223,7 +223,7 @@
           <string>Sticker Sheet</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="Resources.qrc">
            <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
          </property>
         </item>
@@ -232,7 +232,7 @@
           <string>Tag 100 lbs</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="Resources.qrc">
            <normaloff>:/images/cap-red.png</normaloff>:/images/cap-red.png</iconset>
          </property>
         </item>
@@ -241,7 +241,7 @@
           <string>Text Paper 24-70 lbs</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="Resources.qrc">
            <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
          </property>
         </item>
@@ -250,7 +250,7 @@
           <string>Vellum Bristol 57-67 lbs</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="Resources.qrc">
            <normaloff>:/images/cap-yellow.png</normaloff>:/images/cap-yellow.png</iconset>
          </property>
         </item>
@@ -259,7 +259,7 @@
           <string>Writing Paper 24-70 lbs</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="Resources.qrc">
            <normaloff>:/images/cap-blue.png</normaloff>:/images/cap-blue.png</iconset>
          </property>
         </item>
@@ -320,6 +320,9 @@
       </item>
       <item row="3" column="1">
        <widget class="QCheckBox" name="trackEnhancingCheckbox">
+        <property name="toolTip">
+         <string>Feed the media back and forth a few times before cutting to indent it with anti-slip tracks.</string>
+        </property>
         <property name="text">
          <string>Track Enhancing</string>
         </property>
@@ -467,7 +470,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="resources.qrc"/>
+  <include location="Resources.qrc"/>
  </resources>
  <connections>
   <connection>
