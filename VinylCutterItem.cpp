@@ -26,7 +26,7 @@ void VinylCutterItem::paint(QPainter* painter,
 
 	painter->setPen(Qt::NoPen);
 	painter->setBrush(QColor(50, 50, 50, 70));
-	painter->drawRect(-5, -5, 220, 10);
+	painter->drawRoundedRect(-5, -5, 220, 10, 5, 5);
 
 	painter->setPen(QColor(20, 20, 20, 70));
 	painter->setBrush(QColor(0, 0, 200, 70));
