@@ -93,7 +93,11 @@ target_link_libraries(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME} PRIVATE ".")
 target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE "nanoflann/include")
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE "-DPROJECT_VERSION=\"${PROJECT_VERSION}\"")
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+	"-DPROJECT_VERSION=\"${PROJECT_VERSION}\""
+	# Stop Windows from defining min() and max().
+	"-DNOMINMAX"
+)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
 	WIN32_EXECUTABLE TRUE

@@ -2,6 +2,7 @@
 
 #include <libusb/libusb.h>
 
+#include <algorithm>
 #include <iostream>
 #include <cmath>
 #include <iomanip>
@@ -483,8 +484,6 @@ SResult<> Cut(CutParams p)
 		e = UsbSend(handle, "TB50,1\x03"); // ???
 		if (!e) return e;
 	}
-
-	if (!e) return e;
 
 	// I think this is the feed command. Sometimes it is 5588 - maybe a maximum?
 	e = UsbSend(handle, "FO" + ItoS(height - margintop) + "\x03");
