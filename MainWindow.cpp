@@ -239,7 +239,7 @@ void MainWindow::loadFile(QString filename)
 	}
 
 
-	QPointF startingPoint(0.0, data.mediaSize.height());
+	QPointF startingPoint(0.0, 0.0);
 
 	// Sort the paths with the following goals:
 	//
@@ -453,7 +453,7 @@ void MainWindow::animate()
 	}
 	// Get the ends of the segment/edge we are currently on.
 
-	QPointF startingPoint(0.0, data.mediaSize.height());
+	QPointF startingPoint(0.0, 0.0);
 	
 	// How far to travel each "frame". This controls the animation speed.
 	double distanceRemaining = 2.0;
@@ -594,7 +594,7 @@ void MainWindow::addPathItemsToScene()
 	// These can be hidden.
 	QList<QGraphicsItem*> cutterPathLines;
 
-	QPointF startingPoint(0.0, data.mediaSize.height());
+	QPointF startingPoint(0.0, 0.0);
 
 	QPointF currentPoint = startingPoint;
 	QPen pen(QColor::fromHsvF(0.0f, 0.0f, 0.8f));
@@ -675,7 +675,7 @@ void MainWindow::onSortMethodTriggered(QAction* action)
 		return;
 	
 	// Resort the paths.
-	QPointF startingPoint(0.0, data.mediaSize.height());
+	QPointF startingPoint(0.0, 0.0);
 	sortedPaths = sortPaths(data.paths,
 	                        sortMethod,
 	                        startingPoint);
