@@ -19,7 +19,7 @@ One limitation of SVG Tiny is that it does not support `x` and `y` position attr
 
 ## Authors
 
-Originally written by Tim Hutt with big improvements from Markus Schulz, Juergen Weigert and others.
+Originally written by Tim Hutt with big improvements from Markus Schulz, Juergen Weigert and others. The protocol was originally reverse engineered by Tim Hutt. Dave Mankoff later [managed to tease some documentation from Graphtec](https://www.ohthehugemanatee.net/2011/07/gpgl-reference-courtesy-of-graphtec/) but unfortunately it is not very clear.
 
 ## Installation Instructions
 
@@ -179,6 +179,10 @@ Version 0.2 - a3b13ad - Oct 24th 2010
 
 This project is licensed under the terms of the [GPL v3](https://www.gnu.org/licenses/gpl-3.0.en.html). See the `COPYING` file for more details.
 
+# Alternatives
+
+* https://www.codelv.com/projects/inkcut/
+
 # TODO
 
 ## General
@@ -187,9 +191,7 @@ This project is licensed under the terms of the [GPL v3](https://www.gnu.org/lic
 * Use a fancy TSPN algorithm for sorting paths
 * Render previews etc. in another thread. Though it does seem pretty fast so maybe I won't bother.
 * Add rulers.
-* Read SVG size from XML
-* Detect multi-line text in SVG and warn about it (this an unofficial Inkscape extension)
-* Implement a tool to measure sizes, and adjust the scale to correct them
+* Implement a tool to adjust the scale
 * Support multiple devices properly. Ideally with hotplug
 * Re-enable command line options
 
