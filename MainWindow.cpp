@@ -66,6 +66,9 @@ MainWindow::MainWindow(QWidget *parent)
 	// TODO: Implement this.
 //	ui->menuEdit->hide();
 
+	// TODO: Implement this.
+	ui->devicesWidget->hide();
+
 	scene = new PathScene(this);
 	
 	ui->graphicsView->setScene(scene);
