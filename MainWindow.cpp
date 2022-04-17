@@ -346,7 +346,7 @@ void MainWindow::loadFile(QString filename)
 void MainWindow::on_actionAbout_triggered()
 {
 	QString message = QString("<b>") + PROJECT_VERSION +
-	"</b><br><br>By Tim Hutt, &copy; 2010-2019<br/>" +
+	"</b><br><br>By Tim Hutt, &copy; 2010-2022<br/>" +
 	"<br>Parts of the source by Markus Schulz<br/>" +
 	"<br/>This software allows you to read a vector image in <a href=\"http://en.wikipedia.org/wiki/Scalable_Vector_Graphics\">SVG format</a>, " +
 	"and send it to a <a href=\"http://www.graphteccorp.com/craftrobo/\">Graphtec Craft Robo 2</a>/3 " +
