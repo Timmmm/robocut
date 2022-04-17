@@ -57,6 +57,8 @@ private slots:
 	void onMouseMoved(QPointF pos);
 	void onMousePressed(QPointF pos);
 
+	void on_actionCancel_triggered();
+
 private:
 	// Attempt to load the given file.
 	void loadFile(QString currentFilename);

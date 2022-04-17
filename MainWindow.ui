@@ -116,7 +116,7 @@
      <x>0</x>
      <y>0</y>
      <width>823</width>
-     <height>22</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -480,6 +480,14 @@
    </property>
    <property name="text">
     <string>Vinyl Cutter</string>
+   </property>
+  </action>
+  <action name="actionCancel">
+   <property name="text">
+    <string>Cancel</string>
+   </property>
+   <property name="shortcut">
+    <string>Esc</string>
    </property>
   </action>
  </widget>

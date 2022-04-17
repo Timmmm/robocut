@@ -336,7 +336,7 @@ void MainWindow::loadFile(QString filename)
 	// Redraw. Probably not necessary.
 	update();
 	
-	// TODO: What do I want to do here?
+	// TODO: Show a non-modal warning at the top.
 //	if (clipped)
 //		QMessageBox::warning(this, "Paths clipped", "<b>WARNING!</b><br><br>Some paths lay outside the 210&times;297&thinsp;mm A4 area. These have been squeezed back onto the page in a most ugly fashion, so cutting will almost certainly not do what you want.");
 
@@ -720,20 +720,21 @@ void MainWindow::onToolTriggered(QAction* action)
 
 void MainWindow::on_actionRulers_toggled(bool enabled)
 {
-    rulersEnabled = enabled;
+	// TODO: Implement rulers.
+	rulersEnabled = enabled;
 	ui->centralWidget->update();
 }
 
 void MainWindow::on_actionGrid_toggled(bool enabled)
 {
-    gridEnabled = enabled;
+	gridEnabled = enabled;
 	if (gridItem != nullptr)
 		gridItem->setVisible(gridEnabled);
 }
 
 void MainWindow::on_actionDimensions_toggled(bool enabled)
 {
-    dimensionsEnabled = enabled;
+	dimensionsEnabled = enabled;
 	if (dimensionsItem != nullptr)
 		dimensionsItem->setVisible(dimensionsEnabled);
 }
@@ -797,3 +798,10 @@ void MainWindow::onMousePressed(QPointF pos)
 		}
 	}
 }
+
+void MainWindow::on_actionCancel_triggered()
+{
+	// When escape is pressed just go back to the pan tool.
+	ui->actionPan->trigger();
+}
+
