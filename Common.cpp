@@ -55,11 +55,3 @@ SResult<unsigned long long> StoULL(std::string_view s)
 		return "Couldn't convert string to integer: " + std::string(s);
 	return R;
 }
-
-std::string GetEnv(std::string_view var)
-{
-	char* v = getenv(var.data());
-	if (v == nullptr)
-		return "";
-	return v;
-}

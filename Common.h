@@ -26,6 +26,3 @@ SResult<unsigned int> StoUI(std::string_view s);
 
 // String to unsigned long long, returns Fail on fail.
 SResult<unsigned long long> StoULL(std::string_view s);
-
-// Get an environmental variable.
-std::string GetEnv(std::string_view var);
