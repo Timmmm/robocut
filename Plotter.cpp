@@ -4,6 +4,8 @@
 
 #include <iostream>
 #include <cmath>
+#include <iomanip>
+#include <QDebug>
 
 namespace
 {
@@ -136,12 +138,15 @@ SResult<device_handle> UsbOpen()
 
 	int err = 0;
 
-	libusb_device* found = nullptr;
 	for (ssize_t i = 0; i < cnt; ++i)
 	{
 		libusb_device* device = list[i];
 		libusb_device_descriptor desc;
-		libusb_get_device_descriptor(device, &desc);
+		err = libusb_get_device_descriptor(device, &desc);
+		if (err != LIBUSB_SUCCESS)
+		{
+			continue;
+		}
 		
 		if (desc.idVendor != VENDOR_ID_GRAPHTEC)
 			continue;
@@ -149,11 +154,11 @@ SResult<device_handle> UsbOpen()
 		if (PRODUCT_ID_LIST.count(desc.idProduct) == 0)
 			continue;
 
-		libusb_device_handle* handle;
+		libusb_device_handle* handle = nullptr;
 
 		// Currently use the first device found.
-		err = libusb_open(found, &handle);
-		if (err != 0)
+		err = libusb_open(device, &handle);
+		if (err != LIBUSB_SUCCESS)
 		{
 			return Err("Error accessing vinyl cutter: " + UsbError(err) +
 			           ". Do you have permission (on Linux make sure you are in the group 'lp').");
@@ -259,7 +264,20 @@ QList<QPolygonF> Transform_Silhouette_Cameo(QList<QPolygonF> cuts, double *media
 	return paths;
 }
 */
+
+std::string string_to_hex(const std::string& in) {
+	std::stringstream ss;
+
+	ss << std::hex << std::setfill('0');
+	for (size_t i = 0; in.length() > i; ++i) {
+		ss << std::setw(2) << static_cast<unsigned int>(static_cast<unsigned char>(in[i]));
+	}
+
+	return ss.str();
+}
+
 } // anonymous namespace
+
 
 SResult<> Cut(CutParams p)
 {
@@ -306,6 +324,14 @@ SResult<> Cut(CutParams p)
 	e = UsbSend(handle, "\x1b\x04");
 	if (!e) return e;
 
+	// "Interface clear". I added this because sometimes instead of 0\x03 I was getting the "    0,    0\x03" response.
+	e = UsbSend(handle, ";\x03");
+	if (!e) return e;
+
+	sr = UsbReceive(handle, 5000);
+	if (!sr) return sr;
+	std::cout << "Interface clear response: " << sr.unwrap() << " (" << string_to_hex(sr.unwrap()) << ")\n";
+
 	// Status request.
 	e = UsbSend(handle, "\x1b\x05");
 	if (!e) return e;
@@ -314,13 +340,14 @@ SResult<> Cut(CutParams p)
 	if (!sr) return sr;
 
 	resp = sr.unwrap();
+
 	if (resp != "0\x03") // 0 = Ready. 1 = Moving. 2 = Nothing loaded. "  " = ??
 	{
 		if (resp == "1\x03")
 		  return Err(std::string("Moving, please try again."));
 		if (resp == "2\x03")
 		  return Err(std::string("Empty tray, please load media."));	// Silhouette Cameo
-		return Err(std::string("Invalid response from plotter: ") + resp);
+		return Err("Unexpected response from plotter: '" + resp + "' (" + string_to_hex(resp) + ")");
 	}
 
 	// Home the cutter.
@@ -336,12 +363,7 @@ SResult<> Cut(CutParams p)
 	if (!sr) return sr;
 
 	resp = sr.unwrap();
-	// Don't really care about this.
-//	if (resp.length() != 10)
-//	{
-//		e = Error("Version error: " + version);
-//		goto error;
-//	}
+	std::cout << "Version: " << resp << "\n";
 
 	e = UsbSend(handle, "FW" + ItoS(p.media) + "\x03");
 	if (!e) return e;
@@ -352,13 +374,12 @@ SResult<> Cut(CutParams p)
 	e = UsbSend(handle, "FX" + ItoS(p.pressure) + "\x03");
 	if (!e) return e;
 
-	// I think this sets the distance from the position of the plotter
-	// head to the actual cutting point, maybe in 0.1 mms (todo: Measure blade).
+	// This is the cutter offset, maybe in 0.1 mms.
 	// It is 0 for the pen, 18 for cutting.
-	// C possible stands for curvature. Not that any of the other letters make sense...
 	e = UsbSend(handle, "FC" + ItoS(p.media == 113 ? 0 : 18) + "\x03");
 	if (!e) return e;
 
+	// Enable or disable track enhancing.
 	e = UsbSend(handle, "FY" + ItoS(p.trackenhancing ? 0 : 1) + "\x03");
 	if (!e) return e;
 
@@ -368,6 +389,10 @@ SResult<> Cut(CutParams p)
 
 	e = UsbSend(handle, "FE0\x03"); // No idea what this does.
 	if (!e) return e;
+
+//	sr = UsbReceive(handle, 10000); // Allow 10s. Seems reasonable.
+//	if (!sr) return e;
+//	std::cout << "Got resp: " << sr.unwrap() << " (" << string_to_hex(sr.unwrap()) << ")\n";
 
 	e = UsbSend(handle, "TB71\x03"); // Again, no idea. Maybe something to do with registration marks?
 	if (!e) return e;
@@ -379,9 +404,8 @@ SResult<> Cut(CutParams p)
 
 	if (resp != "    0,    0\x03")
 	{
-		return Err(std::string("Invalid response from plotter."));
+		return Err("Unexpected response from plotter: '" + resp + "' (" + string_to_hex(resp) + ")");
 	}
-
 
 	// Begin page definition.
 	e = UsbSend(handle, "FA\x03");
@@ -461,51 +485,49 @@ SResult<> Cut(CutParams p)
 	}
 
 	if (!e) return e;
+
 	// I think this is the feed command. Sometimes it is 5588 - maybe a maximum?
 	e = UsbSend(handle, "FO" + ItoS(height - margintop) + "\x03");
 	if (!e) return e;
 
 	page.flags(std::ios::fixed);
 	page.precision(0);
+	// Set the "factor" to 100,100,100, whatever that means.
+	// \0,0 is "write lower left". Z is "write upper right", so I think this sets the bounds in some way.
 	page << "&100,100,100,\\0,0,Z" << ItoS(width) << "," << ItoS(height) << ",L0";
-	for (int i = 0; i < p.cuts.size(); ++i)
+	for (const auto &cut : p.cuts)
 	{
-		if (p.cuts[i].size() < 2)
+		if (cut.size() < 2)
 			continue;
 
-		double x = p.cuts[i][0].x() * 20.0;
-		double y = p.cuts[i][0].y() * 20.0;
-
-		double xorigin = 0;//ProgramOptions::Instance().getRegOriginWidthMM();
-		double yorigin = 0;//ProgramOptions::Instance().getRegOriginHeightMM();
-
-		if (p.regmark)
+		for (int i = 0; i < cut.size(); ++i)
 		{
-			x -= (xorigin * 20.0);
-			y -= (yorigin * 20.0);
-		}
+			double x = cut[i].x() * 20.0;
+			double y = cut[i].y() * 20.0;
 
-		// Squash to page boundaries.
-		x = std::min(std::max(x, 0.0), double(width));
-		y = std::min(std::max(y, 0.0), double(height));
+//			double xorigin = 0;//ProgramOptions::Instance().getRegOriginWidthMM();
+//			double yorigin = 0;//ProgramOptions::Instance().getRegOriginHeightMM();
 
-		page << ",M" << x << "," << y;
-		for (int j = 1; j < p.cuts[i].size(); ++j)
-		{
-			x = p.cuts[i][j].x() * 20.0;
-			y = p.cuts[i][j].y() * 20.0;
+//			if (p.regmark)
+//			{
+//				x -= (xorigin * 20.0);
+//				y -= (yorigin * 20.0);
+//			}
 
-			if (p.regmark)
-			{
-				x -= (xorigin * 20.0);
-				y -= (yorigin * 20.0);
-			}
+			// Squash to page boundaries.
+			x = std::min(std::max(x, 0.0), double(width));
+			y = std::min(std::max(y, 0.0), double(height));
 
-			page << ",D" << x << "," << y;
+			// Mirror x/y.
+			x = width - x;
+
+			page << (i == 0 ? ",M" : ",D") << x << "," << y;
 		}
 	}
 
-	page << "&1,1,1,TB50,0\x03"; // TB maybe .. ah I dunno. Need to experiment. No idea what &1,1,1 does either.
+	// &1,1,1 is "Factor". TB50,0 is something to do with registration.
+	// I suspect this command resets some settings at the end.
+	page << "&1,1,1,TB50,0\x03";
 
 	// std::cout << page.str() << "\n";
 
@@ -516,7 +538,7 @@ SResult<> Cut(CutParams p)
 	e = UsbSend(handle, "FO0\x03");
 	if (!e) return e;
 
-	// Halt?
+	// Home.
 	e = UsbSend(handle, "H,");
 	if (!e) return e;
 
