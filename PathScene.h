@@ -16,6 +16,6 @@ signals:
 	void mousePressed(QPointF p);
 
 protected:
-	void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
-	void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+	void mouseMoveEvent(QGraphicsSceneMouseEvent* mouseEvent) override;
+	void mousePressEvent(QGraphicsSceneMouseEvent* mouseEvent) override;
 };

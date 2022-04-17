@@ -1,15 +1,13 @@
 #include "CuttingDialog.h"
 #include "ui_CuttingDialog.h"
 
+#include <QCloseEvent>
 #include <QMessageBox>
 #include <QPushButton>
-#include <QCloseEvent>
 
 #include <QDebug>
 
-CuttingDialog::CuttingDialog(QWidget *parent) :
-	QDialog(parent),
-	ui(new Ui::CuttingDialog)
+CuttingDialog::CuttingDialog(QWidget* parent) : QDialog(parent), ui(new Ui::CuttingDialog)
 {
 	ui->setupUi(this);
 	thread = nullptr;
@@ -25,10 +23,11 @@ CuttingDialog::~CuttingDialog()
 	}
 }
 
-void CuttingDialog::changeEvent(QEvent *e)
+void CuttingDialog::changeEvent(QEvent* e)
 {
 	QDialog::changeEvent(e);
-	switch (e->type()) {
+	switch (e->type())
+	{
 	case QEvent::LanguageChange:
 		ui->retranslateUi(this);
 		break;
@@ -36,7 +35,6 @@ void CuttingDialog::changeEvent(QEvent *e)
 		break;
 	}
 }
-
 
 void CuttingDialog::startCut(const CutParams& params)
 {
@@ -79,11 +77,13 @@ void CuttingDialog::closeEvent(QCloseEvent* e)
 {
 	if (thread)
 	{
-		if (QMessageBox::question(this,
-		                          "Kill cutting process?",
-		                          "Are you sure you wish to stop the cutting process? It might be better "
-		                          "just to turn the plotter off and on again.",
-								  QMessageBox::Yes, QMessageBox::No) == QMessageBox::No)
+		if (QMessageBox::question(
+		        this,
+		        "Kill cutting process?",
+		        "Are you sure you wish to stop the cutting process? It might be better "
+		        "just to turn the plotter off and on again.",
+		        QMessageBox::Yes,
+		        QMessageBox::No) == QMessageBox::No)
 		{
 			e->ignore();
 			return;

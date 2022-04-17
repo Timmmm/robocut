@@ -28,8 +28,7 @@ SResult<int> StoI(std::string_view s)
 	auto R = strtol(P, &EP, 0);
 	if (EP == P)
 		return "Couldn't convert string to integer: " + std::string(s);
-	if (R < std::numeric_limits<int>::lowest() ||
-	        R > std::numeric_limits<int>::max())
+	if (R < std::numeric_limits<int>::lowest() || R > std::numeric_limits<int>::max())
 		return "Integer out of range: " + std::string(s);
 	return static_cast<int>(R);
 }

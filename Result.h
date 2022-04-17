@@ -4,14 +4,11 @@
 #include <string_view>
 #include <variant>
 
-template<typename T>
-class OkVal;
-template<typename E>
-class ErrVal;
+template <typename T> class OkVal;
+template <typename E> class ErrVal;
 
 // Result is a Rust-like class that provides an Ok() or Err() state.
-template<typename T, typename E>
-class Result : private std::variant<T, E>
+template <typename T, typename E> class Result : private std::variant<T, E>
 {
 	// Inherit constructors.
 	using std::variant<T, E>::variant;
@@ -55,8 +52,7 @@ public:
 	}
 
 	// If this result is Err() you can convert it to another result type.
-	template<typename T2>
-	operator Result<T2, E>()
+	template <typename T2> operator Result<T2, E>()
 	{
 		if (!is_err())
 			throw std::runtime_error("Error converting Result types - Result was Ok!");
@@ -73,26 +69,29 @@ public:
 		return Result<void, E>(std::in_place_index_t<1>(), std::get<1>(*this));
 	}
 
-	bool is_ok() const {
+	bool is_ok() const
+	{
 		return std::variant<T, E>::index() == 0;
 	}
 
-	bool is_err() const {
+	bool is_err() const
+	{
 		return std::variant<T, E>::index() != 0;
 	}
 
-	operator bool() const {
+	operator bool() const
+	{
 		return is_ok();
 	}
 
-	bool operator!() const {
+	bool operator!() const
+	{
 		return is_err();
 	}
 };
 
 // Specialisation for void Ok type because std::variant cannot contain a `void` type.
-template<typename E>
-class Result<void, E> : private std::variant<std::monostate, E>
+template <typename E> class Result<void, E> : private std::variant<std::monostate, E>
 {
 	using std::variant<std::monostate, E>::variant;
 
@@ -124,8 +123,7 @@ public:
 	}
 
 	// If this result is Err() you can convert it to another result type.
-	template<typename T2>
-	operator Result<T2, E>()
+	template <typename T2> operator Result<T2, E>()
 	{
 		if (!is_err())
 		{
@@ -146,75 +144,77 @@ public:
 		return Result<void, E>(std::in_place_index_t<1>(), std::get<1>(*this));
 	}
 
-	bool is_ok() const {
+	bool is_ok() const
+	{
 		return std::variant<std::monostate, E>::index() == 0;
 	}
 
-	bool is_err() const {
+	bool is_err() const
+	{
 		return std::variant<std::monostate, E>::index() != 0;
 	}
 
-	operator bool() const {
+	operator bool() const
+	{
 		return is_ok();
 	}
 
-	bool operator!() const {
+	bool operator!() const
+	{
 		return is_err();
 	}
 };
 
 // These allow you to `return Ok(42);`.
-template<typename T>
-class OkLVal
+template <typename T> class OkLVal
 {
 public:
-	OkLVal(const T& val) : value(val) {}
+	OkLVal(const T& val) : value(val)
+	{
+	}
 
-	template<typename E>
-	operator Result<T, E>() const
+	template <typename E> operator Result<T, E>() const
 	{
 		return Result<T, E>(std::in_place_index_t<0>(), value);
 	}
+
 private:
 	const T& value;
 };
 
-template<typename T>
-class OkRVal
+template <typename T> class OkRVal
 {
 public:
-	OkRVal(T&& val) : value(std::move(val)) {}
+	OkRVal(T&& val) : value(std::move(val))
+	{
+	}
 
-	template<typename E>
-	operator Result<T, E>() &&
+	template <typename E> operator Result<T, E>() &&
 	{
 		return Result<T, E>(std::in_place_index_t<0>(), std::move(value));
 	}
+
 private:
 	T&& value;
 };
-
 
 // Specialisation for void.
 class OkVoid
 {
 public:
-	template<typename E>
-	operator Result<void, E>() const
+	template <typename E> operator Result<void, E>() const
 	{
 		return Result<void, E>();
 	}
 };
 
 // T can be inferred because it is in a parameter list.
-template<typename T>
-OkLVal<T> Ok(const T& val)
+template <typename T> OkLVal<T> Ok(const T& val)
 {
 	return OkLVal<T>(val);
 }
 
-template<typename T>
-OkRVal<T> Ok(T&& val)
+template <typename T> OkRVal<T> Ok(T&& val)
 {
 	return OkRVal<T>(std::move(val));
 }
@@ -226,45 +226,45 @@ inline OkVoid Ok()
 }
 
 // The same for errors.
-template<typename E>
-class ErrLVal
+template <typename E> class ErrLVal
 {
 public:
-	ErrLVal(const E& err) : error(err) {}
+	ErrLVal(const E& err) : error(err)
+	{
+	}
 
-	template<typename T>
-	operator Result<T, E>() const
+	template <typename T> operator Result<T, E>() const
 	{
 		return Result<T, E>(std::in_place_index_t<1>(), error);
 	}
+
 private:
 	const E& error;
 };
 
-template<typename E>
-class ErrRVal
+template <typename E> class ErrRVal
 {
 public:
-	ErrRVal(E&& err) : error(std::move(err)) {}
+	ErrRVal(E&& err) : error(std::move(err))
+	{
+	}
 
-	template<typename T>
-	operator Result<T, E>() &&
+	template <typename T> operator Result<T, E>() &&
 	{
 		return Result<T, E>(std::in_place_index_t<1>(), std::move(error));
 	}
+
 private:
 	E&& error;
 };
 
 // T can be inferred because it is in a parameter list.
-template<typename E>
-ErrLVal<E> Err(const E& err)
+template <typename E> ErrLVal<E> Err(const E& err)
 {
 	return ErrLVal<E>(err);
 }
 
-template<typename E>
-ErrRVal<E> Err(E&& err)
+template <typename E> ErrRVal<E> Err(E&& err)
 {
 	return ErrRVal<E>(std::move(err));
 }
@@ -274,38 +274,42 @@ ErrRVal<E> Err(E&& err)
 
 #if defined(__clang__) || defined(__GNUC__)
 
-#define TRY(x)            \
-	({                    \
-	    auto&& ref = (x); \
-	    if (!ref) {       \
-	        return ref;   \
-	    }                 \
-	    ref.unwrap();     \
+#define TRY(x) \
+	({ \
+		auto&& ref = (x); \
+		if (!ref) \
+		{ \
+			return ref; \
+		} \
+		ref.unwrap(); \
 	})
 
 #else
 
 // For MSVC: TRY() where you don't need to use the result.
-#define TRY(x)            \
-	do {                  \
-	    auto&& ref = (x); \
-	    if (!ref) {       \
-	        return ref;   \
-	    }                 \
+#define TRY(x) \
+	do \
+	{ \
+		auto&& ref = (x); \
+		if (!ref) \
+		{ \
+			return ref; \
+		} \
 	} while (0)
 
 // For MSVC: TRY() where you want to assign the result to a variable.
-#define TRY_ASSIGN(o, x)   \
-	do {                   \
-	    auto&& ref = (x);  \
-	    if (!ref) {        \
-	        return ref;    \
-	    }                  \
-	    o = ref.unwrap();  \
+#define TRY_ASSIGN(o, x) \
+	do \
+	{ \
+		auto&& ref = (x); \
+		if (!ref) \
+		{ \
+			return ref; \
+		} \
+		o = ref.unwrap(); \
 	} while (0)
 
 #endif
 
 // Result with a std::string error type for convenience.
-template<typename T = void>
-using SResult = Result<T, std::string>;
+template <typename T = void> using SResult = Result<T, std::string>;

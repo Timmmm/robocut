@@ -1,8 +1,8 @@
 #pragma once
 
-#include <QString>
 #include <QList>
 #include <QPolygonF>
+#include <QString>
 
 // This struct stores the data that is loaded from a file.
 struct FileData

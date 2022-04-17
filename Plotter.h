@@ -1,8 +1,8 @@
 #pragma once
 
+#include "Common.h"
 #include <QList>
 #include <QPolygonF>
-#include "Common.h"
 
 #include "CuttingThread.h"
 
@@ -25,12 +25,11 @@ const int VENDOR_ID_GRAPHTEC = 0x0b4d;
 
 // Map from product ID to product name.
 const std::map<int, std::string> PRODUCT_ID_LIST = {
-    { 0x110a, "CC200-20" },
-    { 0x111a, "CC300-20" },
-    { 0x111c, "Silhouette SD / CC220-30" },
-    { 0x111d, "Silhouette SD 2" },
-    { 0x1121, "Silhouette Cameo" },
-    { 0x112f, "Silhouette Cameo 3" },
-    { 0x1223, "Silhouette Portrait" },
+    {0x110a, "CC200-20"},
+    {0x111a, "CC300-20"},
+    {0x111c, "Silhouette SD / CC220-30"},
+    {0x111d, "Silhouette SD 2"},
+    {0x1121, "Silhouette Cameo"},
+    {0x112f, "Silhouette Cameo 3"},
+    {0x1223, "Silhouette Portrait"},
 };
-

@@ -7,9 +7,7 @@ QRectF VinylCutterItem::boundingRect() const
 	return QRectF(-15.0, -25.0, 240.0, 40.0);
 }
 
-void VinylCutterItem::paint(QPainter* painter,
-                            const QStyleOptionGraphicsItem* option,
-                            QWidget* widget)
+void VinylCutterItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
 {
 	(void)option;
 	(void)widget;
@@ -35,5 +33,4 @@ void VinylCutterItem::paint(QPainter* painter,
 	painter->setPen(QColor(20, 20, 20, 100));
 	painter->setBrush(Qt::NoBrush);
 	painter->drawText(0, -10, "Vinyl Cutter");
-
 }

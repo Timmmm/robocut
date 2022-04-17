@@ -1,7 +1,7 @@
 #pragma once
 
-#include <QPaintDevice>
 #include <QList>
+#include <QPaintDevice>
 #include <QPolygonF>
 #include <QSet>
 
@@ -14,7 +14,7 @@ size_t qHash(const QPolygonF& key);
 class PathPaintDevice : public QPaintDevice
 {
 public:
-	PathPaintDevice(double widthInMm, double heightInMm, double pixelsPerMm = 90.0/25.4);
+	PathPaintDevice(double widthInMm, double heightInMm, double pixelsPerMm = 90.0 / 25.4);
 	~PathPaintDevice() override;
 
 	// Adds a path to the device.
@@ -29,6 +29,7 @@ public:
 
 protected:
 	int metric(PaintDeviceMetric metric) const override;
+
 private:
 	mutable PathPaintEngine* engine;
 

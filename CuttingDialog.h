@@ -4,8 +4,9 @@
 
 #include "CuttingThread.h"
 
-namespace Ui {
-	class CuttingDialog;
+namespace Ui
+{
+class CuttingDialog;
 }
 
 // This is the dialog that shows while the cut is progressing. The thread that does the cutting
@@ -15,7 +16,7 @@ class CuttingDialog : public QDialog
 	Q_OBJECT
 
 public:
-	explicit CuttingDialog(QWidget *parent = nullptr);
+	explicit CuttingDialog(QWidget* parent = nullptr);
 	~CuttingDialog() override;
 
 	// Start the cutting thread. Call this only once, before the dialog is shown.
@@ -23,11 +24,11 @@ public:
 	void startCut(const CutParams& params);
 
 protected:
-	void changeEvent(QEvent *e) override;
+	void changeEvent(QEvent* e) override;
 	void closeEvent(QCloseEvent* e) override;
 
 private:
-	Ui::CuttingDialog *ui;
+	Ui::CuttingDialog* ui;
 
 	// The cutting thread. It is pretty basic - just one long run() routine and then it calls onSuccess() or
 	// onError().
@@ -38,4 +39,3 @@ private slots:
 	void onSuccess();
 	void onError(QString message);
 };
-

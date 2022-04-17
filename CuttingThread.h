@@ -32,7 +32,7 @@ class CuttingThread : public QThread
 {
 	Q_OBJECT
 public:
-	explicit CuttingThread(QObject *parent = nullptr);
+	explicit CuttingThread(QObject* parent = nullptr);
 
 	// Set the parameters to use for the cut.
 	void setParams(const CutParams& params);
@@ -51,5 +51,4 @@ protected:
 
 private:
 	CutParams params;
-
 };

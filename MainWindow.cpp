@@ -28,29 +28,25 @@ using namespace std;
 
 namespace
 {
-	bool fileDoesntExist(const QString& filename)
-	{
-		return !QFile::exists(filename);
-	}
-
-	void removeNonexistentFiles(QStringList& filenames)
-	{
-		filenames.erase(
-			std::remove_if(filenames.begin(), filenames.end(), fileDoesntExist),
-			filenames.end()
-		);
-	}
-
+bool fileDoesntExist(const QString& filename)
+{
+	return !QFile::exists(filename);
 }
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow)
+
+void removeNonexistentFiles(QStringList& filenames)
+{
+	filenames.erase(std::remove_if(filenames.begin(), filenames.end(), fileDoesntExist), filenames.end());
+}
+
+} // namespace
+MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
-	
+
 	// Load settings from disk.
 	QSettings settings;
-	lastOpenDir = settings.value("lastOpenDir").toString();	
-	recentFiles = settings.value("recentFiles").toStringList();	
+	lastOpenDir = settings.value("lastOpenDir").toString();
+	recentFiles = settings.value("recentFiles").toStringList();
 	gridEnabled = settings.value("gridEnabled", true).toBool();
 	dimensionsEnabled = settings.value("dimensionsEnabled", true).toBool();
 	rulersEnabled = settings.value("rulersEnabled", true).toBool();
@@ -62,27 +58,27 @@ MainWindow::MainWindow(QWidget *parent)
 	ui->actionRulers->setChecked(rulersEnabled);
 	ui->actionCutter_Path->setChecked(cutterPathEnabled);
 	ui->actionVinyl_Cutter->setChecked(vinylCutterEnabled);
-	
+
 	// TODO: Implement this.
-//	ui->menuEdit->hide();
+	//	ui->menuEdit->hide();
 
 	// TODO: Implement this.
 	ui->devicesWidget->hide();
 
 	scene = new PathScene(this);
-	
+
 	ui->graphicsView->setScene(scene);
 	ui->graphicsView->scale(defaultZoom, defaultZoom);
 
 	animationTimer = new QTimer(this);
 	connect(animationTimer, &QTimer::timeout, this, &MainWindow::animate);
-	
+
 	removeNonexistentFiles(recentFiles);
 	recentFilesModel = new SvgPreviewModel(this);
 	recentFilesModel->setPreviewSize(64);
 	recentFilesModel->setFiles(recentFiles);
 	ui->recentFilesList->setModel(recentFilesModel);
-	
+
 	exampleFilesModel = new SvgPreviewModel(this);
 	exampleFilesModel->setPreviewSize(64);
 
@@ -90,7 +86,7 @@ MainWindow::MainWindow(QWidget *parent)
 	for (auto& f : exampleFiles)
 		f.prepend(":/examples/");
 	exampleFilesModel->setFiles(exampleFiles);
-	
+
 	ui->examplesList->setModel(exampleFilesModel);
 
 	// Alternative zoom shortcuts
@@ -104,14 +100,14 @@ MainWindow::MainWindow(QWidget *parent)
 	toolGroup->addAction(ui->actionMeasure);
 
 	connect(toolGroup, &QActionGroup::triggered, this, &MainWindow::onToolTriggered);
-	
+
 	auto sortMethodGroup = new QActionGroup(this);
 	sortMethodGroup->addAction(ui->actionSortShortest);
 	sortMethodGroup->addAction(ui->actionSortByY);
 	sortMethodGroup->addAction(ui->actionSortGreedy);
 	sortMethodGroup->addAction(ui->actionSortInsideFirst);
 	sortMethodGroup->addAction(ui->actionSortNone);
-	
+
 	connect(sortMethodGroup, &QActionGroup::triggered, this, &MainWindow::onSortMethodTriggered);
 
 	// Initialise icons.
@@ -133,14 +129,16 @@ MainWindow::MainWindow(QWidget *parent)
 		}
 		else
 		{
-			icon.addFile((isDarkMode ? ":icons/dark_ic_" : ":icons/ic_") + on + "_48px.svg",
-			             QSize(),
-			             QIcon::Normal,
-			             QIcon::On);
-			icon.addFile((isDarkMode ? ":icons/dark_ic_" : ":icons/ic_") + off + "_48px.svg",
-			             QSize(),
-			             QIcon::Normal,
-			             QIcon::Off);
+			icon.addFile(
+			    (isDarkMode ? ":icons/dark_ic_" : ":icons/ic_") + on + "_48px.svg",
+			    QSize(),
+			    QIcon::Normal,
+			    QIcon::On);
+			icon.addFile(
+			    (isDarkMode ? ":icons/dark_ic_" : ":icons/ic_") + off + "_48px.svg",
+			    QSize(),
+			    QIcon::Normal,
+			    QIcon::Off);
 			// TODO: Probably need to add it for disabled, etc. too.
 		}
 		icon.setIsMask(true);
@@ -182,7 +180,7 @@ void MainWindow::on_actionOpen_triggered()
 		lastOpenDir = QDir::homePath();
 
 	auto filename = QFileDialog::getOpenFileName(this, tr("Open File"), lastOpenDir, tr("SVG Files (*.svg)"));
-	
+
 	if (filename.isEmpty())
 		return;
 
@@ -197,14 +195,14 @@ void MainWindow::on_actionReload_triggered()
 		qDebug() << "Reload failed. File missing: " << currentFilename;
 		return;
 	}
-	
+
 	loadFile(currentFilename);
 }
 
 void MainWindow::loadFile(QString filename)
 {
 	qDebug() << "Reading file: " << filename;
-	
+
 	// Convert the SVG to paths.
 	auto render = svgToPaths(filename, true);
 
@@ -214,15 +212,19 @@ void MainWindow::loadFile(QString filename)
 		qDebug() << "Error loading svg.";
 		return;
 	}
-	
+
 	if (render.hasTspanPosition)
 	{
-		QMessageBox::warning(this, "Multi-line Text", "This SVG contains multi-line text which "
-		                     "is not supported in SVG Tiny. Text may be rendered incorrectly. "
-		                     "The easiest workaround is to convert the text to paths.");
+		QMessageBox::warning(
+		    this,
+		    "Multi-line Text",
+		    "This SVG contains multi-line text which "
+		    "is not supported in SVG Tiny. Text may be rendered incorrectly. "
+		    "The easiest workaround is to convert the text to paths.");
 	}
 
-	// See https://code.woboq.org/qt5/qtsvg/src/svg/qsvghandler.cpp.html#_ZL15convertToPixelsdbN11QSvgHandler10LengthTypeE
+	// See
+	// https://code.woboq.org/qt5/qtsvg/src/svg/qsvghandler.cpp.html#_ZL15convertToPixelsdbN11QSvgHandler10LengthTypeE
 	// The default size is derived from the width="" height="" svg attribute tags
 	// assuming 90 DPI.
 	data.mediaSize = QSizeF(render.widthMm, render.heightMm);
@@ -232,14 +234,13 @@ void MainWindow::loadFile(QString filename)
 	// Transform the paths from user units to mm.
 	for (auto& path : data.paths)
 	{
-		for (auto& vertex : path) {
+		for (auto& vertex : path)
+		{
 			vertex = QPointF(
-			             (vertex.x() - render.viewBox.x()) * render.widthMm / render.viewBox.width(),
-			             (vertex.y() - render.viewBox.y()) * render.heightMm / render.viewBox.height()
-			         );
+			    (vertex.x() - render.viewBox.x()) * render.widthMm / render.viewBox.width(),
+			    (vertex.y() - render.viewBox.y()) * render.heightMm / render.viewBox.height());
 		}
 	}
-
 
 	QPointF startingPoint(0.0, 0.0);
 
@@ -250,14 +251,12 @@ void MainWindow::loadFile(QString filename)
 	// 3. Try not to travel too much in the Y direction (it can lead to accumulation of
 	//    errors due to the vinyl slipping in the rollers).
 	//
-	sortedPaths = sortPaths(data.paths,
-	                        sortMethod,
-	                        startingPoint);
+	sortedPaths = sortPaths(data.paths, sortMethod, startingPoint);
 
 	// Set the default zoom.
 	auto viewSize = ui->centralWidget->size();
-	defaultZoom = 0.8 * std::min(viewSize.width() / data.mediaSize.width(),
-	                             viewSize.height() / data.mediaSize.height());
+	defaultZoom =
+	    0.8 * std::min(viewSize.width() / data.mediaSize.width(), viewSize.height() / data.mediaSize.height());
 
 	// Clear the scene.
 	clearScene();
@@ -266,30 +265,30 @@ void MainWindow::loadFile(QString filename)
 
 	// And reset the sceneRect, which it doesn't do by default.
 	scene->setSceneRect(pageRect.adjusted(-20, -20, 20, 20));
-	
+
 	scene->setBackgroundBrush(QBrush(Qt::lightGray));
 
 	// Add the page background
 	scene->addRect(pageRect, Qt::NoPen, QBrush(Qt::white));
-	
+
 	// Add the dimensions test.
-	dimensionsItem = scene->addText(QString::number(data.mediaSize.width()) + " × " +
-	                                QString::number(data.mediaSize.height()) + " mm",
-	                                QFont("Helvetica", 10));
+	dimensionsItem = scene->addText(
+	    QString::number(data.mediaSize.width()) + " × " + QString::number(data.mediaSize.height()) + " mm",
+	    QFont("Helvetica", 10));
 	dimensionsItem->setPos(0.0, data.mediaSize.height());
 	dimensionsItem->setVisible(dimensionsEnabled);
-	
+
 	// Add the rulers.
-//	addRulers(scene);
+	//	addRulers(scene);
 
 	// Add the measuring tape and hide it.
 	measureItem = new MeasureItem();
 	measureItem->setZValue(10);
 	measureItem->hide();
 	scene->addItem(measureItem);
-	
+
 	QList<QGraphicsItem*> gridSquares;
-	
+
 	// Add the centimetre grid.
 	for (int x = 0; x < data.mediaSize.width() / 10; ++x)
 	{
@@ -297,16 +296,19 @@ void MainWindow::loadFile(QString filename)
 		{
 			int w = static_cast<int>(std::min(10.0, data.mediaSize.width() - x * 10.0));
 			int h = static_cast<int>(std::min(10.0, data.mediaSize.height() - y * 10.0));
-			gridSquares.append(
-			            scene->addRect(x*10, data.mediaSize.height() - y*10 - h, w, h,
-						               Qt::NoPen, QBrush(QColor::fromRgb(240, 240, 240)))
-			        );
+			gridSquares.append(scene->addRect(
+			    x * 10,
+			    data.mediaSize.height() - y * 10 - h,
+			    w,
+			    h,
+			    Qt::NoPen,
+			    QBrush(QColor::fromRgb(240, 240, 240))));
 		}
 	}
-	
+
 	gridItem = scene->createItemGroup(gridSquares);
-	gridItem->setVisible(gridEnabled);	
-	
+	gridItem->setVisible(gridEnabled);
+
 	// Add the outline of the page.
 	QPen pageOutlinePen;
 	pageOutlinePen.setCosmetic(true);
@@ -328,16 +330,18 @@ void MainWindow::loadFile(QString filename)
 
 	// Reset the viewport.
 	on_actionReset_triggered();
-	
+
 	// Set the page that shows the file.
 	ui->stackedWidget->setCurrentIndex(1);
 
 	// Redraw. Probably not necessary.
 	update();
-	
+
 	// TODO: Show a non-modal warning at the top.
-//	if (clipped)
-//		QMessageBox::warning(this, "Paths clipped", "<b>WARNING!</b><br><br>Some paths lay outside the 210&times;297&thinsp;mm A4 area. These have been squeezed back onto the page in a most ugly fashion, so cutting will almost certainly not do what you want.");
+	//	if (clipped)
+	//		QMessageBox::warning(this, "Paths clipped", "<b>WARNING!</b><br><br>Some paths lay outside the
+	// 210&times;297&thinsp;mm A4 area. These have been squeezed back onto the page in a most ugly fashion, so cutting
+	// will almost certainly not do what you want.");
 
 	// Change window title and enable menu items.
 	setFileLoaded(filename);
@@ -345,16 +349,17 @@ void MainWindow::loadFile(QString filename)
 
 void MainWindow::on_actionAbout_triggered()
 {
-	QString message = QString("<b>") + PROJECT_VERSION +
-	"</b><br><br>By Tim Hutt, &copy; 2010-2022<br/>" +
-	"<br>Parts of the source by Markus Schulz<br/>" +
-	"<br/>This software allows you to read a vector image in <a href=\"http://en.wikipedia.org/wiki/Scalable_Vector_Graphics\">SVG format</a>, " +
-	"and send it to a <a href=\"http://www.graphteccorp.com/craftrobo/\">Graphtec Craft Robo 2</a>/3 " +
-	" or <a href=\"http://www.silhouette.com/cameo\">Silhouette Cameo</a> " +
-	" (or similar device) for cutting. It is designed to work with SVGs produced " +
-	"by the excellent free vector graphics editor <a href=\"http://www.inkscape.org/\">Inkscape</a>. " +
-	" It may work with other software but this has not been tested.<br/>" +
-	"<br/>See <a href=\"http://robocut.org\">the website for more information</a>.";
+	QString message =
+	    QString("<b>") + PROJECT_VERSION + "</b><br><br>By Tim Hutt, &copy; 2010-2022<br/>" +
+	    "<br>Parts of the source by Markus Schulz<br/>" +
+	    "<br/>This software allows you to read a vector image in <a "
+	    "href=\"http://en.wikipedia.org/wiki/Scalable_Vector_Graphics\">SVG format</a>, " +
+	    "and send it to a <a href=\"http://www.graphteccorp.com/craftrobo/\">Graphtec Craft Robo 2</a>/3 " +
+	    " or <a href=\"http://www.silhouette.com/cameo\">Silhouette Cameo</a> " +
+	    " (or similar device) for cutting. It is designed to work with SVGs produced " +
+	    "by the excellent free vector graphics editor <a href=\"http://www.inkscape.org/\">Inkscape</a>. " +
+	    " It may work with other software but this has not been tested.<br/>" +
+	    "<br/>See <a href=\"http://robocut.org\">the website for more information</a>.";
 	QMessageBox::information(this, "About", message);
 }
 
@@ -394,7 +399,10 @@ void MainWindow::on_actionCut_triggered()
 
 void MainWindow::on_actionManual_triggered()
 {
-	QMessageBox::information(this, "Manual", "An online manual is available at <br><br><a href=\"http://robocut.org/\">http://robocut.org/</a>");
+	QMessageBox::information(
+	    this,
+	    "Manual",
+	    "An online manual is available at <br><br><a href=\"http://robocut.org/\">http://robocut.org/</a>");
 }
 
 void MainWindow::on_actionAnimate_toggled(bool animate)
@@ -433,19 +441,19 @@ void MainWindow::on_actionZoom_In_triggered()
 
 void MainWindow::on_actionZoom_Out_triggered()
 {
-	ui->graphicsView->scale(1.0/1.2, 1.0/1.2);
+	ui->graphicsView->scale(1.0 / 1.2, 1.0 / 1.2);
 }
 
 void MainWindow::animate()
 {
 	// TODO: This method is a bit of a mess - could do with moving the
 	// iteration stuff into a separate iterator class.
-	
+
 	if (!cutMarker)
 		return;
 
 	// Make sure the current position is sane.
-	if (cutMarkerPoly >= sortedPaths.size()*2+1)
+	if (cutMarkerPoly >= sortedPaths.size() * 2 + 1)
 	{
 		// If not, reset it.
 		cutMarkerPoly = 0;
@@ -456,25 +464,25 @@ void MainWindow::animate()
 	// Get the ends of the segment/edge we are currently on.
 
 	QPointF startingPoint(0.0, 0.0);
-	
+
 	// How far to travel each "frame". This controls the animation speed.
 	double distanceRemaining = 2.0;
-	
+
 	while (true)
 	{
 		// Start and end points of the current line.
 		QPointF a;
 		QPointF b;
-		
+
 		if (cutMarkerPoly % 2 == 0)
 		{
 			// We are moving between paths, and not cutting.
 			if (cutMarkerPoly == 0)
 				a = startingPoint;
 			else
-				a = sortedPaths[(cutMarkerPoly / 2)-1].back();
-			
-			if (cutMarkerPoly >= sortedPaths.size()*2)
+				a = sortedPaths[(cutMarkerPoly / 2) - 1].back();
+
+			if (cutMarkerPoly >= sortedPaths.size() * 2)
 				b = startingPoint;
 			else
 				b = sortedPaths[(cutMarkerPoly / 2)].front();
@@ -485,18 +493,18 @@ void MainWindow::animate()
 		{
 			auto pathIndex = (cutMarkerPoly - 1) / 2;
 			a = sortedPaths[pathIndex][cutMarkerLine];
-			b = sortedPaths[pathIndex][cutMarkerLine+1];
-			cutMarker->setOpacity(1.0);			
+			b = sortedPaths[pathIndex][cutMarkerLine + 1];
+			cutMarker->setOpacity(1.0);
 		}
-		
+
 		QLineF ln(a, b);
-		
+
 		// If the cutter shouldn't be in this line, go to the next one.
 		if ((ln.length() - cutMarkerDistance) < distanceRemaining)
 		{
 			distanceRemaining -= (ln.length() - cutMarkerDistance);
 			cutMarkerDistance = 0.0;
-			if (cutMarkerPoly % 2 != 0 && cutMarkerLine < sortedPaths[(cutMarkerPoly - 1) / 2].size()-2)
+			if (cutMarkerPoly % 2 != 0 && cutMarkerLine < sortedPaths[(cutMarkerPoly - 1) / 2].size() - 2)
 			{
 				++cutMarkerLine;
 			}
@@ -507,18 +515,18 @@ void MainWindow::animate()
 			}
 			continue;
 		}
-		
+
 		cutMarkerDistance += distanceRemaining;
-		
+
 		// Get a vector along the current line.
-		QPointF r = b-a;
+		QPointF r = b - a;
 		double h = hypot(r.x(), r.y());
 		if (h > 0.0)
 			r /= h;
-		
+
 		// The current position of the marker.
 		QPointF p = a + r * cutMarkerDistance;
-	
+
 		cutMarker->setPos(p);
 		break;
 	}
@@ -542,7 +550,7 @@ void MainWindow::setFileLoaded(QString filename)
 	ui->actionCutter_Path->setEnabled(e);
 	ui->actionPan->setEnabled(e);
 	ui->actionMeasure->setEnabled(e);
-	
+
 	// Update the recent files list. Also ignore files that start
 	// with a colon - those are examples.
 	if (!filename.isEmpty() && !filename.startsWith(":"))
@@ -551,17 +559,19 @@ void MainWindow::setFileLoaded(QString filename)
 		recentFiles.removeAll(filename);
 		recentFiles.prepend(filename);
 	}
-	
+
 	currentFilename = filename;
 }
 
 void MainWindow::addPathItemsToScene()
 {
-	if (pathsItem != nullptr) {
+	if (pathsItem != nullptr)
+	{
 		delete pathsItem;
 		pathsItem = nullptr;
 	}
-	if (cutterPathItem != nullptr) {
+	if (cutterPathItem != nullptr)
+	{
 		delete cutterPathItem;
 		cutterPathItem = nullptr;
 	}
@@ -646,18 +656,18 @@ void MainWindow::on_actionClose_triggered()
 	recentFilesModel->setFiles(recentFiles);
 }
 
-void MainWindow::on_recentFilesList_activated(const QModelIndex &index)
-{	
+void MainWindow::on_recentFilesList_activated(const QModelIndex& index)
+{
 	auto filename = index.data(SvgPreviewModel::FilenameRole).toString();
-	
+
 	lastOpenDir = QFileInfo(filename).absoluteDir().path();
 	loadFile(filename);
 }
 
-void MainWindow::on_examplesList_activated(const QModelIndex &index)
+void MainWindow::on_examplesList_activated(const QModelIndex& index)
 {
 	auto filename = index.data(SvgPreviewModel::FilenameRole).toString();
-	
+
 	loadFile(filename);
 }
 
@@ -675,12 +685,10 @@ void MainWindow::onSortMethodTriggered(QAction* action)
 		sortMethod = PathSortMethod::None;
 	else
 		return;
-	
+
 	// Resort the paths.
 	QPointF startingPoint(0.0, 0.0);
-	sortedPaths = sortPaths(data.paths,
-	                        sortMethod,
-	                        startingPoint);
+	sortedPaths = sortPaths(data.paths, sortMethod, startingPoint);
 
 	// Remove the path items and re-add them.
 	addPathItemsToScene();
@@ -746,14 +754,12 @@ void MainWindow::on_actionCutter_Path_toggled(bool enabled)
 		cutterPathItem->setVisible(cutterPathEnabled);
 }
 
-
 void MainWindow::on_actionVinyl_Cutter_toggled(bool enabled)
 {
 	vinylCutterEnabled = enabled;
 	if (vinylCutterItem != nullptr)
 		vinylCutterItem->setVisible(vinylCutterEnabled);
 }
-
 
 void MainWindow::onMouseMoved(QPointF pos)
 {
@@ -813,4 +819,3 @@ void MainWindow::on_actionCancel_triggered()
 	// When escape is pressed just go back to the pan tool.
 	ui->actionPan->trigger();
 }
-

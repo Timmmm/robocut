@@ -88,4 +88,3 @@ int PathPaintDevice::metric(PaintDeviceMetric metric) const
 	}
 	return 0;
 }
-

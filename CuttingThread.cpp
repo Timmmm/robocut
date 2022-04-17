@@ -2,18 +2,14 @@
 
 #include "Plotter.h"
 
-CuttingThread::CuttingThread(QObject *parent) :
-    QThread(parent)
+CuttingThread::CuttingThread(QObject* parent) : QThread(parent)
 {
-
 }
-
 
 void CuttingThread::setParams(const CutParams& p)
 {
 	params = p;
 }
-
 
 void CuttingThread::run()
 {

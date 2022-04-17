@@ -1,24 +1,23 @@
 #include <iostream>
 
 #include <QApplication>
-#include <QMessageBox>
 #include <QCommandLineParser>
+#include <QMessageBox>
 
-#include "MainWindow.h"
 #include "CommandLineOptions.h"
+#include "MainWindow.h"
 
 #include <libusb/libusb.h>
 
 using namespace std;
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
 	// For the benefit of QSettings.
 	QCoreApplication::setOrganizationName("Robocut");
 	QCoreApplication::setOrganizationDomain("robocut.com");
 	QCoreApplication::setApplicationName("Robocut");
 
-	
 	int err = libusb_init(nullptr);
 	if (err != LIBUSB_SUCCESS)
 	{
@@ -34,9 +33,9 @@ int main(int argc, char *argv[])
 		QApplication app(argc, argv);
 		// Don't show icons in menus, as was the fashion at the time.
 		app.setAttribute(Qt::AA_DontShowIconsInMenus);
-		
-//		processCommandLineOptions(a, argc, argv);
-		
+
+		//		processCommandLineOptions(a, argc, argv);
+
 		MainWindow w;
 		w.show();
 		ret = app.exec();

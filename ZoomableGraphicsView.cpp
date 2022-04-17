@@ -1,24 +1,21 @@
 #include "ZoomableGraphicsView.h"
 
+#include <QDebug>
 #include <QEvent>
 #include <QGesture>
-#include <QDebug>
 
-ZoomableGraphicsView::ZoomableGraphicsView(QWidget* parent)
-  : QGraphicsView(parent)
+ZoomableGraphicsView::ZoomableGraphicsView(QWidget* parent) : QGraphicsView(parent)
 {
 	grabGesture(Qt::PinchGesture);
 }
 
-ZoomableGraphicsView::ZoomableGraphicsView(QGraphicsScene* scene, QWidget* parent)
-  : QGraphicsView(scene, parent)
+ZoomableGraphicsView::ZoomableGraphicsView(QGraphicsScene* scene, QWidget* parent) : QGraphicsView(scene, parent)
 {
 	grabGesture(Qt::PinchGesture);
 }
 
 ZoomableGraphicsView::~ZoomableGraphicsView()
 {
-  
 }
 
 bool ZoomableGraphicsView::event(QEvent* event)
@@ -39,9 +36,9 @@ bool ZoomableGraphicsView::gestureEvent(QGestureEvent* event)
 		panTriggered(static_cast<QPanGesture*>(pan));
 	else if (QGesture* pinch = event->gesture(Qt::PinchGesture))
 		pinchTriggered(static_cast<QPinchGesture*>(pinch));
-	
+
 	event->accept();
-	
+
 	return true;
 }
 
@@ -65,13 +62,15 @@ void ZoomableGraphicsView::wheelEvent(QWheelEvent* event)
 	// use the default implementation, which does nothing (we use pinch to zoom instead).
 	if (event->source() != Qt::MouseEventNotSynthesized)
 		return QGraphicsView::wheelEvent(event);
-	
 
 	double scaleBy = 1.0;
 
-	if (event->hasPixelDelta()) {
+	if (event->hasPixelDelta())
+	{
 		scaleBy = exp(event->pixelDelta().y() * 0.002);
-	} else {
+	}
+	else
+	{
 		// Scroll wheel on Windows has no pixel delta for example.
 		scaleBy = exp(event->angleDelta().y() * 0.002);
 	}
@@ -80,10 +79,9 @@ void ZoomableGraphicsView::wheelEvent(QWheelEvent* event)
 	setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 
 	scale(scaleBy, scaleBy);
-	
+
 	// Anchor in view centre for keyboard shortcuts.
 	setTransformationAnchor(QGraphicsView::AnchorViewCenter);
-	
+
 	event->accept();
 }
-

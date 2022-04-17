@@ -2,21 +2,21 @@
 
 #include <QMainWindow>
 
+#include <QGraphicsItem>
 #include <QGraphicsScene>
 #include <QTimer>
-#include <QGraphicsItem>
 
 #include "CutDialog.h"
 #include "FileData.h"
-#include "SvgPreviewModel.h"
-#include "PathSorter.h"
 #include "MeasureItem.h"
 #include "PathScene.h"
+#include "PathSorter.h"
+#include "SvgPreviewModel.h"
 #include "VinylCutterItem.h"
 
 namespace Ui
 {
-	class MainWindow;
+class MainWindow;
 }
 
 class MainWindow : public QMainWindow
@@ -24,7 +24,7 @@ class MainWindow : public QMainWindow
 	Q_OBJECT
 
 public:
-	explicit MainWindow(QWidget *parent = nullptr);
+	explicit MainWindow(QWidget* parent = nullptr);
 	~MainWindow() override;
 
 private slots:
@@ -42,13 +42,13 @@ private slots:
 	void on_actionRulers_toggled(bool enabled);
 	void on_actionZoom_In_triggered();
 	void on_actionZoom_Out_triggered();
-	void on_examplesList_activated(const QModelIndex &index);
-	void on_openSvgButton_clicked();	
-	void on_recentFilesList_activated(const QModelIndex &index);
-	
+	void on_examplesList_activated(const QModelIndex& index);
+	void on_openSvgButton_clicked();
+	void on_recentFilesList_activated(const QModelIndex& index);
+
 	// Advance the cutting animation frame.
 	void animate();
-	
+
 	void onSortMethodTriggered(QAction* action);
 	void onToolTriggered(QAction* action);
 
@@ -63,7 +63,7 @@ private slots:
 private:
 	// Attempt to load the given file.
 	void loadFile(QString currentFilename);
-	
+
 	// Set the currently loaded file. This updates the window title, menus etc.
 	// Use an empty string to indicate that no file is loaded.
 	void setFileLoaded(QString currentFilename);
@@ -75,7 +75,7 @@ private:
 	void clearScene();
 
 private:
-	Ui::MainWindow *ui = nullptr;
+	Ui::MainWindow* ui = nullptr;
 
 	// The cutting paths that were loaded from the SVG.
 	FileData data;
@@ -88,15 +88,15 @@ private:
 
 	// The dialog that asks what settings to use. We keep this around and reuse it as necessary.
 	CutDialog* cutDialog = nullptr;
-	
+
 	// The dimensions item, e.g. "210 x 297 mm"
 	QGraphicsTextItem* dimensionsItem = nullptr;
-	
+
 	// The grid item - the grid squares are children of this.
 	QGraphicsItemGroup* gridItem = nullptr;
-	
+
 	// The rulers...
-//	QGraphicsItem* 
+	//	QGraphicsItem*
 
 	// The vinyl cutter, to make it clear where it will cut.
 	VinylCutterItem* vinylCutterItem = nullptr;
@@ -119,7 +119,7 @@ private:
 	int cutMarkerLine = 0;
 	// Current distance along line.
 	double cutMarkerDistance = 0.0;
-	
+
 	// The lines that show the path the cutter takes.
 	QGraphicsItemGroup* cutterPathItem = nullptr;
 
@@ -131,29 +131,30 @@ private:
 
 	// The currently loaded file. Empty if there isn't one.
 	QString currentFilename;
-	
+
 	// List of recently loaded files.
 	QStringList recentFiles;
-	
+
 	// Recently loaded files model.
 	SvgPreviewModel* recentFilesModel = nullptr;
-	
+
 	// Example files model.
 	SvgPreviewModel* exampleFilesModel = nullptr;
-	
+
 	// The current path sort method.
 	PathSortMethod sortMethod = PathSortMethod::Best;
-	
+
 	bool rulersEnabled = true;
 	bool gridEnabled = true;
 	bool dimensionsEnabled = true;
 	bool cutterPathEnabled = false;
 	bool vinylCutterEnabled = true;
-	
+
 	// The default zoom for the current document, which is based on its size.
 	double defaultZoom = 1.0;
 
-	enum class Tool {
+	enum class Tool
+	{
 		Pan,
 		Measure,
 	} tool = Tool::Pan;

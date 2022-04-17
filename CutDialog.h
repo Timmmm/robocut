@@ -2,17 +2,18 @@
 
 #include <QDialog>
 
-namespace Ui {
-    class CutDialog;
+namespace Ui
+{
+class CutDialog;
 }
 
 // This dialog asks the user what settings to use for cutting.
 class CutDialog : public QDialog
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit CutDialog(QWidget *parent = nullptr);
+	explicit CutDialog(QWidget* parent = nullptr);
 	~CutDialog() override;
 
 	// The media code. See CutDialog.ui for a list.
@@ -30,17 +31,18 @@ public:
 	bool regMark() const;
 	// If true, search for registration marks automatically, otherwise
 	// rely on manual positioning?
-	bool regSearch() const; 
+	bool regSearch() const;
 	// Positions of the registration marks.
 	double regWidth() const;
 	double regHeight() const;
 
 protected:
-	void changeEvent(QEvent *e) override;
+	void changeEvent(QEvent* e) override;
 
 private slots:
 	// When they change the media selection, update the default speed and pressure.
 	void onMediaChanged(int idx);
+
 private:
-    Ui::CutDialog *ui;
+	Ui::CutDialog* ui;
 };

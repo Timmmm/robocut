@@ -1,10 +1,10 @@
 #include "SvgRenderer.h"
 
-#include <QPainter>
-#include <QDebug>
 #include <QApplication>
-#include <QPalette>
+#include <QDebug>
 #include <QFile>
+#include <QPainter>
+#include <QPalette>
 
 #include "PathPaintDevice.h"
 
@@ -77,7 +77,7 @@ struct SvgXmlData
 {
 	QString widthAttribute;
 	QString heightAttribute;
-	
+
 	bool hasTspanPosition = false;
 
 	bool parseError = true;
@@ -89,27 +89,26 @@ struct SvgXmlData
 SvgXmlData scanSvgElements(const QByteArray& svgContents, bool searchForTspans)
 {
 	SvgXmlData data;
-	
+
 	// Read the width/height attributes, and also check for tspans.
 	QXmlStreamReader xml(svgContents);
 	while (!xml.atEnd())
 	{
 		switch (xml.readNext())
 		{
-		case QXmlStreamReader::StartElement:
-		{
+		case QXmlStreamReader::StartElement: {
 			const auto& attr = xml.attributes();
 			if (xml.name() == u"svg")
 			{
 				const auto& width = attr.value("width");
 				const auto& height = attr.value("height");
-				
+
 				if (!width.isEmpty() && !height.isEmpty())
 				{
 					data.widthAttribute = width.toString();
 					data.heightAttribute = height.toString();
 				}
-				
+
 				if (!searchForTspans)
 				{
 					data.parseError = false;
@@ -125,7 +124,7 @@ SvgXmlData scanSvgElements(const QByteArray& svgContents, bool searchForTspans)
 					return data;
 				}
 			}
-			
+
 			break;
 		}
 		default:
@@ -148,20 +147,20 @@ SvgXmlData scanSvgElements(const QByteArray& svgContents, bool searchForTspans)
 SvgRender svgToPaths(const QString& filename, bool searchForTspans)
 {
 	SvgRender render;
-	
+
 	QFile svgFile(filename);
-	
+
 	if (!svgFile.open(QIODevice::ReadOnly))
 	{
 		qDebug() << "Couldn't open:" << filename << svgFile.errorString();
 		return render;
 	}
-	
+
 	// Read the entire contents of the file into memory.
 	auto svgContents = svgFile.readAll();
-	
+
 	svgFile.close();
-	
+
 	if (svgContents.isEmpty())
 	{
 		qDebug() << "Empty file or error:" << filename;
@@ -177,17 +176,17 @@ SvgRender svgToPaths(const QString& filename, bool searchForTspans)
 	render.widthAttribute = xmlData.widthAttribute;
 	render.heightAttribute = xmlData.heightAttribute;
 	render.hasTspanPosition = xmlData.hasTspanPosition;
-	
+
 	render.widthMm = sizeAttributeToMm(render.widthAttribute);
 	render.heightMm = sizeAttributeToMm(render.heightAttribute);
-	
+
 	QSvgRenderer renderer;
 	if (!renderer.load(svgContents))
 	{
 		qDebug() << "Couldn't render SVG:" << filename;
 		return render;
 	}
-	
+
 	render.viewBox = renderer.viewBoxF();
 
 	// So here we pretend that the viewbox is in mm.
@@ -195,19 +194,18 @@ SvgRender svgToPaths(const QString& filename, bool searchForTspans)
 	QPainter p(&pg);
 
 	renderer.render(&p, render.viewBox);
-	
+
 	// These are the paths in user units.
 	render.paths = pg.paths();
-	
+
 	render.success = true;
-	
-	
+
 	if (render.widthMm <= 0.0 || render.heightMm <= 0.0)
 	{
 		render.widthMm = render.viewBox.width();
 		render.heightMm = render.viewBox.height();
 	}
-	
+
 	return render;
 }
 
@@ -220,14 +218,14 @@ QPixmap svgToPreviewImage(const QString& filename, QSize dimensions)
 	pix.fill(background);
 
 	auto paths = svgToPaths(filename, false);
-	
+
 	auto viewBox = paths.viewBox;
-	
+
 	QTransform transform;
-	
+
 	auto scaleFitWidth = dimensions.width() / viewBox.width();
 	auto scaleFitHeight = dimensions.height() / viewBox.height();
-	
+
 	if (scaleFitHeight < scaleFitWidth)
 	{
 		// Translate for the padding bar.
@@ -241,21 +239,21 @@ QPixmap svgToPreviewImage(const QString& filename, QSize dimensions)
 
 		// Translate for the padding bar.
 		transform.translate(0.0, (dimensions.height() - (viewBox.height() * scaleFitWidth)) / 2.0);
-		
+
 		// Scale to fit the width, with padding bars on the top and bottom.
 		transform.scale(scaleFitWidth, scaleFitWidth);
 	}
 
-	transform.translate(-viewBox.left(), -viewBox.top());	
-	
+	transform.translate(-viewBox.left(), -viewBox.top());
+
 	QPainter painter(&pix);
 	painter.setBrush(Qt::NoBrush);
 	painter.setPen(QPen(foreground));
 	painter.setTransform(transform);
-	
+
 	// Work out the scaling and offset for the paths.
 	for (const auto& path : paths.paths)
 		painter.drawPolygon(path);
 
-	return pix;	
+	return pix;
 }
