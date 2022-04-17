@@ -21,7 +21,6 @@ QRectF MeasureItem::boundingRect() const
   QRectF r(std::min(0.0, vec.x()), std::min(0.0, vec.y()),
            std::fabs(vec.x()), std::fabs(vec.y()));
   r.adjust(-15.0, -15.0, 80.0, 15.0);
-  qDebug() << "Bounding rect: " << r;
   return r;
 }
 

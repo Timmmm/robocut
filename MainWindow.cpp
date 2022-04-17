@@ -21,7 +21,6 @@
 #include <QSettings>
 #include <QShortcut>
 #include <QSvgRenderer>
-#include <QWheelEvent>
 
 #include <algorithm>
 
@@ -781,18 +780,15 @@ void MainWindow::onMousePressed(QPointF pos)
 			switch (measureItem->state())
 			{
 			case MeasureItem::State::Free:
-				qDebug() << "Setting OneEndAttached";
 				measureItem->setState(MeasureItem::State::OneEndAttached);
 				measureItem->setPos(pos);
 				measureItem->setVec(QPointF());
 				break;
 			case MeasureItem::State::OneEndAttached:
-				qDebug() << "Setting BothEndsAttached";
 				measureItem->setState(MeasureItem::State::BothEndsAttached);
 				measureItem->setVec(pos - measureItem->pos());
 				break;
 			case MeasureItem::State::BothEndsAttached:
-				qDebug() << "Setting Free";
 				measureItem->setState(MeasureItem::State::Free);
 				measureItem->setPos(pos);
 				measureItem->setVec(QPointF(30.0, 0.0));

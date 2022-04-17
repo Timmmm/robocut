@@ -66,12 +66,20 @@ void ZoomableGraphicsView::wheelEvent(QWheelEvent* event)
 	if (event->source() != Qt::MouseEventNotSynthesized)
 		return QGraphicsView::wheelEvent(event);
 	
+
+	double scaleBy = 1.0;
+
+	if (event->hasPixelDelta()) {
+		scaleBy = exp(event->pixelDelta().y() * 0.002);
+	} else {
+		// Scroll wheel on Windows has no pixel delta for example.
+		scaleBy = exp(event->angleDelta().y() * 0.002);
+	}
+
 	// Anchor under mouse for mouse events.
 	setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-	if (event->pixelDelta().y() <= 0)
-		scale(1.0/1.2, 1.0/1.2);
-	else
-		scale(1.2, 1.2);
+
+	scale(scaleBy, scaleBy);
 	
 	// Anchor in view centre for keyboard shortcuts.
 	setTransformationAnchor(QGraphicsView::AnchorViewCenter);
