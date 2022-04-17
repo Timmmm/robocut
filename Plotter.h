@@ -34,13 +34,3 @@ const std::map<int, std::string> PRODUCT_ID_LIST = {
     { 0x1223, "Silhouette Portrait" },
 };
 
-struct CutterId
-{
-  std::string msg;
-  int usb_vendor_id;
-  int usb_product_id;
-};
-
-// Get the connected device.
-// TODO: Do this properly with hotplug, listing multiple devices etc.
-CutterId DetectDevices();

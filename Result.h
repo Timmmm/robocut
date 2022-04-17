@@ -165,11 +165,10 @@ public:
 
 // These allow you to `return Ok(42);`.
 template<typename T>
-class OkVal
+class OkLVal
 {
 public:
-	OkVal(const T& val) : value(val) {}
-	OkVal(T&& val) : value(val) {}
+	OkLVal(const T& val) : value(val) {}
 
 	template<typename E>
 	operator Result<T, E>() const
@@ -180,13 +179,26 @@ private:
 	const T& value;
 };
 
-// Specialisation for void.
-template<>
-class OkVal<void>
+template<typename T>
+class OkRVal
 {
 public:
-	OkVal() {}
+	OkRVal(T&& val) : value(std::move(val)) {}
 
+	template<typename E>
+	operator Result<T, E>() &&
+	{
+		return Result<T, E>(std::in_place_index_t<0>(), std::move(value));
+	}
+private:
+	T&& value;
+};
+
+
+// Specialisation for void.
+class OkVoid
+{
+public:
 	template<typename E>
 	operator Result<void, E>() const
 	{
@@ -196,30 +208,29 @@ public:
 
 // T can be inferred because it is in a parameter list.
 template<typename T>
-OkVal<T> Ok(const T& val)
+OkLVal<T> Ok(const T& val)
 {
-	return OkVal<T>(val);
+	return OkLVal<T>(val);
 }
 
 template<typename T>
-OkVal<T> Ok(T&& val)
+OkRVal<T> Ok(T&& val)
 {
-	return OkVal<T>(val);
+	return OkRVal<T>(std::move(val));
 }
 
 // Specialisation for void.
-inline OkVal<void> Ok()
+inline OkVoid Ok()
 {
-	return OkVal<void>();
+	return OkVoid();
 }
 
 // The same for errors.
 template<typename E>
-class ErrVal
+class ErrLVal
 {
 public:
-	ErrVal(const E& err) : error(err) {}
-	ErrVal(E&& err) : error(err) {}
+	ErrLVal(const E& err) : error(err) {}
 
 	template<typename T>
 	operator Result<T, E>() const
@@ -230,17 +241,32 @@ private:
 	const E& error;
 };
 
+template<typename E>
+class ErrRVal
+{
+public:
+	ErrRVal(E&& err) : error(std::move(err)) {}
+
+	template<typename T>
+	operator Result<T, E>() &&
+	{
+		return Result<T, E>(std::in_place_index_t<1>(), std::move(error));
+	}
+private:
+	E&& error;
+};
+
 // T can be inferred because it is in a parameter list.
 template<typename E>
-ErrVal<E> Err(const E& err)
+ErrLVal<E> Err(const E& err)
 {
-	return ErrVal<E>(err);
+	return ErrLVal<E>(err);
 }
 
 template<typename E>
-ErrVal<E> Err(E&& err)
+ErrRVal<E> Err(E&& err)
 {
-	return ErrVal<E>(err);
+	return ErrRVal<E>(std::move(err));
 }
 
 // Like Rust's try!(). Only works on GCC or Clang because it uses statement expressions.

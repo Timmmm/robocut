@@ -57,6 +57,8 @@ set(src_files
 	"SvgPreviewModel.h"
 	"SvgRenderer.cpp"
 	"SvgRenderer.h"
+	"VinylCutterItem.cpp"
+	"VinylCutterItem.h"
 	"ZoomableGraphicsView.cpp"
 	"ZoomableGraphicsView.h"
 	"main.cpp"

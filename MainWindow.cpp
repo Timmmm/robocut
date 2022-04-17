@@ -55,11 +55,13 @@ MainWindow::MainWindow(QWidget *parent)
 	dimensionsEnabled = settings.value("dimensionsEnabled", true).toBool();
 	rulersEnabled = settings.value("rulersEnabled", true).toBool();
 	cutterPathEnabled = settings.value("cutterPathEnabled", false).toBool();
-	
+	vinylCutterEnabled = settings.value("vinylCutterEnabled", true).toBool();
+
 	ui->actionGrid->setChecked(gridEnabled);
 	ui->actionDimensions->setChecked(dimensionsEnabled);
 	ui->actionRulers->setChecked(rulersEnabled);
 	ui->actionCutter_Path->setChecked(cutterPathEnabled);
+	ui->actionVinyl_Cutter->setChecked(vinylCutterEnabled);
 	
 	// TODO: Implement this.
 //	ui->menuEdit->hide();
@@ -168,6 +170,7 @@ MainWindow::~MainWindow()
 	settings.setValue("dimensionsEnabled", dimensionsEnabled);
 	settings.setValue("rulersEnabled", rulersEnabled);
 	settings.setValue("cutterPathEnabled", cutterPathEnabled);
+	settings.setValue("vinylCutterEnabled", vinylCutterEnabled);
 }
 
 void MainWindow::on_actionOpen_triggered()
@@ -193,18 +196,6 @@ void MainWindow::on_actionReload_triggered()
 	}
 	
 	loadFile(currentFilename);
-}
-
-void MainWindow::on_actionIdentify_triggered()
-{
-	// CAUTION: only call this when not cutting!
-	CutterId id = DetectDevices();
-	cout << "Identify:";
-	if (id.usb_product_id)
-	{
-		cout << " usb=" << id.usb_vendor_id << "/" << id.usb_product_id;
-	}
-	cout << " " << id.msg << endl;
 }
 
 void MainWindow::loadFile(QString filename)
@@ -247,7 +238,7 @@ void MainWindow::loadFile(QString filename)
 	}
 
 
-	QPointF startingPoint(0.0, data.mediaSize.height());
+	QPointF startingPoint(0.0, 0.0);
 
 	// Sort the paths with the following goals:
 	//
@@ -317,6 +308,11 @@ void MainWindow::loadFile(QString filename)
 	QPen pageOutlinePen;
 	pageOutlinePen.setCosmetic(true);
 	scene->addRect(pageRect, pageOutlinePen, Qt::NoBrush);
+
+	// Add the vinyl cutter item.
+	vinylCutterItem = new VinylCutterItem();
+	vinylCutterItem->setVisible(vinylCutterEnabled);
+	scene->addItem(vinylCutterItem);
 
 	addPathItemsToScene();
 
@@ -456,7 +452,7 @@ void MainWindow::animate()
 	}
 	// Get the ends of the segment/edge we are currently on.
 
-	QPointF startingPoint(0.0, data.mediaSize.height());
+	QPointF startingPoint(0.0, 0.0);
 	
 	// How far to travel each "frame". This controls the animation speed.
 	double distanceRemaining = 2.0;
@@ -597,7 +593,7 @@ void MainWindow::addPathItemsToScene()
 	// These can be hidden.
 	QList<QGraphicsItem*> cutterPathLines;
 
-	QPointF startingPoint(0.0, data.mediaSize.height());
+	QPointF startingPoint(0.0, 0.0);
 
 	QPointF currentPoint = startingPoint;
 	QPen pen(QColor::fromHsvF(0.0f, 0.0f, 0.8f));
@@ -626,6 +622,7 @@ void MainWindow::clearScene()
 	cutterPathItem = nullptr;
 	pathsItem = nullptr;
 	measureItem = nullptr;
+	vinylCutterItem = nullptr;
 }
 
 void MainWindow::on_openSvgButton_clicked()
@@ -677,7 +674,7 @@ void MainWindow::onSortMethodTriggered(QAction* action)
 		return;
 	
 	// Resort the paths.
-	QPointF startingPoint(0.0, data.mediaSize.height());
+	QPointF startingPoint(0.0, 0.0);
 	sortedPaths = sortPaths(data.paths,
 	                        sortMethod,
 	                        startingPoint);
@@ -745,6 +742,15 @@ void MainWindow::on_actionCutter_Path_toggled(bool enabled)
 	if (cutterPathItem != nullptr)
 		cutterPathItem->setVisible(cutterPathEnabled);
 }
+
+
+void MainWindow::on_actionVinyl_Cutter_toggled(bool enabled)
+{
+	vinylCutterEnabled = enabled;
+	if (vinylCutterItem != nullptr)
+		vinylCutterItem->setVisible(vinylCutterEnabled);
+}
+
 
 void MainWindow::onMouseMoved(QPointF pos)
 {
