@@ -1,5 +1,6 @@
 #include "HPGL2.h"
 
+#include <cmath>
 #include <sstream>
 
 const double mm2hpgl = 40.0;
@@ -14,7 +15,7 @@ std::string renderToHPGL2(const QList<QPolygonF> &paths, double widthMm, double 
 	// Initialise.
 	ss << "IN;";
 	// Set soft clipping window to the entire page.
-	ss << "IW0,0," << lroundl(widthMm * mm2hpgl) << "," << lroundl(heightMm * mm2hpgl) << ";";
+	ss << "IW0,0," << std::round(widthMm * mm2hpgl) << "," << std::round(heightMm * mm2hpgl) << ";";
 	// Select Pen 1. This is necessary.
 	ss << "SP1;";
 
