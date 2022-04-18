@@ -144,17 +144,14 @@ SvgXmlData scanSvgElements(const QByteArray& svgContents, bool searchForTspans)
 
 } // anonymous namespace
 
-SvgRender svgToPaths(const QString& filename, bool searchForTspans)
+SResult<SvgRender> svgToPaths(const QString& filename, bool searchForTspans)
 {
 	SvgRender render;
 
 	QFile svgFile(filename);
 
 	if (!svgFile.open(QIODevice::ReadOnly))
-	{
-		qDebug() << "Couldn't open:" << filename << svgFile.errorString();
-		return render;
-	}
+		return Err(("Couldn't open: " + filename + ": " + svgFile.errorString()).toStdString());
 
 	// Read the entire contents of the file into memory.
 	auto svgContents = svgFile.readAll();
@@ -162,17 +159,12 @@ SvgRender svgToPaths(const QString& filename, bool searchForTspans)
 	svgFile.close();
 
 	if (svgContents.isEmpty())
-	{
-		qDebug() << "Empty file or error:" << filename;
-		return render;
-	}
+		return Err(("Empty file or error: " + filename).toStdString());
 
 	auto xmlData = scanSvgElements(svgContents, searchForTspans);
 	if (xmlData.parseError)
-	{
-		qDebug() << "XML parse error";
-		return render;
-	}
+		return Err(std::string("XML parse error"));
+
 	render.widthAttribute = xmlData.widthAttribute;
 	render.heightAttribute = xmlData.heightAttribute;
 	render.hasTspanPosition = xmlData.hasTspanPosition;
@@ -182,10 +174,7 @@ SvgRender svgToPaths(const QString& filename, bool searchForTspans)
 
 	QSvgRenderer renderer;
 	if (!renderer.load(svgContents))
-	{
-		qDebug() << "Couldn't render SVG:" << filename;
-		return render;
-	}
+		return Err(("Couldn't render SVG: " + filename).toStdString());
 
 	render.viewBox = renderer.viewBoxF();
 
@@ -197,8 +186,6 @@ SvgRender svgToPaths(const QString& filename, bool searchForTspans)
 
 	// These are the paths in user units.
 	render.paths = pg.paths();
-
-	render.success = true;
 
 	if (render.widthMm <= 0.0 || render.heightMm <= 0.0)
 	{
@@ -217,7 +204,13 @@ QPixmap svgToPreviewImage(const QString& filename, QSize dimensions)
 	QPixmap pix(dimensions);
 	pix.fill(background);
 
-	auto paths = svgToPaths(filename, false);
+	auto pathsResult = svgToPaths(filename, false);
+	if (pathsResult.is_err())
+	{
+		return pix;
+	}
+
+	const auto& paths = pathsResult.unwrap();
 
 	auto viewBox = paths.viewBox;
 
@@ -236,7 +229,6 @@ QPixmap svgToPreviewImage(const QString& filename, QSize dimensions)
 	}
 	else
 	{
-
 		// Translate for the padding bar.
 		transform.translate(0.0, (dimensions.height() - (viewBox.height() * scaleFitWidth)) / 2.0);
 

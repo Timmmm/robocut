@@ -4,12 +4,10 @@
 #include <QPolygonF>
 #include <QSvgRenderer>
 
+#include "Result.h"
+
 struct SvgRender
 {
-	// Whether or not the render succeeded.
-	// TODO: Use SResult<>.
-	bool success = false;
-
 	// The shapes, in user units.
 	//
 	// User units can be anything - in Inkscape by default 1 unit is 1 mm
@@ -37,7 +35,7 @@ struct SvgRender
 };
 
 // Convert an SVG to a list of paths.
-SvgRender svgToPaths(const QString& filename, bool searchForTspans);
+SResult<SvgRender> svgToPaths(const QString& filename, bool searchForTspans);
 
 // Make a preview image of an SVG. This renders the paths using a fixed-size pen so you'll be able to see
 // them even if the preview size is small.

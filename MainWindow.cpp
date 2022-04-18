@@ -206,14 +206,15 @@ void MainWindow::loadFile(QString filename)
 	qDebug() << "Reading file: " << filename;
 
 	// Convert the SVG to paths.
-	auto render = svgToPaths(filename, true);
+	auto renderResult = svgToPaths(filename, true);
 
-	if (!render.success)
+	if (renderResult.is_err())
 	{
-		QMessageBox::critical(this, "Error loading file.", "Couldn't open the file for reading.");
-		qDebug() << "Error loading svg.";
+		QMessageBox::critical(this, "Error loading file.", QString::fromStdString(renderResult.unwrap_err()));
 		return;
 	}
+
+	auto render = renderResult.unwrap();
 
 	if (render.hasTspanPosition)
 	{
@@ -832,14 +833,14 @@ void MainWindow::on_actionExport_HPGL_triggered()
 	QSaveFile file(filename);
 	if (!file.open(QIODevice::WriteOnly))
 	{
-		QMessageBox::information(this, "Error writing HPGL2", "Couldn't open file");
+		QMessageBox::critical(this, "Error writing HPGL2", "Couldn't open file");
 		return;
 	}
 
-	file.write(hpgl.data(), hpgl.size());
+	file.write(hpgl.data(), static_cast<quint64>(hpgl.size()));
 	if (!file.commit())
 	{
-		QMessageBox::information(this, "Error writing HPGL2", "Couldn't write data");
+		QMessageBox::critical(this, "Error writing HPGL2", "Couldn't write data");
 		return;
 	}
 }
