@@ -7,6 +7,7 @@
 struct SvgRender
 {
 	// Whether or not the render succeeded.
+	// TODO: Use SResult<>.
 	bool success = false;
 
 	// The shapes, in user units.
@@ -35,7 +36,7 @@ struct SvgRender
 	bool hasTspanPosition = false;
 };
 
-// Convert an SVG to a list of paths. Clipped is set to true if the SVG paths are outside its view box.
+// Convert an SVG to a list of paths.
 SvgRender svgToPaths(const QString& filename, bool searchForTspans);
 
 // Make a preview image of an SVG. This renders the paths using a fixed-size pen so you'll be able to see

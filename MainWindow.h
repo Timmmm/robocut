@@ -33,6 +33,7 @@ private slots:
 	void on_actionClose_triggered();
 	void on_actionCut_triggered();
 	void on_actionDimensions_toggled(bool enabled);
+	void on_actionExport_HPGL_triggered();
 	void on_actionExit_triggered();
 	void on_actionGrid_toggled(bool enabled);
 	void on_actionManual_triggered();
@@ -57,8 +58,6 @@ private slots:
 
 	void onMouseMoved(QPointF pos);
 	void onMousePressed(QPointF pos);
-
-	void on_actionCancel_triggered();
 
 private:
 	// Attempt to load the given file.

@@ -129,6 +129,7 @@
     <addaction name="actionClose"/>
     <addaction name="separator"/>
     <addaction name="actionCut"/>
+    <addaction name="actionExport_HPGL"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -480,6 +481,9 @@
    <property name="text">
     <string>Pan</string>
    </property>
+   <property name="shortcut">
+    <string>Esc</string>
+   </property>
   </action>
   <action name="actionVinyl_Cutter">
    <property name="checkable">
@@ -489,12 +493,12 @@
     <string>Vinyl Cutter</string>
    </property>
   </action>
-  <action name="actionCancel">
-   <property name="text">
-    <string>Cancel</string>
+  <action name="actionExport_HPGL">
+   <property name="enabled">
+    <bool>false</bool>
    </property>
-   <property name="shortcut">
-    <string>Esc</string>
+   <property name="text">
+    <string>Export HPGL</string>
    </property>
   </action>
  </widget>

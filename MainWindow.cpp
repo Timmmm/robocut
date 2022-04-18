@@ -2,6 +2,7 @@
 #include "ui_MainWindow.h"
 
 #include "CuttingDialog.h"
+#include "HPGL2.h"
 #include "PathPaintDevice.h"
 #include "PathSorter.h"
 #include "Plotter.h"
@@ -18,6 +19,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QPainter>
+#include <QSaveFile>
 #include <QSettings>
 #include <QShortcut>
 #include <QSvgRenderer>
@@ -550,6 +552,7 @@ void MainWindow::setFileLoaded(QString filename)
 	ui->actionCutter_Path->setEnabled(e);
 	ui->actionPan->setEnabled(e);
 	ui->actionMeasure->setEnabled(e);
+	ui->actionExport_HPGL->setEnabled(e);
 
 	// Update the recent files list. Also ignore files that start
 	// with a colon - those are examples.
@@ -645,7 +648,9 @@ void MainWindow::on_openSvgButton_clicked()
 
 void MainWindow::on_actionClose_triggered()
 {
+	// TODO: Use std::optional.
 	setFileLoaded("");
+	sortedPaths.clear();
 
 	clearScene();
 
@@ -814,8 +819,28 @@ void MainWindow::onMousePressed(QPointF pos)
 	}
 }
 
-void MainWindow::on_actionCancel_triggered()
+void MainWindow::on_actionExport_HPGL_triggered()
 {
-	// When escape is pressed just go back to the pan tool.
-	ui->actionPan->trigger();
+	// Export HPGL2.
+	auto filename = QFileDialog::getSaveFileName(this, tr("Export HPGL2"), lastOpenDir, tr("HPGL Files (*.hpgl)"));
+
+	if (filename.isEmpty())
+		return;
+
+	auto hpgl = renderToHPGL2(sortedPaths, data.mediaSize.width(), data.mediaSize.height());
+
+	QSaveFile file(filename);
+	if (!file.open(QIODevice::WriteOnly))
+	{
+		QMessageBox::information(this, "Error writing HPGL2", "Couldn't open file");
+		return;
+	}
+
+	file.write(hpgl.data(), hpgl.size());
+	if (!file.commit())
+	{
+		QMessageBox::information(this, "Error writing HPGL2", "Couldn't write data");
+		return;
+	}
 }
+
