@@ -132,7 +132,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 		-Wno-padded
 
 		# Warns about missing std::move for return value optimisation in C++11, which I'm not using.
-		-Wreturn-std-move-in-c++11
+		-Wno-return-std-move-in-c++11
 	)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 	target_compile_options(${PROJECT_NAME} PRIVATE
