@@ -1,5 +1,7 @@
 #include "Common.h"
 
+#include <charconv>
+
 std::string ItoS(int i)
 {
 	std::stringstream s;
@@ -16,41 +18,40 @@ std::string UItoS(unsigned int i)
 
 std::string ULLtoS(unsigned long long i)
 {
-	char out[128];
-	snprintf(out, 128, "%lld", i);
-	return out;
+	std::stringstream s;
+	s << i;
+	return s.str();
+}
+
+template<typename I>
+SResult<I> StoInt(std::string_view s)
+{
+	I value = 0;
+	auto result = std::from_chars(s.data(), s.data() + s.size(), value);
+
+	if (result.ec == std::errc::invalid_argument)
+		return "Not an integer: " + std::string(s);
+	if (result.ec == std::errc::result_out_of_range)
+		return "Integer out of range: " + std::string(s);
+	if (result.ec != std::errc())
+		return "Couldn't parse integer: " + std::string(s);
+	if (result.ptr != s.data() + s.size())
+		return "Invalid integer characters in string: " + std::string(s);
+
+	return value;
 }
 
 SResult<int> StoI(std::string_view s)
 {
-	char* EP;
-	const char* P = s.data();
-	auto R = strtol(P, &EP, 0);
-	if (EP == P)
-		return "Couldn't convert string to integer: " + std::string(s);
-	if (R < std::numeric_limits<int>::lowest() || R > std::numeric_limits<int>::max())
-		return "Integer out of range: " + std::string(s);
-	return static_cast<int>(R);
+	return StoInt<int>(s);
 }
 
 SResult<unsigned int> StoUI(std::string_view s)
 {
-	char* EP;
-	const char* P = s.data();
-	auto R = strtoul(P, &EP, 0);
-	if (EP == P)
-		return "Couldn't convert string to integer: " + std::string(s);
-	if (R > std::numeric_limits<unsigned int>::max())
-		return "Integer out of range: " + std::string(s);
-	return static_cast<unsigned int>(R);
+	return StoInt<unsigned int>(s);
 }
 
 SResult<unsigned long long> StoULL(std::string_view s)
 {
-	char* EP;
-	const char* P = s.data();
-	auto R = strtoull(P, &EP, 0);
-	if (EP == P)
-		return "Couldn't convert string to integer: " + std::string(s);
-	return R;
+	return StoInt<unsigned long long>(s);
 }
