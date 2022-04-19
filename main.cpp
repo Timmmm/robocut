@@ -11,6 +11,12 @@
 
 using namespace std;
 
+// Needed to avoid a no previous prototype warning for qMain when compiling
+// with Clang on Windows.
+#if defined(QT_NEEDS_QMAIN)
+int qMain(int, char **);
+#endif
+
 int main(int argc, char* argv[])
 {
 	// For the benefit of QSettings.
