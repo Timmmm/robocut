@@ -837,7 +837,7 @@ void MainWindow::on_actionExport_HPGL_triggered()
 		return;
 	}
 
-	file.write(hpgl.data(), static_cast<quint64>(hpgl.size()));
+	file.write(hpgl.data(), static_cast<qint64>(hpgl.size()));
 	if (!file.commit())
 	{
 		QMessageBox::critical(this, "Error writing HPGL2", "Couldn't write data");
