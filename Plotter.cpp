@@ -266,6 +266,7 @@ QList<QPolygonF> Transform_Silhouette_Cameo(QList<QPolygonF> cuts, double *media
 }
 */
 
+// Convert a byte string to hex, e.g. Hello -> 48656c6c6f
 std::string string_to_hex(const std::string& in)
 {
 	std::stringstream ss;
@@ -303,9 +304,7 @@ SResult<> Cut(CutParams p)
 	auto handleRes = UsbInit();
 
 	if (!handleRes)
-	{
 		return handleRes;
-	}
 
 	auto handle = std::move(handleRes.unwrap());
 
@@ -422,9 +421,7 @@ SResult<> Cut(CutParams p)
 	resp = sr.unwrap();
 
 	if (resp != "    0,    0\x03")
-	{
 		return Err("Unexpected response from plotter: '" + resp + "' (" + string_to_hex(resp) + ")");
-	}
 
 	// Begin page definition.
 	e = UsbSend(handle, "FA\x03");

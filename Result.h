@@ -134,16 +134,7 @@ public:
 		return Result<T2, E>(std::in_place_index_t<1>(), std::get<1>(*this));
 	}
 
-	// void version.
-	operator Result<void, E>()
-	{
-		if (!is_err())
-		{
-			throw std::runtime_error("Error converting Result types - Result was Ok!");
-		}
-
-		return Result<void, E>(std::in_place_index_t<1>(), std::get<1>(*this));
-	}
+	// void version not needed because it's already that type.
 
 	bool is_ok() const
 	{
