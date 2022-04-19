@@ -151,7 +151,7 @@ SResult<SvgRender> svgToPaths(const QString& filename, bool searchForTspans)
 	QFile svgFile(filename);
 
 	if (!svgFile.open(QIODevice::ReadOnly))
-		return Err(("Couldn't open: " + filename + ": " + svgFile.errorString()).toStdString());
+		return ("Couldn't open: " + filename + ": " + svgFile.errorString()).toStdString();
 
 	// Read the entire contents of the file into memory.
 	auto svgContents = svgFile.readAll();
@@ -159,11 +159,11 @@ SResult<SvgRender> svgToPaths(const QString& filename, bool searchForTspans)
 	svgFile.close();
 
 	if (svgContents.isEmpty())
-		return Err(("Empty file or error: " + filename).toStdString());
+		return ("Empty file or error: " + filename).toStdString();
 
 	auto xmlData = scanSvgElements(svgContents, searchForTspans);
 	if (xmlData.parseError)
-		return Err(std::string("XML parse error"));
+		return "XML parse error";
 
 	render.widthAttribute = xmlData.widthAttribute;
 	render.heightAttribute = xmlData.heightAttribute;
@@ -174,7 +174,7 @@ SResult<SvgRender> svgToPaths(const QString& filename, bool searchForTspans)
 
 	QSvgRenderer renderer;
 	if (!renderer.load(svgContents))
-		return Err(("Couldn't render SVG: " + filename).toStdString());
+		return ("Couldn't render SVG: " + filename).toStdString();
 
 	render.viewBox = renderer.viewBoxF();
 

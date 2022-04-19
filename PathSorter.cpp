@@ -180,7 +180,7 @@ class VertexCloud
 public:
 	struct Point
 	{
-		Point(qreal x, qreal y, int polygon, int vertex) : x(x), y(y), polygon(polygon), vertex(vertex)
+		Point(qreal x_, qreal y_, int polygon_, int vertex_) : x(x_), y(y_), polygon(polygon_), vertex(vertex_)
 		{
 		}
 

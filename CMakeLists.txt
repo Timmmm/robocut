@@ -114,18 +114,34 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 		-Weverything
 		-Werror
 		-pedantic
+
+		# Turning -Weverything on warns you about incompatibilities with C++98 even
+		# if you have -std=c++17.
 		-Wno-c++98-compat
 		-Wno-c++98-compat-pedantic
 
-		# These are too noisy.
-		-Wno-padded
+		# Warns about not explicitly handling enumeration values in switch even if
+		# they have a default clause.
 		-Wno-switch-enum
-		-Wno-exit-time-destructors
-		-Wno-global-constructors
-		-Wno-shadow-field-in-constructor
 
-		# Moc causes these.
-		-Wno-redundant-parens
+		# Warns about globals requiring a constructor or destructor.
+		-Wno-global-constructors
+		-Wno-exit-time-destructors
+	)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+	target_compile_options(${PROJECT_NAME} PRIVATE
+		-Weverything
+		-Werror
+		-pedantic
+
+		# Turning -Weverything on warns you about incompatibilities with C++98 even
+		# if you have -std=c++17.
+		-Wno-c++98-compat
+		-Wno-c++98-compat-pedantic
+
+		# Warns about globals requiring a constructor or destructor.
+		-Wno-global-constructors
+		-Wno-exit-time-destructors
 	)
 endif ()
 
