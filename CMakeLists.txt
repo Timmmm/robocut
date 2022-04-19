@@ -127,21 +127,18 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 		# Warns about globals requiring a constructor or destructor.
 		-Wno-global-constructors
 		-Wno-exit-time-destructors
+
+		# Warns about structs that have any padding.
+		-Wno-padded
 	)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 	target_compile_options(${PROJECT_NAME} PRIVATE
-		-Weverything
+		-Wall -Wextra
 		-Werror
 		-pedantic
 
-		# Turning -Weverything on warns you about incompatibilities with C++98 even
-		# if you have -std=c++17.
-		-Wno-c++98-compat
-		-Wno-c++98-compat-pedantic
-
-		# Warns about globals requiring a constructor or destructor.
-		-Wno-global-constructors
-		-Wno-exit-time-destructors
+		# Warns about structs that have any padding.
+		-Wno-padded
 	)
 endif ()
 
