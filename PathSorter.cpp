@@ -61,20 +61,20 @@ QPolygonF rotatePolygonStart(const QPolygonF& poly, int newStart)
 	return rotated;
 }
 
-// Return the index of the point in the polygon with the largest Y coordinate (+Y is down).
-int highestIndex(const QPolygonF& poly)
+// Return the index of the point in the polygon with the smallest Y coordinate.
+int lowestIndex(const QPolygonF& poly)
 {
-	int maxIdx = 0;
-	qreal maxY = std::numeric_limits<qreal>::lowest();
+	int idx = 0;
+	qreal minY = std::numeric_limits<qreal>::max();
 	for (int i = 0; i < poly.size(); ++i)
 	{
-		if (poly[i].y() > maxY)
+		if (poly[i].y() < minY)
 		{
-			maxIdx = i;
-			maxY = poly[i].y();
+			idx = i;
+			minY = poly[i].y();
 		}
 	}
-	return maxIdx;
+	return idx;
 }
 
 // Return the index of the point in the polygon closest to p.
@@ -94,8 +94,7 @@ int closestIndex(const QPolygonF& poly, QPointF p)
 	return minIdx;
 }
 
-// Sort paths by increasing Y... but ... well, +Y is down so this actually sorts
-// them by decreasing Y coordinate.
+// Sort paths by increasing Y.
 QList<QPolygonF> sortPathsIncreasingY(const QList<QPolygonF>& paths, QPointF startingPoint)
 {
 	(void)startingPoint;
@@ -106,8 +105,8 @@ QList<QPolygonF> sortPathsIncreasingY(const QList<QPolygonF>& paths, QPointF sta
 	{
 		// Index of the path in `paths`
 		int pathIndex;
-		// Index of the point in the path with the down-most Y coordinate.
-		int bottomIndex;
+		// Index of the point in the path with the lowest Y coordinate.
+		int lowestIndex;
 	};
 
 	// Get the indices of the lowest points.
@@ -115,10 +114,10 @@ QList<QPolygonF> sortPathsIncreasingY(const QList<QPolygonF>& paths, QPointF sta
 	indices.reserve(paths.size());
 
 	for (int i = 0; i < paths.size(); ++i)
-		indices.append({i, highestIndex(paths[i])});
+		indices.append({i, lowestIndex(paths[i])});
 
 	std::sort(indices.begin(), indices.end(), [&](const IndexAndBottom& a, const IndexAndBottom& b) {
-		return paths[a.pathIndex][a.bottomIndex].y() > paths[b.pathIndex][b.bottomIndex].y();
+		return paths[a.pathIndex][a.lowestIndex].y() < paths[b.pathIndex][b.lowestIndex].y();
 	});
 
 	QList<QPolygonF> sorted;
@@ -126,7 +125,7 @@ QList<QPolygonF> sortPathsIncreasingY(const QList<QPolygonF>& paths, QPointF sta
 
 	// And rotate the polygons so that the lowest point is at the start.
 	for (auto& idx : indices)
-		sorted.append(rotatePolygonStart(paths[idx.pathIndex], idx.bottomIndex));
+		sorted.append(rotatePolygonStart(paths[idx.pathIndex], idx.lowestIndex));
 
 	return sorted;
 }
