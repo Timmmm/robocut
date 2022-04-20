@@ -20,11 +20,11 @@ void VinylCutterItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* o
 
 	painter->setPen(outline);
 	painter->setBrush(fill);
-	painter->drawRoundedRect(-10, -25, 230, 35, 5, 5);
+	painter->drawRoundedRect(-10, -25, mediaWidth + 20, 35, 5, 5);
 
 	painter->setPen(Qt::NoPen);
 	painter->setBrush(QColor(50, 50, 50, 70));
-	painter->drawRoundedRect(-5, -5, 220, 10, 5, 5);
+	painter->drawRoundedRect(-5, -5, mediaWidth + 10, 10, 5, 5);
 
 	painter->setPen(QColor(20, 20, 20, 70));
 	painter->setBrush(QColor(0, 0, 200, 70));
@@ -33,4 +33,9 @@ void VinylCutterItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* o
 	painter->setPen(QColor(20, 20, 20, 100));
 	painter->setBrush(Qt::NoBrush);
 	painter->drawText(0, -10, "Vinyl Cutter");
+}
+
+void VinylCutterItem::setMediaWidth(int widthMm)
+{
+	mediaWidth = widthMm;
 }
