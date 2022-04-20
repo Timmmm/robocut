@@ -1,5 +1,7 @@
 #pragma once
 
+#include <variant>
+
 #include <QMainWindow>
 
 #include <QGraphicsItem>
@@ -7,7 +9,6 @@
 #include <QTimer>
 
 #include "CutDialog.h"
-#include "FileData.h"
 #include "MeasureItem.h"
 #include "PathScene.h"
 #include "PathSorter.h"
@@ -18,6 +19,47 @@ namespace Ui
 {
 class MainWindow;
 }
+
+// Position of the cut marker used for the animate feature.
+struct CutMarkerPos
+{
+	// Current polygon (or polyline), or gap between them. E.g. if there are two shapes:
+	// 0 is the line from the start position to the first shape.
+	// 1 is the first shape.
+	// 2 is the line from the first shape to the second shape.
+	// 3 is the second shape.
+	// 4 is the line from the second shape back to the start position.
+	int poly = 0;
+	// Current line in the polygon/line that is being cut.
+	int line = 0;
+	// Current distance along line.
+	double distance = 0.0;
+};
+
+// Store data for when we are in the welcome page.
+struct StateWelcome
+{
+	// No data
+};
+
+// Stores data for when the UI is in the file-loaded state.
+struct StateFileLoaded
+{
+	// Filename it was loaded from.
+	QString filename;
+	// The polygons to cut, in mm.
+	QList<QPolygonF> paths;
+	// The page size in mm.
+	QSizeF mediaSize;
+	// The default zoom for this document, which is based on its size.
+	double defaultZoom = 1.0;
+
+	// The sorted paths.
+	QList<QPolygonF> sortedPaths;
+
+	// Position of the cut marker for the animate feature.
+	CutMarkerPos cutMarkerPos;
+};
 
 class MainWindow : public QMainWindow
 {
@@ -61,11 +103,11 @@ private slots:
 
 private:
 	// Attempt to load the given file.
-	void loadFile(QString currentFilename);
+	void loadFile(QString filename);
 
-	// Set the currently loaded file. This updates the window title, menus etc.
-	// Use an empty string to indicate that no file is loaded.
-	void setFileLoaded(QString currentFilename);
+	// Update the UI according to the current value of `state`.
+	// Set window title, enable/disable actions etc.
+	void updateUI();
 
 	// Add the path items to the graphics scene for `data.paths`.
 	void addPathItemsToScene();
@@ -76,11 +118,9 @@ private:
 private:
 	Ui::MainWindow* ui = nullptr;
 
-	// The cutting paths that were loaded from the SVG.
-	FileData data;
-
-	// The sorted paths.
-	QList<QPolygonF> sortedPaths;
+	// Contains the data for when the file is loaded (if we are in the
+	// file loaded state.
+	std::variant<StateWelcome, StateFileLoaded> state = StateWelcome{};
 
 	// The graphics scene which holds the cuts, the grid, the dimensions, etc.
 	PathScene* scene = nullptr;
@@ -107,17 +147,6 @@ private:
 	QTimer* animationTimer = nullptr;
 	// The circle that marks where the cutter blade is.
 	QGraphicsItem* cutMarker = nullptr;
-	// Current polygon (or polyline), or gap between them. E.g. if there are two shapes:
-	// 0 is the line from the start position to the first shape.
-	// 1 is the first shape.
-	// 2 is the line from the first shape to the second shape.
-	// 3 is the second shape.
-	// 4 is the line from the second shape back to the start position.
-	int cutMarkerPoly = 0;
-	// Current line in the polygon/line that is being cut.
-	int cutMarkerLine = 0;
-	// Current distance along line.
-	double cutMarkerDistance = 0.0;
 
 	// The lines that show the path the cutter takes.
 	QGraphicsItemGroup* cutterPathItem = nullptr;
@@ -127,9 +156,6 @@ private:
 
 	// Tape measure item
 	MeasureItem* measureItem = nullptr;
-
-	// The currently loaded file. Empty if there isn't one.
-	QString currentFilename;
 
 	// List of recently loaded files.
 	QStringList recentFiles;
@@ -148,9 +174,6 @@ private:
 	bool dimensionsEnabled = true;
 	bool cutterPathEnabled = false;
 	bool vinylCutterEnabled = true;
-
-	// The default zoom for the current document, which is based on its size.
-	double defaultZoom = 1.0;
 
 	enum class Tool
 	{

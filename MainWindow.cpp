@@ -30,17 +30,14 @@ using namespace std;
 
 namespace
 {
-bool fileDoesntExist(const QString& filename)
-{
-	return !QFile::exists(filename);
-}
 
 void removeNonexistentFiles(QStringList& filenames)
 {
-	filenames.erase(std::remove_if(filenames.begin(), filenames.end(), fileDoesntExist), filenames.end());
+	filenames.erase(std::remove_if(filenames.begin(), filenames.end(), [](const QString& filename) { return !QFile::exists(filename); }), filenames.end());
 }
 
 } // namespace
+
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
@@ -70,7 +67,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
 	scene = new PathScene(this);
 
 	ui->graphicsView->setScene(scene);
-	ui->graphicsView->scale(defaultZoom, defaultZoom);
 
 	animationTimer = new QTimer(this);
 	connect(animationTimer, &QTimer::timeout, this, &MainWindow::animate);
@@ -192,13 +188,20 @@ void MainWindow::on_actionOpen_triggered()
 
 void MainWindow::on_actionReload_triggered()
 {
-	if (!QFile::exists(currentFilename))
+	auto s = std::get_if<StateFileLoaded>(&state);
+	if (s == nullptr)
 	{
-		qDebug() << "Reload failed. File missing: " << currentFilename;
+		qDebug() << "Reload triggered with no file loaded";
 		return;
 	}
 
-	loadFile(currentFilename);
+	if (!QFile::exists(s->filename))
+	{
+		qDebug() << "Reload failed. File missing: " << s->filename;
+		return;
+	}
+
+	loadFile(s->filename);
 }
 
 void MainWindow::loadFile(QString filename)
@@ -226,16 +229,20 @@ void MainWindow::loadFile(QString filename)
 		    "The easiest workaround is to convert the text to paths.");
 	}
 
+	StateFileLoaded loadedState;
+
 	// See
 	// https://code.woboq.org/qt5/qtsvg/src/svg/qsvghandler.cpp.html#_ZL15convertToPixelsdbN11QSvgHandler10LengthTypeE
 	// The default size is derived from the width="" height="" svg attribute tags
 	// assuming 90 DPI.
-	data.mediaSize = QSizeF(render.widthMm, render.heightMm);
+	QSizeF mediaSize(render.widthMm, render.heightMm);
 
-	data.paths = render.paths;
+	loadedState.mediaSize = mediaSize;
+	loadedState.paths = std::move(render.paths);
+	loadedState.filename = filename;
 
 	// Transform the paths from user units to mm.
-	for (auto& path : data.paths)
+	for (auto& path : loadedState.paths)
 	{
 		for (auto& vertex : path)
 		{
@@ -254,17 +261,19 @@ void MainWindow::loadFile(QString filename)
 	// 3. Try not to travel too much in the Y direction (it can lead to accumulation of
 	//    errors due to the vinyl slipping in the rollers).
 	//
-	sortedPaths = sortPaths(data.paths, sortMethod, startingPoint);
+	loadedState.sortedPaths = sortPaths(loadedState.paths, sortMethod, startingPoint);
 
 	// Set the default zoom.
 	auto viewSize = ui->centralWidget->size();
-	defaultZoom =
-	    0.8 * std::min(viewSize.width() / data.mediaSize.width(), viewSize.height() / data.mediaSize.height());
+	loadedState.defaultZoom =
+	    0.8 * std::min(viewSize.width() / mediaSize.width(), viewSize.height() / mediaSize.height());
+
+	state = std::move(loadedState);
 
 	// Clear the scene.
 	clearScene();
 
-	QRectF pageRect(0.0, 0.0, data.mediaSize.width(), data.mediaSize.height());
+	QRectF pageRect(0.0, 0.0, mediaSize.width(), mediaSize.height());
 
 	// And reset the sceneRect, which it doesn't do by default.
 	scene->setSceneRect(pageRect.adjusted(-20, -20, 20, 20));
@@ -276,9 +285,9 @@ void MainWindow::loadFile(QString filename)
 
 	// Add the dimensions test.
 	dimensionsItem = scene->addText(
-	    QString::number(data.mediaSize.width()) + " × " + QString::number(data.mediaSize.height()) + " mm",
+	    QString::number(mediaSize.width()) + " × " + QString::number(mediaSize.height()) + " mm",
 	    QFont("Helvetica", 10));
-	dimensionsItem->setPos(0.0, data.mediaSize.height());
+	dimensionsItem->setPos(0.0, mediaSize.height());
 	dimensionsItem->setVisible(dimensionsEnabled);
 
 	// Add the rulers.
@@ -293,15 +302,15 @@ void MainWindow::loadFile(QString filename)
 	QList<QGraphicsItem*> gridSquares;
 
 	// Add the centimetre grid.
-	for (int x = 0; x < data.mediaSize.width() / 10; ++x)
+	for (int x = 0; x < mediaSize.width() / 10; ++x)
 	{
-		for (int y = x % 2; y < data.mediaSize.height() / 10; y += 2)
+		for (int y = x % 2; y < mediaSize.height() / 10; y += 2)
 		{
-			int w = static_cast<int>(std::min(10.0, data.mediaSize.width() - x * 10.0));
-			int h = static_cast<int>(std::min(10.0, data.mediaSize.height() - y * 10.0));
+			int w = static_cast<int>(std::min(10.0, mediaSize.width() - x * 10.0));
+			int h = static_cast<int>(std::min(10.0, mediaSize.height() - y * 10.0));
 			gridSquares.append(scene->addRect(
 			    x * 10,
-			    data.mediaSize.height() - y * 10 - h,
+			    mediaSize.height() - y * 10 - h,
 			    w,
 			    h,
 			    Qt::NoPen,
@@ -319,6 +328,7 @@ void MainWindow::loadFile(QString filename)
 
 	// Add the vinyl cutter item.
 	vinylCutterItem = new VinylCutterItem();
+	vinylCutterItem->setMediaWidth(static_cast<int>(mediaSize.width()));
 	vinylCutterItem->setVisible(vinylCutterEnabled);
 	scene->addItem(vinylCutterItem);
 
@@ -347,7 +357,7 @@ void MainWindow::loadFile(QString filename)
 	// will almost certainly not do what you want.");
 
 	// Change window title and enable menu items.
-	setFileLoaded(filename);
+	updateUI();
 }
 
 void MainWindow::on_actionAbout_triggered()
@@ -373,6 +383,13 @@ void MainWindow::on_actionExit_triggered()
 
 void MainWindow::on_actionCut_triggered()
 {
+	auto s = std::get_if<StateFileLoaded>(&state);
+	if (s == nullptr)
+	{
+		qDebug() << "Cut triggered with no file loaded";
+		return;
+	}
+
 	if (!cutDialog)
 		cutDialog = new CutDialog(this);
 
@@ -384,9 +401,9 @@ void MainWindow::on_actionCut_triggered()
 	CuttingDialog* cuttingDlg = new CuttingDialog(this);
 
 	CutParams params;
-	params.cuts = sortedPaths;
-	params.mediawidth = data.mediaSize.width();
-	params.mediaheight = data.mediaSize.height();
+	params.cuts = s->sortedPaths;
+	params.mediawidth = s->mediaSize.width();
+	params.mediaheight = s->mediaSize.height();
 	params.media = cutDialog->media();
 	params.pressure = cutDialog->pressure();
 	params.regwidth = cutDialog->regWidth();
@@ -410,9 +427,16 @@ void MainWindow::on_actionManual_triggered()
 
 void MainWindow::on_actionAnimate_toggled(bool animate)
 {
-	cutMarkerPoly = 0;
-	cutMarkerLine = 0;
-	cutMarkerDistance = 0.0;
+	auto s = std::get_if<StateFileLoaded>(&state);
+	if (s == nullptr)
+	{
+		qDebug() << "Animate triggered with no file loaded";
+		return;
+	}
+
+	s->cutMarkerPos.poly = 0;
+	s->cutMarkerPos.line = 0;
+	s->cutMarkerPos.distance = 0.0;
 
 	if (animate)
 	{
@@ -433,8 +457,14 @@ void MainWindow::on_actionAnimate_toggled(bool animate)
 
 void MainWindow::on_actionReset_triggered()
 {
+	auto s = std::get_if<StateFileLoaded>(&state);
+	if (s == nullptr)
+	{
+		qDebug() << "Reset triggered with no file loaded";
+		return;
+	}
 	ui->graphicsView->resetTransform();
-	ui->graphicsView->scale(defaultZoom, defaultZoom);
+	ui->graphicsView->scale(s->defaultZoom, s->defaultZoom);
 }
 
 void MainWindow::on_actionZoom_In_triggered()
@@ -449,19 +479,25 @@ void MainWindow::on_actionZoom_Out_triggered()
 
 void MainWindow::animate()
 {
+	auto s = std::get_if<StateFileLoaded>(&state);
+	if (s == nullptr)
+		return;
+
 	// TODO: This method is a bit of a mess - could do with moving the
 	// iteration stuff into a separate iterator class.
 
 	if (!cutMarker)
 		return;
 
+	auto& m = s->cutMarkerPos;
+
 	// Make sure the current position is sane.
-	if (cutMarkerPoly >= sortedPaths.size() * 2 + 1)
+	if (m.poly >= s->sortedPaths.size() * 2 + 1)
 	{
 		// If not, reset it.
-		cutMarkerPoly = 0;
-		cutMarkerLine = 0;
-		cutMarkerDistance = 0.0;
+		m.poly = 0;
+		m.line = 0;
+		m.distance = 0.0;
 		return;
 	}
 	// Get the ends of the segment/edge we are currently on.
@@ -477,49 +513,49 @@ void MainWindow::animate()
 		QPointF a;
 		QPointF b;
 
-		if (cutMarkerPoly % 2 == 0)
+		if (m.poly % 2 == 0)
 		{
 			// We are moving between paths, and not cutting.
-			if (cutMarkerPoly == 0)
+			if (m.poly == 0)
 				a = startingPoint;
 			else
-				a = sortedPaths[(cutMarkerPoly / 2) - 1].back();
+				a = s->sortedPaths[(m.poly / 2) - 1].back();
 
-			if (cutMarkerPoly >= sortedPaths.size() * 2)
+			if (m.poly >= s->sortedPaths.size() * 2)
 				b = startingPoint;
 			else
-				b = sortedPaths[(cutMarkerPoly / 2)].front();
+				b = s->sortedPaths[(m.poly / 2)].front();
 
 			cutMarker->setOpacity(0.2);
 		}
 		else
 		{
-			auto pathIndex = (cutMarkerPoly - 1) / 2;
-			a = sortedPaths[pathIndex][cutMarkerLine];
-			b = sortedPaths[pathIndex][cutMarkerLine + 1];
+			auto pathIndex = (m.poly - 1) / 2;
+			a = s->sortedPaths[pathIndex][m.line];
+			b = s->sortedPaths[pathIndex][m.line + 1];
 			cutMarker->setOpacity(1.0);
 		}
 
 		QLineF ln(a, b);
 
 		// If the cutter shouldn't be in this line, go to the next one.
-		if ((ln.length() - cutMarkerDistance) < distanceRemaining)
+		if ((ln.length() - m.distance) < distanceRemaining)
 		{
-			distanceRemaining -= (ln.length() - cutMarkerDistance);
-			cutMarkerDistance = 0.0;
-			if (cutMarkerPoly % 2 != 0 && cutMarkerLine < sortedPaths[(cutMarkerPoly - 1) / 2].size() - 2)
+			distanceRemaining -= (ln.length() - m.distance);
+			m.distance = 0.0;
+			if (m.poly % 2 != 0 && m.line < s->sortedPaths[(m.poly - 1) / 2].size() - 2)
 			{
-				++cutMarkerLine;
+				++m.line;
 			}
 			else
 			{
-				cutMarkerPoly = (cutMarkerPoly + 1) % (sortedPaths.size() * 2 + 1);
-				cutMarkerLine = 0;
+				m.poly = (m.poly + 1) % (s->sortedPaths.size() * 2 + 1);
+				m.line = 0;
 			}
 			continue;
 		}
 
-		cutMarkerDistance += distanceRemaining;
+		m.distance += distanceRemaining;
 
 		// Get a vector along the current line.
 		QPointF r = b - a;
@@ -528,20 +564,26 @@ void MainWindow::animate()
 			r /= h;
 
 		// The current position of the marker.
-		QPointF p = a + r * cutMarkerDistance;
+		QPointF p = a + r * m.distance;
 
 		cutMarker->setPos(p);
 		break;
 	}
 }
-void MainWindow::setFileLoaded(QString filename)
+
+void MainWindow::updateUI()
 {
-	bool e = !filename.isEmpty();
+	auto s = std::get_if<StateFileLoaded>(&state);
+
+	bool e = s != nullptr;
+
+	// Set window title.
 	if (e)
-		setWindowTitle("Robocut - " + filename);
+		setWindowTitle("Robocut - " + s->filename);
 	else
 		setWindowTitle("Robocut");
 
+	// Enable/disable menu actions.
 	ui->actionAnimate->setEnabled(e);
 	ui->actionReset->setEnabled(e);
 	ui->actionZoom_In->setEnabled(e);
@@ -549,26 +591,28 @@ void MainWindow::setFileLoaded(QString filename)
 	ui->actionCut->setEnabled(e);
 	ui->actionReload->setEnabled(e);
 	ui->actionClose->setEnabled(e);
-	ui->actionGrid->setEnabled(e);
-	ui->actionCutter_Path->setEnabled(e);
 	ui->actionPan->setEnabled(e);
 	ui->actionMeasure->setEnabled(e);
 	ui->actionExport_HPGL->setEnabled(e);
 
-	// Update the recent files list. Also ignore files that start
-	// with a colon - those are examples.
-	if (!filename.isEmpty() && !filename.startsWith(":"))
+	// Ensure the current file is in the recent files list.
+	// Ignore files that start with a colon - those are examples.
+	if (e && !s->filename.startsWith(":"))
 	{
-		qDebug() << "Adding" << filename << "to recents";
-		recentFiles.removeAll(filename);
-		recentFiles.prepend(filename);
+		recentFiles.removeAll(s->filename);
+		recentFiles.prepend(s->filename);
 	}
-
-	currentFilename = filename;
 }
 
 void MainWindow::addPathItemsToScene()
 {
+	auto s = std::get_if<StateFileLoaded>(&state);
+	if (s == nullptr)
+	{
+		qDebug() << "Add path items to scene with no file loaded";
+		return;
+	}
+
 	if (pathsItem != nullptr)
 	{
 		delete pathsItem;
@@ -586,7 +630,7 @@ void MainWindow::addPathItemsToScene()
 
 	QList<QGraphicsItem*> pathLines;
 
-	for (const auto& path : sortedPaths)
+	for (const auto& path : s->sortedPaths)
 	{
 		QPen pen(QColor::fromHsvF(static_cast<float>(hue), 1.0f, 0.7f));
 
@@ -617,7 +661,7 @@ void MainWindow::addPathItemsToScene()
 	// Don't change the pen width with zoom.
 	pen.setCosmetic(true);
 	pen.setWidthF(3.0);
-	for (const auto& path : sortedPaths)
+	for (const auto& path : s->sortedPaths)
 	{
 		cutterPathLines.append(scene->addLine(QLineF(currentPoint, path.first()), pen));
 		currentPoint = path.last();
@@ -649,14 +693,21 @@ void MainWindow::on_openSvgButton_clicked()
 
 void MainWindow::on_actionClose_triggered()
 {
-	// TODO: Use std::optional.
-	setFileLoaded("");
-	sortedPaths.clear();
+	auto s = std::get_if<StateFileLoaded>(&state);
+	if (s == nullptr)
+	{
+		qDebug() << "Close triggered with no file loaded";
+		return;
+	}
+
+	state = StateWelcome{};
+	updateUI();
 
 	clearScene();
 
 	ui->stackedWidget->setCurrentIndex(0);
-	// Update the recent files - a new one may have been loaded. Unfortunately
+
+	// Update the recent files model - a new one may have been loaded. Unfortunately
 	// this re-renders them all, but eh.
 	// TODO: Don't re-render them all.
 	recentFilesModel->setFiles(recentFiles);
@@ -692,9 +743,13 @@ void MainWindow::onSortMethodTriggered(QAction* action)
 	else
 		return;
 
+	auto s = std::get_if<StateFileLoaded>(&state);
+	if (s == nullptr)
+		return;
+
 	// Resort the paths.
 	QPointF startingPoint(0.0, 0.0);
-	sortedPaths = sortPaths(data.paths, sortMethod, startingPoint);
+	s->sortedPaths = sortPaths(s->paths, sortMethod, startingPoint);
 
 	// Remove the path items and re-add them.
 	addPathItemsToScene();
@@ -822,13 +877,20 @@ void MainWindow::onMousePressed(QPointF pos)
 
 void MainWindow::on_actionExport_HPGL_triggered()
 {
+	auto s = std::get_if<StateFileLoaded>(&state);
+	if (s == nullptr)
+	{
+		qDebug() << "Export HPGL triggered with no file loaded";
+		return;
+	}
+
 	// Export HPGL2.
 	auto filename = QFileDialog::getSaveFileName(this, tr("Export HPGL2"), lastOpenDir, tr("HPGL Files (*.hpgl)"));
 
 	if (filename.isEmpty())
 		return;
 
-	auto hpgl = renderToHPGL2(sortedPaths, data.mediaSize.width(), data.mediaSize.height());
+	auto hpgl = renderToHPGL2(s->sortedPaths, s->mediaSize.width(), s->mediaSize.height());
 
 	QSaveFile file(filename);
 	if (!file.open(QIODevice::WriteOnly))

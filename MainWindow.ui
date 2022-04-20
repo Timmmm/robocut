@@ -385,9 +385,6 @@
    <property name="checked">
     <bool>true</bool>
    </property>
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
    <property name="text">
     <string>Grid</string>
    </property>
@@ -449,9 +446,6 @@
   <action name="actionCutter_Path">
    <property name="checkable">
     <bool>true</bool>
-   </property>
-   <property name="enabled">
-    <bool>false</bool>
    </property>
    <property name="text">
     <string>Cutter Path</string>

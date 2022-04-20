@@ -34,8 +34,6 @@ set(src_files
 	"CuttingDialog.ui"
 	"CuttingThread.cpp"
 	"CuttingThread.h"
-	"FileData.cpp"
-	"FileData.h"
 	"HPGL2.cpp"
 	"HPGL2.h"
 	"MeasureItem.cpp"
