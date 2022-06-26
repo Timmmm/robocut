@@ -160,9 +160,14 @@ SResult<device_handle> UsbOpen()
 		err = libusb_open(device, &handle);
 		if (err != LIBUSB_SUCCESS)
 		{
-			return Err(
-			    "Error accessing vinyl cutter: " + UsbError(err) +
-			    ". Do you have permission (on Linux make sure you are in the group 'lp').");
+#if defined(__linux__)
+			const char* help = ". Do you have permission (on Linux make sure you are in the group 'lp').";
+#elif defined(_WIN32)
+			const char* help = ". Have you installed a WinUSB driver using Zadig?";
+#else
+			const char* help = ".";
+#endif
+			return Err("Error accessing vinyl cutter: " + UsbError(err) + help);
 		}
 		device_handle devH(handle);
 		return Ok(std::move(devH));
@@ -222,7 +227,7 @@ SResult<device_handle> UsbInit()
 		return Err("Error setting alternate USB interface: " + UsbError(r));
 	}
 
-	std::cout << "Initialisation successful.\n";
+	std::cout << "USB initialisation successful.\n";
 	return Ok(std::move(handle));
 }
 
@@ -321,15 +326,21 @@ SResult<> Cut(CutParams p)
 	SResult<std::string> sr;
 	std::string resp;
 
+	std::cout << "Initialising plotter.\n";
+
 	// Initialise plotter.
 	e = UsbSend(handle, "\x1b\x04");
 	if (!e)
 		return e;
 
+	std::cout << "Interface clear send.\n";
+
 	// "Interface clear". I added this because sometimes instead of 0\x03 I was getting the "    0,    0\x03" response.
 	e = UsbSend(handle, ";\x03");
 	if (!e)
 		return e;
+
+	std::cout << "Interface clear receive.\n";
 
 	sr = UsbReceive(handle, 5000);
 	if (!sr)
