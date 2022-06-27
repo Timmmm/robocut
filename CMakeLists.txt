@@ -3,9 +3,12 @@ cmake_minimum_required(VERSION 3.16)
 set(CMAKE_OSX_DEPLOYMENT_TARGET 10.14)
 
 project(Robocut
-	VERSION 1.1.0
+	VERSION 2.0.0
 	DESCRIPTION "A program to control Graphtec vinyl cutters."
 	LANGUAGES C CXX)
+
+# We can't use suffixes so this is necessary for pre-releases.
+set(FULL_PROJECT_VERSION "${PROJECT_VERSION}.beta0")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
@@ -94,7 +97,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE ".")
 target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE "nanoflann/include")
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE
-	"-DPROJECT_VERSION=\"${PROJECT_VERSION}\""
+	"-DPROJECT_VERSION=\"${FULL_PROJECT_VERSION}\""
 	# Stop Windows from defining min() and max().
 	"-DNOMINMAX"
 )
