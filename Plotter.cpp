@@ -333,19 +333,17 @@ SResult<> Cut(CutParams p)
 	if (!e)
 		return e;
 
-	std::cout << "Interface clear send.\n";
-
-	// "Interface clear". I added this because sometimes instead of 0\x03 I was getting the "    0,    0\x03" response.
-	e = UsbSend(handle, ";\x03");
-	if (!e)
-		return e;
-
-	std::cout << "Interface clear receive.\n";
-
-	sr = UsbReceive(handle, 5000);
-	if (!sr)
-		return sr;
-	std::cout << "Interface clear response: " << sr.unwrap() << " (" << string_to_hex(sr.unwrap()) << ")\n";
+	// "Interface clear". I added this (based on this documentation: https://www.ohthehugemanatee.net/2011/07/gpgl-reference-courtesy-of-graphtec/)
+	// because sometimes instead of 0\x03 I was getting the "    0,    0\x03" response. Unfortunately it doesn't seem to work so it is
+	// commented out for now.
+	//
+	//	e = UsbSend(handle, ";\x03");
+	//	if (!e)
+	//		return e;
+	//	sr = UsbReceive(handle, 5000);
+	//	if (!sr)
+	//		return sr;
+	//	std::cout << "Interface clear response: " << sr.unwrap() << " (" << string_to_hex(sr.unwrap()) << ")\n";
 
 	// Status request.
 	e = UsbSend(handle, "\x1b\x05");
@@ -416,10 +414,6 @@ SResult<> Cut(CutParams p)
 	e = UsbSend(handle, "FE0\x03"); // No idea what this does.
 	if (!e)
 		return e;
-
-	//	sr = UsbReceive(handle, 10000); // Allow 10s. Seems reasonable.
-	//	if (!sr) return e;
-	//	std::cout << "Got resp: " << sr.unwrap() << " (" << string_to_hex(sr.unwrap()) << ")\n";
 
 	e = UsbSend(handle, "TB71\x03"); // Again, no idea. Maybe something to do with registration marks?
 	if (!e)
