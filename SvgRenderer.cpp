@@ -1,5 +1,7 @@
 #include "SvgRenderer.h"
 
+#include <optional>
+
 #include <QApplication>
 #include <QDebug>
 #include <QFile>
@@ -10,39 +12,32 @@
 
 namespace
 {
+
+// 1 px is 1/96th of an inch.
+const double MM_PER_CM = 10.0;
+const double MM_PER_Q = 0.25;
+const double MM_PER_IN = 25.4;
+const double MM_PER_PC = 25.4 / 6.0;
+const double MM_PER_PT = 25.4 / 72.0;
+const double MM_PER_PX = 25.4 / 96.0;
+
 // Parse a width or height attribute, and try to return its size in mm.
-// If no units are given it is assumed to be mm.
-// If the unit is percent, then it returns 0.
-// length ::= number ("em" | "ex" | "px" | "in" | "cm" | "mm" | "pt" | "pc" | "%")?
-double sizeAttributeToMm(const QString& attr)
+// If no units are given then they are assumed to be px.
+// If the unit is not a known absolute unit it returns `none`.
+//
+// Supported absolute units are "cm", "mm", "Q", "in", "pc", "pt", "px".
+//
+// See https://www.w3.org/TR/css-values-3/#absolute-lengths
+std::optional<double> sizeAttributeToMm(const QString& attr)
 {
-	double multiplier = 1.0;
+	// Default with no unit.
+	double multiplier = MM_PER_PX;
 
 	auto a = attr.trimmed();
 
-	if (a.endsWith("em"))
+	if (a.endsWith("cm"))
 	{
-		multiplier = 1.0;
-		a.chop(2);
-	}
-	else if (a.endsWith("ex"))
-	{
-		multiplier = 1.0;
-		a.chop(2);
-	}
-	else if (a.endsWith("px"))
-	{
-		multiplier = 1.0;
-		a.chop(2);
-	}
-	else if (a.endsWith("in"))
-	{
-		multiplier = 1.0;
-		a.chop(2);
-	}
-	else if (a.endsWith("cm"))
-	{
-		multiplier = 1.0;
+		multiplier = MM_PER_CM;
 		a.chop(2);
 	}
 	else if (a.endsWith("mm"))
@@ -50,25 +45,39 @@ double sizeAttributeToMm(const QString& attr)
 		multiplier = 1.0;
 		a.chop(2);
 	}
-	else if (a.endsWith("pt"))
+	else if (a.endsWith("Q"))
 	{
-		multiplier = 1.0;
+		multiplier = MM_PER_Q;
+		a.chop(1);
+	}
+	else if (a.endsWith("in"))
+	{
+		multiplier = MM_PER_IN;
 		a.chop(2);
 	}
 	else if (a.endsWith("pc"))
 	{
-		multiplier = 1.0;
+		multiplier = MM_PER_PC;
 		a.chop(2);
 	}
-	else if (a.endsWith("%"))
+	else if (a.endsWith("pt"))
 	{
-		return 0.0;
+		multiplier = MM_PER_PT;
+		a.chop(2);
+	}
+	else if (a.endsWith("px"))
+	{
+		multiplier = MM_PER_PX;
+		a.chop(2);
 	}
 
+	// QString::toDouble() is actually sensibly designed (unlike all of the standard library
+	// conversions) so that it fails on extra characters (whitespace, trailing letters, etc).
+	// This means if there's a unit we didn't handle above it will fail.
 	bool ok = false;
 	double len = a.toDouble(&ok);
 	if (!ok)
-		return 0.0;
+		return std::nullopt;
 
 	return len * multiplier;
 }
@@ -169,9 +178,6 @@ SResult<SvgRender> svgToPaths(const QString& filename, bool searchForTspans)
 	render.heightAttribute = xmlData.heightAttribute;
 	render.hasTspanPosition = xmlData.hasTspanPosition;
 
-	render.widthMm = sizeAttributeToMm(render.widthAttribute);
-	render.heightMm = sizeAttributeToMm(render.heightAttribute);
-
 	QSvgRenderer renderer;
 	if (!renderer.load(svgContents))
 		return ("Couldn't render SVG: " + filename).toStdString();
@@ -187,11 +193,10 @@ SResult<SvgRender> svgToPaths(const QString& filename, bool searchForTspans)
 	// These are the paths in user units.
 	render.paths = pg.paths();
 
-	if (render.widthMm <= 0.0 || render.heightMm <= 0.0)
-	{
-		render.widthMm = render.viewBox.width();
-		render.heightMm = render.viewBox.height();
-	}
+	// If no width or height were provided then use the viewBox. The units are
+	// assumed to be px. See https://svgwg.org/svg2-draft/coords.html#ViewportSpace
+	render.widthMm = sizeAttributeToMm(render.widthAttribute).value_or(render.viewBox.width() * MM_PER_PX);
+	render.heightMm = sizeAttributeToMm(render.heightAttribute).value_or(render.viewBox.height() * MM_PER_PX);
 
 	return render;
 }
