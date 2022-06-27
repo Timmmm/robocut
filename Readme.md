@@ -3,15 +3,17 @@
 
 # Robocut
 
-Robocut is a simple graphical program to allow you to cut graphics with one of the following vinyl cutters made by Graphtec / Silhouette (it seems to be the same company).
+Robocut is a simple graphical program to allow you to cut graphics with one of the following vinyl cutters made by Graphtec:
 
-* Graphtec CraftRobo CC200-20
-* Graphtec CraftRobo CC300-20
+* Craft Robo CC200-20
+* Craft Robo CC300-20
 * Silhouette SD
 * Silhouette SD 2
 * Silhouette Cameo
 * Silhouette Cameo 3
 * Silhouette Portrait
+
+![](screenshot.png)
 
 It can read SVG Tiny 1.2 files ([details](https://doc.qt.io/qt-5.10/svgrendering.html)). This includes files produced by Inkscape. Unlike the official programs, Robocut can also run on Linux and Mac OS X.
 
@@ -27,7 +29,9 @@ Originally written by Tim Hutt with big improvements from Markus Schulz, Juergen
 
 Download the latest Windows binary release, and also [Zadig](http://zadig.akeo.ie/), which is the easiest way to install a libusb-compatible driver for your cutter.
 
-Run Zadig, and use it to install a driver for your device. You may need to check `Options->List all devices`. Any of the three driver options *should* work, but WinUSB definitely does so I'd go with that.
+Run Zadig, and use it to install a driver for your device. You may need to check `Options->List all devices` and find the `USB Printing Support` device (if you hover the "Vendor ID" it should say "Graphtec"). Replace its `usbprint` driver with `WinUSB`.
+
+![](zadig.png)
 
 Once that is complete you should just be able to run `Robocut.exe`.
 
@@ -37,11 +41,11 @@ This is the easiest option - unzip the application and copy it to your Applicati
 
 ### Linux
 
-On Ubuntu you can simply
+There is an old version available for Ubuntu.
 
 	sudo apt-get install robocut
 
-If you wish to build from source, first install the dependencies - Qt5 and libusb-1.0. Then unzip the source and run
+For the latest version you need to build from source. First install the dependencies - Qt6 and libusb-1.0. Then unzip the source and run
 
 	qmake
 	make
@@ -80,17 +84,23 @@ I'm not sure why this is.
 
 * The whole program crashes.
 
-This is possibly because you opened and SVG containing raster data. It shouldn't happen but it hasn't been fixed yet.
+This is possibly because you opened an SVG containing raster data. It shouldn't happen but it hasn't been fixed yet.
 
-* It says it can't find the cutter.
+* It says it can't find the cutter or "the operation is not supported".
 
 Make sure the WinUSB driver is installed with Zadig on Windows. On Linux make sure you are in the `lp` group.
 
 ## Changelog
 
-Master
+2.0.0.beta0
 
-...
+* New welcome UI with example files.
+* Background 1cm grid.
+* Rule measuring tool (to verify dimensions)
+* Option to show the cutter path.
+* New path sorting algorithms - Sort by Y may be useful for cutting without a mat in some cases.
+* HPGL export. This is not tested with an actual plotter yet but I do have access to one so I will at some point. It also only exports a file, it doesn't support direct writing to a serial port (yet).
+* Lots of code updates.
 
 1.0.11
 
@@ -163,15 +173,12 @@ kind of clipping (but not in preview)
 1.0.2
 
 * Initial Release on Ubuntu.
-
-Master
-
 * Some brief documentation
 * Initial registration mark support
 * Load page size from file
 * Small UI improvements
 
-Version 0.2 - a3b13ad - Oct 24th 2010
+0.2 - a3b13ad - Oct 24th 2010
 
 * Initial working version.
 
@@ -194,13 +201,13 @@ This project is licensed under the terms of the [GPL v3](https://www.gnu.org/lic
 * Implement a tool to adjust the scale
 * Support multiple devices properly. Ideally with hotplug
 * Re-enable command line options
+* new sorting algorithm to limit backward movements
+	to max 20mm, so that we can cut paper and cardboard
+	without a mat in many cases.
 
 ## Silhouette Cameo
 
 * paint 24mm blocked area in the GUI at the bottom of the paper.
 * put the Identify() output in a GUI element (rather than stdout).
-* new sorting algorithm to limit backward movements
-	to max 20mm, so that we can cut paper and cardboard
-	without a mat in many cases.
 * debug this: when the paper was moved with the devices cursor keys,
 	"cut" will just home the paper and not cut at all.

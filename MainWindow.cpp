@@ -363,16 +363,13 @@ void MainWindow::loadFile(QString filename)
 void MainWindow::on_actionAbout_triggered()
 {
 	QString message =
-	    QString("<b>") + PROJECT_VERSION + "</b><br><br>By Tim Hutt, &copy; 2010-2022<br/>" +
-	    "<br>Parts of the source by Markus Schulz<br/>" +
-	    "<br/>This software allows you to read a vector image in <a "
-	    "href=\"http://en.wikipedia.org/wiki/Scalable_Vector_Graphics\">SVG format</a>, " +
-	    "and send it to a <a href=\"http://www.graphteccorp.com/craftrobo/\">Graphtec Craft Robo 2</a>/3 " +
-	    " or <a href=\"http://www.silhouette.com/cameo\">Silhouette Cameo</a> " +
-	    " (or similar device) for cutting. It is designed to work with SVGs produced " +
-	    "by the excellent free vector graphics editor <a href=\"http://www.inkscape.org/\">Inkscape</a>. " +
-	    " It may work with other software but this has not been tested.<br/>" +
-	    "<br/>See <a href=\"http://robocut.org\">the website for more information</a>.";
+	    QString("<b>") + PROJECT_VERSION + "</b><br><br>By Tim Hutt, &copy; 2010-2022 "
+	    "with contributiosn from Markus Schulz and others."
+	    "<br/><br/>"
+	    "This software allows you to read a vector image in <a "
+	    "href=\"http://en.wikipedia.org/wiki/Scalable_Vector_Graphics\">SVG format</a>, "
+	    "and send it to a <a href=\"http://www.graphteccorp.com/\">Graphtec</a> vinyl cutter. "
+	    "See <a href=\"http://robocut.org/\">robocut.org</a> for more information.";
 	QMessageBox::information(this, "About", message);
 }
 
