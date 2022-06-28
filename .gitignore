@@ -5,3 +5,6 @@ ui_*
 .gitignore
 *.user
 robocut
+
+# For in-tree builds if you want that.
+/build*
