@@ -10,6 +10,9 @@ project(Robocut
 # We can't use suffixes so this is necessary for pre-releases.
 set(FULL_PROJECT_VERSION "${PROJECT_VERSION}.beta0")
 
+# Export compile_commands.json - useful for IDEs.
+set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
