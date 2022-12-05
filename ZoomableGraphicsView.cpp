@@ -32,6 +32,7 @@ bool ZoomableGraphicsView::event(QEvent* event)
 
 bool ZoomableGraphicsView::gestureEvent(QGestureEvent* event)
 {
+	// Note that this is never actually called for some reason.
 	if (QGesture* pan = event->gesture(Qt::PanGesture))
 		panTriggered(static_cast<QPanGesture*>(pan));
 	else if (QGesture* pinch = event->gesture(Qt::PinchGesture))
@@ -58,10 +59,9 @@ void ZoomableGraphicsView::pinchTriggered(QPinchGesture* gesture)
 
 void ZoomableGraphicsView::wheelEvent(QWheelEvent* event)
 {
-	// For synthesized mouse events, i.e. ones not from a real mouse wheel
+	// For non-mouse events (e.g. pinch-zoom on a touchpad generates scroll events)
 	// use the default implementation, which does nothing (we use pinch to zoom instead).
-	if (event->source() != Qt::MouseEventNotSynthesized)
-		return QGraphicsView::wheelEvent(event);
+	qDebug() << "wheelEvent(): " << event->device()->type();
 
 	double scaleBy = 1.0;
 
