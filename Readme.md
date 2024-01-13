@@ -90,6 +90,33 @@ This is possibly because you opened an SVG containing raster data. It shouldn't 
 
 Make sure the WinUSB driver is installed with Zadig on Windows. On Linux make sure you are in the `lp` group.
 
+* It says `fatal error: libudev.h: No such file or directory` when compiling from source.
+
+Install `systemd-devel` (RHEL/Centos/Rocky) or `libsystemd-dev` (Debian/Ubuntu).
+
+* It says `Could not load the Qt platform plugin "xcb" in "" even though it was found.` when running on Linux.
+
+Run it again with `QT_DEBUG_PLUGINS=1`. It will probably give more details like `libxcb-cursor.so.0: cannot open shared object file: No such file or directory`. Then you need to find which package has that shared library. On RHEL/Centos/Rocky you can use `dnf provides '*/libxcb-cursor.so.0'` which says you need to `sudo dnf install xcb-util-cursor`.
+
+## Building From Source
+
+You can have a look the CI config (`.gitlab/workflows/build.yaml`) to see precise instructions for building from source, but roughly it is:
+
+    git clone --recursive https://github.com/Timmmm/robocut.git
+    cd robocut
+    mkdir build
+    # Qt path is something like ~/Qt/6.6.1/gcc_64/lib/cmake/
+    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=path/to/Wt/version/compiler/lib/cmake/ ..
+    cmake --build . --config Release --target artefact
+
+That should generate a zip or DMG file. If you don't need the finished package you can omit `--target artefact`.
+
+The build requirements are
+
+* Qt6. Your distro may have packages for this. If not you can get it from https://qt.io/ (though annoyingly you need a free account).
+* CMake. If you use Qt's graphical installer, it offers to install CMake and Ninja. This is probably the easiest option on Windows. On other platforms I would install CMake via Pip like this: `python3 -m pip install --upgrade cmake`. Do not use your distro's package manager. This provides the latest version on all platforms and is officially supported. (Yes it's weird.)
+* libudev on Linux, found in `systemd-devel` or `libsystemd-dev`.
+
 ## Changelog
 
 2.0.0.beta0
