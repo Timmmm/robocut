@@ -13,7 +13,10 @@
 namespace
 {
 
-// 1 px is 1/96th of an inch.
+// If the user specifies width="96px" then we assume 96 DPI and return
+// a size of 1 inch (this matches the latest versions of Inkscape).
+// Note Qt assumes 90 DPI when rendering and SVG but we account for that so
+// it has no effect.
 const double MM_PER_CM = 10.0;
 const double MM_PER_Q = 0.25;
 const double MM_PER_IN = 25.4;
@@ -184,10 +187,12 @@ SResult<SvgRender> svgToPaths(const QString& filename, bool searchForTspans)
 
 	render.viewBox = renderer.viewBoxF();
 
-	// So here we pretend that the viewbox is in mm.
+	// Give the size of the canvas. We just use 1 user unit per pixel and
+	// then convert later.
 	PathPaintDevice pg(render.viewBox.width(), render.viewBox.height());
 	QPainter p(&pg);
 
+	// Render, this will assume 1 user unit = 1px.
 	renderer.render(&p, render.viewBox);
 
 	// These are the paths in user units.

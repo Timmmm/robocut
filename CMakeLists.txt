@@ -16,8 +16,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
-# Set the CMAKE_PREFIX_PATH environment variable to (e.g) ~/Qt/5.8/clang_64 so it can find Qt.
-# CoreTools is for win/macdeployqt
+# Set the CMAKE_PREFIX_PATH environment variable to (e.g) ~/Qt/6.6.1/gcc_64/lib/cmake/
+# so it can find Qt. CoreTools is for win/macdeployqt.
 find_package(Qt6 REQUIRED COMPONENTS Core Widgets Svg CoreTools)
 
 qt_standard_project_setup()

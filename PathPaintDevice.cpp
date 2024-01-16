@@ -18,20 +18,13 @@ size_t qHash(const QPolygonF& key)
 	return qHash(repr);
 }
 
-PathPaintDevice::PathPaintDevice(double widthInMm, double heightInMm, double pixelsPerMm)
+PathPaintDevice::PathPaintDevice(double width, double height)
+	: width(width), height(height)
 {
-	engine = nullptr;
-	width = widthInMm;
-	height = heightInMm;
-	ppm = pixelsPerMm;
-	if (ppm == 0.0)
-		ppm = 1.0;
 }
 
 PathPaintDevice::~PathPaintDevice()
 {
-	if (engine)
-		delete engine;
 }
 
 void PathPaintDevice::addPath(const QPolygonF& path)
@@ -45,8 +38,8 @@ void PathPaintDevice::addPath(const QPolygonF& path)
 QPaintEngine* PathPaintDevice::paintEngine() const
 {
 	if (!engine)
-		engine = new PathPaintEngine();
-	return engine;
+		engine = std::make_unique<PathPaintEngine>();
+	return engine.get();
 }
 
 QList<QPolygonF> PathPaintDevice::paths()
@@ -60,9 +53,9 @@ int PathPaintDevice::metric(PaintDeviceMetric metric) const
 	{
 	// Width in pixels.
 	case PdmWidth:
-		return static_cast<int>(width * ppm);
+		return static_cast<int>(width);
 	case PdmHeight:
-		return static_cast<int>(height * ppm);
+		return static_cast<int>(height);
 	case PdmWidthMM:
 		return static_cast<int>(width);
 	case PdmHeightMM:
@@ -72,19 +65,17 @@ int PathPaintDevice::metric(PaintDeviceMetric metric) const
 	case PdmDepth:
 		return 1;
 	case PdmDpiX:
-		return static_cast<int>(25.4 * ppm); // Convert to inches.
+		return static_cast<int>(25.4);
 	case PdmDpiY:
-		return static_cast<int>(25.4 * ppm);
+		return static_cast<int>(25.4);
 	case PdmPhysicalDpiX:
-		return static_cast<int>(25.4 * ppm);
+		return static_cast<int>(25.4);
 	case PdmPhysicalDpiY:
-		return static_cast<int>(25.4 * ppm);
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 6, 0))
+		return static_cast<int>(25.4);
 	case PdmDevicePixelRatio:
 		return 1;
 	case PdmDevicePixelRatioScaled:
 		return 1;
-#endif
 	}
 	return 0;
 }

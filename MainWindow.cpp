@@ -231,10 +231,16 @@ void MainWindow::loadFile(QString filename)
 
 	StateFileLoaded loadedState;
 
-	// See
-	// https://code.woboq.org/qt5/qtsvg/src/svg/qsvghandler.cpp.html#_ZL15convertToPixelsdbN11QSvgHandler10LengthTypeE
-	// The default size is derived from the width="" height="" svg attribute tags
-	// assuming 90 DPI.
+	// When Qt renders an SVG it sets its width and height based on the
+	// width="" height="" svg attributes. These can be given in physical units
+	// e.g. width="25mm". In that case Qt renders at 90 DPI. However that is
+	// incorrect. SVG/CSS use 96 DPI.
+	//
+	// See `convertToPixels()` here: https://codebrowser.dev/qt6/qtsvg/src/svg/qsvghandler.cpp.html#932
+	//
+
+	// This is the size of the entire document in mm, calculated from the
+	// width/height attributes, using the correct conversion from pixels (96 DPI).
 	QSizeF mediaSize(render.widthMm, render.heightMm);
 
 	loadedState.mediaSize = mediaSize;
@@ -903,4 +909,3 @@ void MainWindow::on_actionExport_HPGL_triggered()
 		return;
 	}
 }
-

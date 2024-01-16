@@ -14,7 +14,8 @@ size_t qHash(const QPolygonF& key);
 class PathPaintDevice : public QPaintDevice
 {
 public:
-	PathPaintDevice(double widthInMm, double heightInMm, double pixelsPerMm = 90.0 / 25.4);
+	// Width/height in pixels.
+	PathPaintDevice(double width, double height);
 	~PathPaintDevice() override;
 
 	// Adds a path to the device.
@@ -31,7 +32,7 @@ protected:
 	int metric(PaintDeviceMetric metric) const override;
 
 private:
-	mutable PathPaintEngine* engine;
+	mutable std::unique_ptr<PathPaintEngine> engine;
 
 	// The paths added.
 	QList<QPolygonF> pagePaths;
@@ -40,6 +41,4 @@ private:
 
 	double width;
 	double height;
-
-	double ppm;
 };

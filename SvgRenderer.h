@@ -25,6 +25,7 @@ struct SvgRender
 	// from the width= and height= attributes, if they have physical units. If they
 	// are in user units then it is assumed to be mm. If they are in % or are not present
 	// then the view box size is used and is assumed to be in mm.
+	// If they are in pixels then they are converted at 96 DPI per the SVG spec.
 	double widthMm;
 	double heightMm;
 
