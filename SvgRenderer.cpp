@@ -249,6 +249,7 @@ QPixmap svgToPreviewImage(const QString& filename, QSize dimensions)
 	transform.translate(-viewBox.left(), -viewBox.top());
 
 	QPainter painter(&pix);
+	painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
 	painter.setBrush(Qt::NoBrush);
 	painter.setPen(QPen(foreground));
 	painter.setTransform(transform);
