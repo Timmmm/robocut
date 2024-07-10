@@ -36,6 +36,8 @@ public:
 	double regWidth() const;
 	double regHeight() const;
 
+	void setRegMarks(QRectF bounding) const;
+
 protected:
 	void changeEvent(QEvent* e) override;
 
