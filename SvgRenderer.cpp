@@ -269,8 +269,6 @@ SResult<SvgRender> svgToPaths(const QString& filename, bool searchForTspans)
 	render.widthMm = sizeAttributeToMm(render.widthAttribute).value_or(render.viewBox.width() * MM_PER_PX);
 	render.heightMm = sizeAttributeToMm(render.heightAttribute).value_or(render.viewBox.height() * MM_PER_PX);
 
-	std::cout<<"width "<<render.widthMm << "box :" << render.viewBox.width() <<std::endl;
-
 	if (render.markElementId.isEmpty()) {
 		render.markOffset = QPointF(render.widthMm,0);
 	}
