@@ -8,8 +8,12 @@
 #include <iomanip>
 #include <iostream>
 
+#include<unistd.h>
+
 namespace
 {
+
+int noPressure = 0;
 
 std::string UsbError(int e)
 {

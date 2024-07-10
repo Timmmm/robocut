@@ -244,20 +244,12 @@ void MainWindow::loadFile(QString filename)
 	QSizeF mediaSize(render.widthMm, render.heightMm);
 
 	loadedState.mediaSize = mediaSize;
-	loadedState.paths = std::move(render.paths);
+	loadedState.showpaths = std::move(render.showpaths);
+	loadedState.cutpaths = std::move(render.cutpaths);
 	loadedState.filename = filename;
-
-	// Transform the paths from user units to mm.
-	for (auto& path : loadedState.paths)
-	{
-		for (auto& vertex : path)
-		{
-			vertex = QPointF(
-			    (vertex.x() - render.viewBox.x()) * render.widthMm / render.viewBox.width(),
-			    (vertex.y() - render.viewBox.y()) * render.heightMm / render.viewBox.height());
-		}
-	}
-
+	loadedState.markPosition = render.markPosition;
+	loadedState.markOffset = render.markOffset;
+	loadedState.markStroke = render.markStroke;
 	QPointF startingPoint(0.0, 0.0);
 
 	// Sort the paths with the following goals:
@@ -267,7 +259,8 @@ void MainWindow::loadFile(QString filename)
 	// 3. Try not to travel too much in the Y direction (it can lead to accumulation of
 	//    errors due to the vinyl slipping in the rollers).
 	//
-	loadedState.sortedPaths = sortPaths(loadedState.paths, sortMethod, startingPoint);
+	loadedState.sortedCutPaths = sortPaths(loadedState.cutpaths, sortMethod, startingPoint);
+	loadedState.sortedShowPaths = loadedState.showpaths;
 
 	// Set the default zoom.
 	auto viewSize = ui->centralWidget->size();
@@ -279,7 +272,7 @@ void MainWindow::loadFile(QString filename)
 	// Clear the scene.
 	clearScene();
 
-	QRectF pageRect(0.0, 0.0, mediaSize.width(), mediaSize.height());
+	QRectF pageRect(0.0, 0.0, mediaSize.width()*96/90, mediaSize.height()*96/90);
 
 	// And reset the sceneRect, which it doesn't do by default.
 	scene->setSceneRect(pageRect.adjusted(-20, -20, 20, 20));
@@ -293,7 +286,7 @@ void MainWindow::loadFile(QString filename)
 	dimensionsItem = scene->addText(
 	    QString::number(mediaSize.width()) + " × " + QString::number(mediaSize.height()) + " mm",
 	    QFont("Helvetica", 10));
-	dimensionsItem->setPos(0.0, mediaSize.height());
+	dimensionsItem->setPos(0.0, mediaSize.height()*96/90);
 	dimensionsItem->setVisible(dimensionsEnabled);
 
 	// Add the rulers.
@@ -307,22 +300,12 @@ void MainWindow::loadFile(QString filename)
 
 	QList<QGraphicsItem*> gridSquares;
 
-	// Add the centimetre grid.
-	for (int x = 0; x < mediaSize.width() / 10; ++x)
-	{
-		for (int y = x % 2; y < mediaSize.height() / 10; y += 2)
-		{
-			int w = static_cast<int>(std::min(10.0, mediaSize.width() - x * 10.0));
-			int h = static_cast<int>(std::min(10.0, mediaSize.height() - y * 10.0));
-			gridSquares.append(scene->addRect(
-			    x * 10,
-			    mediaSize.height() - y * 10 - h,
-			    w,
-			    h,
-			    Qt::NoPen,
-			    QBrush(QColor::fromRgb(240, 240, 240))));
-		}
-	}
+	QPen mmPen = QPen(QBrush(QColor::fromRgb(240, 240, 240)), 0.0);
+	QPen cmPen = QPen(QBrush(QColor::fromRgb(200, 200, 200)), 0.0);
+	for (int x=0; x<=mediaSize.width()*96/90; x++)
+    gridSquares.append(scene->addLine(x,0,x,mediaSize.height()*96/90, (x%10==0)?cmPen:mmPen));
+	for (int y=0; y<=mediaSize.height()*96/90; y++)
+    gridSquares.append(scene->addLine(0,y,mediaSize.width()*96/90,y, (y%10==0)?cmPen:mmPen));
 
 	gridItem = scene->createItemGroup(gridSquares);
 	gridItem->setVisible(gridEnabled);
@@ -396,6 +379,9 @@ void MainWindow::on_actionCut_triggered()
 	if (!cutDialog)
 		cutDialog = new CutDialog(this);
 
+	if (!s->markPosition.isNull()) std::cout << "Found regmarks in SVG!" << std::endl;
+	cutDialog->setRegMarks(s->markPosition);
+
 	if (cutDialog->exec() != QDialog::Accepted)
 		return;
 
@@ -404,7 +390,7 @@ void MainWindow::on_actionCut_triggered()
 	CuttingDialog* cuttingDlg = new CuttingDialog(this);
 
 	CutParams params;
-	params.cuts = s->sortedPaths;
+	params.cuts = s->sortedCutPaths;
 	params.mediawidth = s->mediaSize.width();
 	params.mediaheight = s->mediaSize.height();
 	params.media = cutDialog->media();
@@ -412,7 +398,9 @@ void MainWindow::on_actionCut_triggered()
 	params.regwidth = cutDialog->regWidth();
 	params.regheight = cutDialog->regHeight();
 	params.regmark = cutDialog->regMark();
+	params.regoffset = s->markOffset;
 	params.regsearch = cutDialog->regSearch();
+	params.regstroke = s->markStroke;
 	params.speed = cutDialog->speed();
 	params.trackenhancing = cutDialog->trackEnhancing();
 
@@ -495,7 +483,7 @@ void MainWindow::animate()
 	auto& m = s->cutMarkerPos;
 
 	// Make sure the current position is sane.
-	if (m.poly >= s->sortedPaths.size() * 2 + 1)
+	if (m.poly >= s->sortedCutPaths.size() * 2 + 1)
 	{
 		// If not, reset it.
 		m.poly = 0;
@@ -522,20 +510,20 @@ void MainWindow::animate()
 			if (m.poly == 0)
 				a = startingPoint;
 			else
-				a = s->sortedPaths[(m.poly / 2) - 1].back();
+				a = s->sortedCutPaths[(m.poly / 2) - 1].back();
 
-			if (m.poly >= s->sortedPaths.size() * 2)
+			if (m.poly >= s->sortedCutPaths.size() * 2)
 				b = startingPoint;
 			else
-				b = s->sortedPaths[(m.poly / 2)].front();
+				b = s->sortedCutPaths[(m.poly / 2)].front();
 
 			cutMarker->setOpacity(0.2);
 		}
 		else
 		{
 			auto pathIndex = (m.poly - 1) / 2;
-			a = s->sortedPaths[pathIndex][m.line];
-			b = s->sortedPaths[pathIndex][m.line + 1];
+			a = s->sortedCutPaths[pathIndex][m.line];
+			b = s->sortedCutPaths[pathIndex][m.line + 1];
 			cutMarker->setOpacity(1.0);
 		}
 
@@ -546,13 +534,13 @@ void MainWindow::animate()
 		{
 			distanceRemaining -= (ln.length() - m.distance);
 			m.distance = 0.0;
-			if (m.poly % 2 != 0 && m.line < s->sortedPaths[(m.poly - 1) / 2].size() - 2)
+			if (m.poly % 2 != 0 && m.line < s->sortedCutPaths[(m.poly - 1) / 2].size() - 2)
 			{
 				++m.line;
 			}
 			else
 			{
-				m.poly = (m.poly + 1) % (s->sortedPaths.size() * 2 + 1);
+				m.poly = (m.poly + 1) % (s->sortedCutPaths.size() * 2 + 1);
 				m.line = 0;
 			}
 			continue;
@@ -633,7 +621,7 @@ void MainWindow::addPathItemsToScene()
 
 	QList<QGraphicsItem*> pathLines;
 
-	for (const auto& path : s->sortedPaths)
+	for (const auto& path : s->sortedShowPaths)
 	{
 		QPen pen(QColor::fromHsvF(static_cast<float>(hue), 1.0f, 0.7f));
 
@@ -664,7 +652,7 @@ void MainWindow::addPathItemsToScene()
 	// Don't change the pen width with zoom.
 	pen.setCosmetic(true);
 	pen.setWidthF(3.0);
-	for (const auto& path : s->sortedPaths)
+	for (const auto& path : s->sortedShowPaths)
 	{
 		cutterPathLines.append(scene->addLine(QLineF(currentPoint, path.first()), pen));
 		currentPoint = path.last();
@@ -752,7 +740,7 @@ void MainWindow::onSortMethodTriggered(QAction* action)
 
 	// Resort the paths.
 	QPointF startingPoint(0.0, 0.0);
-	s->sortedPaths = sortPaths(s->paths, sortMethod, startingPoint);
+	s->sortedCutPaths = sortPaths(s->cutpaths, sortMethod, startingPoint);
 
 	// Remove the path items and re-add them.
 	addPathItemsToScene();
@@ -893,7 +881,7 @@ void MainWindow::on_actionExport_HPGL_triggered()
 	if (filename.isEmpty())
 		return;
 
-	auto hpgl = renderToHPGL2(s->sortedPaths, s->mediaSize.width(), s->mediaSize.height());
+	auto hpgl = renderToHPGL2(s->sortedShowPaths, s->mediaSize.width(), s->mediaSize.height());
 
 	QSaveFile file(filename);
 	if (!file.open(QIODevice::WriteOnly))

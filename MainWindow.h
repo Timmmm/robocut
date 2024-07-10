@@ -48,17 +48,23 @@ struct StateFileLoaded
 	// Filename it was loaded from.
 	QString filename;
 	// The polygons to cut, in mm.
-	QList<QPolygonF> paths;
+	QList<QPolygonF> cutpaths;
+	QList<QPolygonF> showpaths;
 	// The page size in mm.
 	QSizeF mediaSize;
 	// The default zoom for this document, which is based on its size.
 	double defaultZoom = 1.0;
 
 	// The sorted paths.
-	QList<QPolygonF> sortedPaths;
+	QList<QPolygonF> sortedCutPaths;
+	QList<QPolygonF> sortedShowPaths;
 
 	// Position of the cut marker for the animate feature.
 	CutMarkerPos cutMarkerPos;
+
+	QRectF markPosition;
+	QPointF markOffset;
+	double markStroke;
 };
 
 class MainWindow : public QMainWindow
