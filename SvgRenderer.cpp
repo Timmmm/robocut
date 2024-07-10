@@ -259,6 +259,7 @@ SResult<SvgRender> svgToPaths(const QString& filename, bool searchForTspans)
 	else {
 	// 	//No specific cut layer - Draw all layers - But can ont use regmarks.
 		renderer.render(&p);
+		render.cutpaths = pg.paths();
 		// These are the paths in user units.
 	}
 	render.showpaths = pg.paths();
