@@ -158,6 +158,11 @@ SResult<device_handle> UsbOpen()
 		if (PRODUCT_ID_LIST.count(desc.idProduct) == 0)
 			continue;
 
+		if (desc.idProduct == 0x110a) {
+			std::cout<< "CC200-20 detected - Pressure set to maximum\n";
+			noPressure = 1;
+		} else noPressure = 0;
+
 		libusb_device_handle* handle = nullptr;
 
 		// Currently use the first device found.
@@ -314,6 +319,9 @@ SResult<> Cut(CutParams p)
 
 	if (!handleRes)
 		return handleRes;
+
+	if (noPressure != 0)
+		p.pressure = 33;
 
 	auto handle = std::move(handleRes.unwrap());
 
