@@ -7,6 +7,12 @@
 #include <QFile>
 #include <QPainter>
 #include <QPalette>
+#include <QRegularExpression>
+#include <QRegularExpressionMatch>
+
+#include <iostream>
+
+#include<unistd.h>
 
 #include "PathPaintDevice.h"
 
@@ -89,6 +95,9 @@ struct SvgXmlData
 {
 	QString widthAttribute;
 	QString heightAttribute;
+	QString cutElementId = QString();
+	QString markElementId = QString();
+	double markStroke;
 
 	bool hasTspanPosition = false;
 
@@ -136,7 +145,24 @@ SvgXmlData scanSvgElements(const QByteArray& svgContents, bool searchForTspans)
 					return data;
 				}
 			}
-
+			else if ((xml.name() == u"g") && attr.hasAttribute("id") && attr.value("inkscape:label").contains(QString("cut"),Qt::CaseInsensitive))
+			{
+				data.cutElementId = attr.value("id").toString();
+			}
+			else if ((xml.name() == u"g") && attr.hasAttribute("id") && attr.value("inkscape:label").contains(QString("regmarks"),Qt::CaseInsensitive))
+			{
+				data.markElementId = attr.value("id").toString();
+			}
+			else if ((xml.name() == u"path") && attr.hasAttribute("style") && attr.value("inkscape:label").contains(QString("RightMarkH"),Qt::CaseInsensitive))
+			{
+				std::cout<< "found mark" << std::endl;
+				auto style = attr.value("style").toString();
+				QRegularExpression re("stroke-width:(\\d+(\\.\\d+)?)");
+				QRegularExpressionMatch match = re.match(style);
+				if (match.hasMatch()) {
+					data.markStroke = match.captured(1).toDouble();
+				}
+			}
 			break;
 		}
 		default:
@@ -180,6 +206,9 @@ SResult<SvgRender> svgToPaths(const QString& filename, bool searchForTspans)
 	render.widthAttribute = xmlData.widthAttribute;
 	render.heightAttribute = xmlData.heightAttribute;
 	render.hasTspanPosition = xmlData.hasTspanPosition;
+	render.cutElementId = xmlData.cutElementId;
+	render.markElementId = xmlData.markElementId;
+	render.markStroke = xmlData.markStroke;
 
 	QSvgRenderer renderer;
 	if (!renderer.load(svgContents))
@@ -187,21 +216,84 @@ SResult<SvgRender> svgToPaths(const QString& filename, bool searchForTspans)
 
 	render.viewBox = renderer.viewBoxF();
 
-	// Give the size of the canvas. We just use 1 user unit per pixel and
-	// then convert later.
 	PathPaintDevice pg(render.viewBox.width(), render.viewBox.height());
 	QPainter p(&pg);
 
-	// Render, this will assume 1 user unit = 1px.
-	renderer.render(&p, render.viewBox);
+	if (!render.markElementId.isEmpty()) {
+		double x0,y0,x1,y1;
+		PathPaintDevice pgmark(render.viewBox.width(), render.viewBox.height());
+		QPainter pmark(&pgmark);
+		QRectF bound1 = renderer.boundsOnElement(render.markElementId);
+		QTransform transf = renderer.transformForElement(render.markElementId);
+		render.markPosition = transf.mapRect(bound1);
+		renderer.render(&pmark, render.markElementId, render.markPosition);
+		render.markPosition.getCoords(&x0, &y0, &x1, &y1);
+		render.markPosition.setCoords(x0* MM_PER_PX, y0* MM_PER_PX, x1* MM_PER_PX, y1* MM_PER_PX);
+		bool start = true;
+		for ( auto polygon : pgmark.paths() ) {
+		    for ( QPointF point : polygon ) {
+					if (start) {
+						render.markOffset = point;
+						start = false;
+					} else {
+						if ((point.x() >= render.markOffset.x()) && (point.y() <= render.markOffset.y()))
+							render.markOffset = point;
+					}
+				}
+		}
+		render.markOffset = QPointF(
+				(render.markOffset.x()+(render.markStroke/2.0)) * MM_PER_PX,
+				(render.markOffset.y()+(render.markStroke/2.0)) * MM_PER_PX);
+		std::cout<<"markOffset " <<render.markOffset.x() << "," <<render.markOffset.y()<< std::endl;
+	}
+	if (!render.cutElementId.isEmpty()) {
+		PathPaintDevice pgcut(render.viewBox.width(), render.viewBox.height());
+		QPainter pcut(&pgcut);
+		QRectF bound1 = renderer.boundsOnElement(render.cutElementId);
+		QTransform transf = renderer.transformForElement(render.cutElementId);
+		QRectF bound2 = transf.mapRect(bound1);
+		renderer.render(&pcut, render.cutElementId, bound2);
+		renderer.render(&p);
+		render.cutpaths = pgcut.paths();
+	}
+	else {
+	// 	//No specific cut layer - Draw all layers - But can ont use regmarks.
+		renderer.render(&p);
+		render.cutpaths = pg.paths();
+		// These are the paths in user units.
+	}
+	render.showpaths = pg.paths();
 
-	// These are the paths in user units.
-	render.paths = pg.paths();
 
 	// If no width or height were provided then use the viewBox. The units are
 	// assumed to be px. See https://svgwg.org/svg2-draft/coords.html#ViewportSpace
 	render.widthMm = sizeAttributeToMm(render.widthAttribute).value_or(render.viewBox.width() * MM_PER_PX);
 	render.heightMm = sizeAttributeToMm(render.heightAttribute).value_or(render.viewBox.height() * MM_PER_PX);
+
+	if (render.markElementId.isEmpty()) {
+		render.markOffset = QPointF(render.widthMm,0);
+	}
+	// Transform the paths from user units to mm.
+	for (auto& path : render.cutpaths)
+	{
+		for (auto& vertex : path)
+		{
+			vertex = QPointF(
+					vertex.x() * MM_PER_PX,
+					vertex.y() * MM_PER_PX);
+		}
+	}
+
+	// Transform the paths from user units to mm.
+	for (auto& path : render.showpaths)
+	{
+		for (auto& vertex : path)
+		{
+			vertex = QPointF(
+					(vertex.x() - render.viewBox.x()) * render.widthMm / render.viewBox.width(),
+					(vertex.y() - render.viewBox.y()) * render.heightMm / render.viewBox.height());
+		}
+	}
 
 	return render;
 }
@@ -255,7 +347,7 @@ QPixmap svgToPreviewImage(const QString& filename, QSize dimensions)
 	painter.setTransform(transform);
 
 	// Work out the scaling and offset for the paths.
-	for (const auto& path : paths.paths)
+	for (const auto& path : paths.cutpaths)
 		painter.drawPolygon(path);
 
 	return pix;

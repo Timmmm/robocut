@@ -8,8 +8,12 @@
 #include <iomanip>
 #include <iostream>
 
+#include<unistd.h>
+
 namespace
 {
+
+int noPressure = 0;
 
 std::string UsbError(int e)
 {
@@ -153,6 +157,11 @@ SResult<device_handle> UsbOpen()
 
 		if (PRODUCT_ID_LIST.count(desc.idProduct) == 0)
 			continue;
+
+		if (desc.idProduct == 0x110a) {
+			std::cout<< "CC200-20 detected - Pressure set to maximum\n";
+			noPressure = 1;
+		} else noPressure = 0;
 
 		libusb_device_handle* handle = nullptr;
 
@@ -311,6 +320,9 @@ SResult<> Cut(CutParams p)
 	if (!handleRes)
 		return handleRes;
 
+	if (noPressure != 0)
+		p.pressure = 33;
+
 	auto handle = std::move(handleRes.unwrap());
 
 	// TODO: Renable this.
@@ -362,7 +374,7 @@ SResult<> Cut(CutParams p)
 			return Err(std::string("Moving, please try again."));
 		if (resp == "2\x03")
 			return Err(std::string("Empty tray, please load media.")); // Silhouette Cameo
-		return Err("Unexpected response from plotter: '" + resp + "' (" + string_to_hex(resp) + ")");
+		return Err("1 Unexpected response from plotter: '" + resp + "' (" + string_to_hex(resp) + ") instead "+ string_to_hex("1\x03"));
 	}
 
 	// Home the cutter.
@@ -406,11 +418,6 @@ SResult<> Cut(CutParams p)
 	if (!e)
 		return e;
 
-	// Set to portrait. FN1 does landscape but it's easier just to rotate the image.
-	e = UsbSend(handle, "FN0\x03");
-	if (!e)
-		return e;
-
 	e = UsbSend(handle, "FE0\x03"); // No idea what this does.
 	if (!e)
 		return e;
@@ -425,11 +432,16 @@ SResult<> Cut(CutParams p)
 
 	resp = sr.unwrap();
 
-	if (resp != "    0,    0\x03")
-		return Err("Unexpected response from plotter: '" + resp + "' (" + string_to_hex(resp) + ")");
+	if (resp != "    1,    0\x03")
+		return Err("2 Unexpected response from plotter: '" + resp + "' (" + string_to_hex(resp) + ") instead "+ string_to_hex("    0,    0\x03"));
 
 	// Begin page definition.
 	e = UsbSend(handle, "FA\x03");
+	if (!e)
+		return e;
+
+	// Set to portrait. FN1 does landscape but it's easier just to rotate the image.
+	e = UsbSend(handle, "FN0\x03");
 	if (!e)
 		return e;
 
@@ -449,13 +461,21 @@ SResult<> Cut(CutParams p)
 	if (!e)
 		return e;
 
+	//flushing USB for clean pipe state
+	while (UsbReceive(handle, 500));
+
 	if (p.regmark)
 	{
+		//Get current position
 		std::stringstream regmarkstr;
 		regmarkstr.precision(0);
 		std::string searchregchar = "23,";
 		int regw = static_cast<int>(lround(p.regwidth * 20.0));
 		int regl = static_cast<int>(lround(p.regheight * 20.0));
+
+		//flushing USB for clean pipe state
+		while (UsbReceive(handle, 500));
+
 		e = UsbSend(handle, "TB50,381\x03"); // only with registration (it was TB50,1) ???
 		if (!e)
 			return e;
@@ -478,35 +498,23 @@ SResult<> Cut(CutParams p)
 		sr = UsbReceive(handle, 40000); // Allow 40s for reply...
 		if (!sr)
 			return sr;
-
-		resp = sr.unwrap();
-		if (resp != "    0,    0\x03")
-		{
-			std::cout << resp << "\n";
-			return Err(std::string("Couldn't find registration marks."));
-		}
-		// Looks like if the reg marks work it gets 3 messages back (if it fails it times out because it only gets the
-		// first message)
-		sr = UsbReceive(handle, 40000); // Allow 40s for reply...
-		if (!sr)
-			return sr;
-
 		resp = sr.unwrap();
 		if (resp != "    0\x03")
 		{
 			std::cout << resp << "\n";
-			return Err(std::string("Couldn't find registration marks."));
+			e = UsbSend(handle, "TT");
+			return Err(std::string("Couldn't find registration marks - Back to Home."));
 		}
 
 		sr = UsbReceive(handle, 40000); // Allow 40s for reply...
 		if (!sr)
 			return sr;
-
 		resp = sr.unwrap();
 		if (resp != "    1\x03")
 		{
 			std::cout << resp << "\n";
-			return Err(std::string("Couldn't find registration marks."));
+			e = UsbSend(handle, "TT");
+			return Err(std::string("Couldn't find registration marks - Back to Home."));
 		}
 	}
 	else
@@ -526,31 +534,22 @@ SResult<> Cut(CutParams p)
 	// Set the "factor" to 100,100,100, whatever that means.
 	// \0,0 is "write lower left". Z is "write upper right", so I think this sets the bounds in some way.
 	page << "&100,100,100,\\0,0,Z" << ItoS(width) << "," << ItoS(height) << ",L0";
+
 	for (const auto& cut : p.cuts)
 	{
 		if (cut.size() < 2)
 			continue;
-
 		for (int i = 0; i < cut.size(); ++i)
 		{
-			double x = cut[i].x() * 20.0;
-			double y = cut[i].y() * 20.0;
-
+			std::cout<<"cut " << p.regoffset.x() - cut[i].x() << "," << cut[i].y()-p.regoffset.y() << std::endl;
+			double x = (p.regoffset.x() - cut[i].x()) * 20.0;
+			double y = (cut[i].y()-p.regoffset.y()) * 20.0;
 			//			double xorigin = 0;//ProgramOptions::Instance().getRegOriginWidthMM();
 			//			double yorigin = 0;//ProgramOptions::Instance().getRegOriginHeightMM();
-
-			//			if (p.regmark)
-			//			{
-			//				x -= (xorigin * 20.0);
-			//				y -= (yorigin * 20.0);
-			//			}
 
 			// Squash to page boundaries.
 			x = std::min(std::max(x, 0.0), double(width));
 			y = std::min(std::max(y, 0.0), double(height));
-
-			// Mirror x/y.
-			x = width - x;
 
 			page << (i == 0 ? ",M" : ",D") << x << "," << y;
 		}
@@ -558,21 +557,17 @@ SResult<> Cut(CutParams p)
 
 	// &1,1,1 is "Factor". TB50,0 is something to do with registration.
 	// I suspect this command resets some settings at the end.
-	page << "&1,1,1,TB50,0\x03";
+	// set the regmarks stroke based on svg extract
+	page << "&1,1,1,TB50,0\x03TB53,"<< static_cast<int>(lround(p.regstroke * 20.0)) <<"\0x3";
 
 	// std::cout << page.str() << "\n";
-
 	e = UsbSend(handle, page.str());
 	if (!e)
 		return e;
 
-	// Feed the page out.
-	e = UsbSend(handle, "FO0\x03");
-	if (!e)
-		return e;
-
 	// Home.
-	e = UsbSend(handle, "H,");
+	std::cout<<"Back to origin"<<std::endl;
+	e = UsbSend(handle, "H\0x3");
 	if (!e)
 		return e;
 

@@ -26,6 +26,8 @@ struct CutParams
 	bool regsearch = false;
 	double regwidth = 0.0;
 	double regheight = 0.0;
+	double regstroke = 0.0;
+	QPointF regoffset = QPointF(0.0,0.0);
 };
 
 class CuttingThread : public QThread

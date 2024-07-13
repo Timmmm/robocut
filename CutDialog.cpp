@@ -4,6 +4,7 @@
 CutDialog::CutDialog(QWidget* parent) : QDialog(parent), ui(new Ui::CutDialog)
 {
 	ui->setupUi(this);
+	ui->mediaCombo->setCurrentIndex(5);
 	//	ui->mediaCombo->setCurrentIndex(ProgramOptions::Instance().getMedia());
 	//	ui->speedSlider->setValue(ProgramOptions::Instance().getSpeed());
 	//	ui->pressureSlider->setValue(ProgramOptions::Instance().getPressure());
@@ -66,6 +67,14 @@ int CutDialog::pressure() const
 bool CutDialog::trackEnhancing() const
 {
 	return ui->trackEnhancingCheckbox->isChecked();
+}
+
+void CutDialog::setRegMarks(QRectF bounding) const
+{
+	ui->regMarksGroup->setEnabled(!bounding.isNull());
+	ui->regMarksGroup->setChecked(!bounding.isNull());
+	ui->regWidthSpinner->setValue(bounding.width());
+	ui->regHeightSpinner->setValue(bounding.height());
 }
 
 bool CutDialog::regMark() const

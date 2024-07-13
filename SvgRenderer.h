@@ -12,7 +12,8 @@ struct SvgRender
 	//
 	// User units can be anything - in Inkscape by default 1 unit is 1 mm
 	// but this can be changed in the document settings and isn't guaranteed.
-	QList<QPolygonF> paths;
+	QList<QPolygonF> showpaths;
+	QList<QPolygonF> cutpaths;
 
 	// The view box (the visible portal of the SVG) in user units.
 	QRectF viewBox;
@@ -20,6 +21,15 @@ struct SvgRender
 	// The SVG width and height attributes if present.
 	QString widthAttribute;
 	QString heightAttribute;
+
+	//The Cut Layer only
+	QString cutElementId = QString();
+
+	//The Registration marks layer only
+	QString markElementId = QString();
+	QRectF markPosition = QRectF();
+	QPointF markOffset;
+	double markStroke;
 
 	// The width and height in mm if they have been specified. This is calculated
 	// from the width= and height= attributes, if they have physical units. If they
