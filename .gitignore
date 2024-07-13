@@ -8,3 +8,7 @@ robocut
 
 # For in-tree builds if you want that.
 /build*
+
+# VSCode and Visual Studio files.
+/.vscode
+/.vs
