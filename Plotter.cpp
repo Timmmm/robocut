@@ -362,7 +362,7 @@ SResult<> Cut(CutParams p)
 			return Err(std::string("Moving, please try again."));
 		if (resp == "2\x03")
 			return Err(std::string("Empty tray, please load media.")); // Silhouette Cameo
-		return Err("Unexpected response from plotter: '" + resp + "' (" + string_to_hex(resp) + ")");
+		return Err("Unexpected response from plotter status request: '" + resp + "' (hex: " + string_to_hex(resp) + "), expected \"0\\x03\"");
 	}
 
 	// Home the cutter.
@@ -426,7 +426,7 @@ SResult<> Cut(CutParams p)
 	resp = sr.unwrap();
 
 	if (resp != "    0,    0\x03")
-		return Err("Unexpected response from plotter: '" + resp + "' (" + string_to_hex(resp) + ")");
+		return Err("Unexpected response from plotter configuration: '" + resp + "' (hex: " + string_to_hex(resp) + "), expected \"    0,    0\\x03\"");
 
 	// Begin page definition.
 	e = UsbSend(handle, "FA\x03");
