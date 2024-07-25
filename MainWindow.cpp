@@ -47,6 +47,8 @@
 #include <iostream>
 #include <QWheelEvent>
 
+#include <QDomDocument>
+
 using namespace std;
 
 const double InitialZoom = 2.0;
@@ -123,6 +125,29 @@ void MainWindow::on_actionIdentify_triggered()
 	cout << " " << id->msg << endl;
 }
 
+constexpr double defaultPpm = 96.0/25.4; // Pixels per mm.
+
+inline float stringSizeToMm(const QString& repr, double ppm=defaultPpm)
+{
+	if (repr.endsWith("mm")) {
+		return repr.left(repr.size() - 2).toFloat();
+	}
+	return repr.toFloat() / defaultPpm;
+}
+
+void MainWindow::readPageSize()
+{
+	QDomDocument xmlDocument;
+	QFile file(filename);
+
+	xmlDocument.setContent(&file);
+
+	QDomElement svgNode = xmlDocument.elementsByTagName("svg").item(0).toElement();
+	const QString widthXmlValue = svgNode.attribute("width");
+	const QString heightXmlValue = svgNode.attribute("height");
+
+	mediaSize = {stringSizeToMm(widthXmlValue), stringSizeToMm(heightXmlValue)};
+}
 
 void MainWindow::loadFile()
 {
@@ -139,19 +164,13 @@ void MainWindow::loadFile()
 		return;
 	}
 
+	readPageSize();
+
 	qDebug() << "SVG default size: " << rend.defaultSize() << endl;
 	qDebug() << "SVG view box: " << rend.viewBoxF() << endl;
-
-	// Geqt size from SVG. TODO: Sanity check.
-	// Also TODO: This won't handle offset viewboxes... need to get the offset and subtract it from
-	// all the objects.
-	mediaSize = rend.viewBoxF().size() * 25.4 / 96.0;
-
-	double ppm = 96.0/25.4; // Pixels per mm.
-
 	qDebug() << "Page size (mm): " << mediaSize << endl;
 
-	PathPaintDevice pg(mediaSize.width(), mediaSize.height(), ppm);
+	PathPaintDevice pg(mediaSize.width(), mediaSize.height(), defaultPpm);
 	QPainter p(&pg);
 
 	rend.render(&p);

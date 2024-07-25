@@ -70,6 +70,8 @@ private:
 	
 	QString filename;
 
+	void readPageSize();
+
 public:
 	int sortFlag;
 	int tspFlag;
