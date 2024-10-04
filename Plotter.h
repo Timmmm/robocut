@@ -32,4 +32,5 @@ const std::map<int, std::string> PRODUCT_ID_LIST = {
     {0x1121, "Silhouette Cameo"},
     {0x112f, "Silhouette Cameo 3"},
     {0x1223, "Silhouette Portrait"},
+    {0x1137, "Silhouette Cameo 4"},
 };
