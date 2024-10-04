@@ -6,7 +6,7 @@ project(Robocut
 	LANGUAGES C CXX)
 
 # Set the CMAKE_PREFIX_PATH environment variable to (e.g) ~/Qt/5.8/clang_64 so it can find Qt.
-find_package(Qt5 COMPONENTS Core Widgets Svg REQUIRED)
+find_package(Qt5 COMPONENTS Core Widgets Svg Xml REQUIRED)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
@@ -70,6 +70,7 @@ add_executable(Robocut MACOSX_BUNDLE WIN32
 target_link_libraries(Robocut
 	Qt5::Widgets
 	Qt5::Svg
+	Qt5::Xml
 	libusb
 )
 
