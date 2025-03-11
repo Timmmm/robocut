@@ -61,12 +61,13 @@ You will probably have to log out and log in again after that.
 Basic instructions are:
 
 1. Create a new A4 portrait drawing in Inkscape. (For the registration mark feature you can use the supplied public domain letter_reg-marks.svg file)
-2. Make sure in the options that the default export DPI is 96.0
-3. Paste your stuff into the drawing.
-4. Export as Plain SVG.
-5. Open the SVG with Robocut.
-6. Make sure it will cut correctly with the View->Animate option.
-7. File->Cut.
+2. Make sure in the document properties that units are `px` and that the scale is 1 pixel per user unit.
+3. Make sure in the options that the default export DPI is 96.0
+4. Paste your stuff into the drawing.
+5. Export as Plain SVG.
+6. Open the SVG with Robocut.
+7. Make sure it will cut correctly with the View->Animate option.
+8. File->Cut.
 
 ## Troubleshooting
 
