@@ -22,7 +22,7 @@
 #include "Plotter.h"
 #include "ProgramOptions.h"
 
-#include <libusb/libusb.h>
+#include <libusb.h>
 
       int VENDOR_ID = ProgramOptions::Instance().getVendorUSB_ID();
       int PRODUCT_ID = ProgramOptions::Instance().getProductUSB_ID();

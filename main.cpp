@@ -25,7 +25,7 @@
 
 #include "ProgramOptions.h"
 
-#include <libusb/libusb.h>
+#include <libusb.h>
 #include <iostream>
 
 using namespace std;

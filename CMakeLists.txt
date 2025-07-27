@@ -11,8 +11,6 @@ find_package(Qt5 COMPONENTS Core Widgets Svg REQUIRED)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
-add_subdirectory(libusb)
-
 set(src_files
 	"main.cpp"
 	"MainWindow.cpp"
@@ -67,13 +65,26 @@ add_executable(Robocut MACOSX_BUNDLE WIN32
 	${src_files}
 )
 
-target_link_libraries(Robocut
-	Qt5::Widgets
-	Qt5::Svg
-	libusb
-)
+find_package(PkgConfig)
+pkg_check_modules(LIBUSB IMPORTED_TARGET libusb-1.0)
+if (${LIBUSB_FOUND})
+        target_include_directories(${CMAKE_PROJECT_NAME}
+         	PUBLIC ${LIBUSB_INCLUDE_DIRS})
+        target_link_libraries(${CMAKE_PROJECT_NAME}
+		Qt5::Widgets
+		Qt5::Svg
+		PkgConfig::LIBUSB)
+else (${LIBUSB_FOUND})
+        add_subdirectory(libusb)
+        target_include_directories(${CMAKE_PROJECT_NAME}
+		PUBLIC "libusb/libusb")
+	target_link_libraries(${CMAKE_PROJECT_NAME}
+		Qt5::Widgets
+		Qt5::Svg
+		libusb)
+endif (${LIBUSB_FOUND})
 
-target_compile_definitions(Robocut PRIVATE "-DROBOCUT_VERSION=\"${PROJECT_VERSION}\"")
+target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE "-DROBOCUT_VERSION=\"${PROJECT_VERSION}\"")
 
 # Packaging
 if (WIN32)
@@ -90,7 +101,7 @@ if (WIN32)
 			"--no-angle" "--no-opengl-sw" "--no-translations" "--no-system-d3d-compiler"
 			"${CMAKE_BINARY_DIR}/Zip/Robocut/Robocut.exe"
 
-		DEPENDS Robocut
+		DEPENDS ${CMAKE_PROJECT_NAME}
 		COMMENT "Deploying Qt"
 		VERBATIM
 	)
@@ -111,7 +122,7 @@ elseif (APPLE)
 		COMMAND "${_qt5Core_install_prefix}/bin/macdeployqt" "Robocut.app" "-dmg"
 		COMMAND "${CMAKE_COMMAND}" "-E" "rename" "${CMAKE_BINARY_DIR}/Robocut.dmg"
 			"${CMAKE_BINARY_DIR}/Robocut-${PROJECT_VERSION}.dmg"
-		DEPENDS Robocut
+		DEPENDS ${CMAKE_PROJECT_NAME}
 		WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 		COMMENT "Creating DMG"
 		VERBATIM
@@ -119,12 +130,12 @@ elseif (APPLE)
 else ()
 	# This is just here for consistency with platforms that don't produce zip or dmg.
 	add_custom_Target(artefact
-		DEPENDS Robocut
+		DEPENDS ${CMAKE_PROJECT_NAME}
 		COMMENT "Not generating build artefact"
 		VERBATIM
 	)
 
-	install(TARGETS Robocut
+	install(TARGETS ${CMAKE_PROJECT_NAME}
 		RUNTIME DESTINATION bin)
 
 endif ()
