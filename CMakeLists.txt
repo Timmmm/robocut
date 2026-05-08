@@ -96,7 +96,7 @@ target_link_libraries(${PROJECT_NAME}
 	libusb
 )
 
-target_include_directories(${PROJECT_NAME} PRIVATE ".")
+target_include_directories(${PROJECT_NAME} PRIVATE "src")
 target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE "nanoflann/include")
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE
@@ -115,28 +115,10 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	# More sensible warnings/errors.
 	target_compile_options(${PROJECT_NAME} PRIVATE
-		-Weverything
+		-Wall -Wextra
 		-Werror
+
 		-pedantic
-
-		# Turning -Weverything on warns you about incompatibilities with C++98 even
-		# if you have -std=c++17.
-		-Wno-c++98-compat
-		-Wno-c++98-compat-pedantic
-
-		# Warns about not explicitly handling enumeration values in switch even if
-		# they have a default clause.
-		-Wno-switch-enum
-
-		# Warns about globals requiring a constructor or destructor.
-		-Wno-global-constructors
-		-Wno-exit-time-destructors
-
-		# Warns about structs that have any padding.
-		-Wno-padded
-
-		# Warns about missing std::move for return value optimisation in C++11, which I'm not using.
-		-Wno-return-std-move-in-c++11
 	)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 	target_compile_options(${PROJECT_NAME} PRIVATE
