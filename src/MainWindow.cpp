@@ -371,8 +371,8 @@ void MainWindow::loadFile(QString filename)
 void MainWindow::on_actionAbout_triggered()
 {
 	QString message = QString("<b>") + PROJECT_VERSION +
-	                  "</b><br><br>By Tim Hutt, &copy; 2010-2022 "
-	                  "with contributiosn from Markus Schulz and others."
+	                  "</b><br><br>By Tim Hutt, &copy; 2010-2026 "
+	                  "with contributions from Markus Schulz and others."
 	                  "<br/><br/>"
 	                  "This software allows you to read a vector image in <a "
 	                  "href=\"http://en.wikipedia.org/wiki/Scalable_Vector_Graphics\">SVG format</a>, "
