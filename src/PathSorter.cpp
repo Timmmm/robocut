@@ -270,7 +270,7 @@ QList<QPolygonF> sortPathsGreedy(const QList<QPolygonF>& paths, QPointF starting
 		KNNResultSet<qreal> resultSet(num_results);
 		resultSet.init(&ret_index, &out_dist_sqr);
 		std::vector<qreal> queryPoint{startingPoint.x(), startingPoint.y()};
-		index.findNeighbors(resultSet, queryPoint.data(), SearchParams());
+		index.findNeighbors(resultSet, queryPoint.data());
 
 		const auto& closest = vertices.points[ret_index];
 
