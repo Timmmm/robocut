@@ -23,7 +23,19 @@ find_package(Qt6 REQUIRED COMPONENTS Core Widgets Svg CoreTools)
 qt_standard_project_setup()
 set(CMAKE_AUTORCC TRUE)
 
-add_subdirectory(libusb)
+option(USE_SYSTEM_LIBUSB "Use the system libusb instead of the bundled one" FALSE)
+if (USE_SYSTEM_LIBUSB)
+	# This requires pkg-config currently, but it's probably mainly useful only
+	# on Linux anyway.
+	find_package(PkgConfig REQUIRED)
+	pkg_check_modules(libusb REQUIRED IMPORTED_TARGET libusb-1.0)
+
+	set(libusb_target PkgConfig::libusb)
+else()
+	add_subdirectory(libusb)
+
+	set(libusb_target libusb)
+endif()
 
 set(src_files
 	"src/Bezier.cpp"
@@ -93,7 +105,7 @@ add_executable(${PROJECT_NAME} MACOSX_BUNDLE WIN32
 target_link_libraries(${PROJECT_NAME}
 	Qt6::Widgets
 	Qt6::Svg
-	libusb
+	${libusb_target}
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE "src")

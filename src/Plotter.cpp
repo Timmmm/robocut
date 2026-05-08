@@ -1,6 +1,6 @@
 #include "Plotter.h"
 
-#include <libusb/libusb.h>
+#include <libusb.h>
 
 #include <QDebug>
 #include <algorithm>

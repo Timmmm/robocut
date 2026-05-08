@@ -7,7 +7,7 @@
 #include "CommandLineOptions.h"
 #include "MainWindow.h"
 
-#include <libusb/libusb.h>
+#include <libusb.h>
 
 using namespace std;
 

@@ -54,8 +54,8 @@ add_library(libusb STATIC
 	${src_files}
 )
 
-target_include_directories(libusb SYSTEM PUBLIC "libusb")
-target_include_directories(libusb PRIVATE "libusb/libusb")
+# Use -isystem to include the files so we don't get warnings from them.
+target_include_directories(libusb SYSTEM PUBLIC "libusb/libusb")
 
 # For config.h
 if (WIN32)
@@ -67,5 +67,3 @@ elseif (UNIX)
 	target_include_directories(libusb PRIVATE "linux_config")
 	target_link_libraries(libusb "-lpthread" "-ludev")
 endif ()
-
-
