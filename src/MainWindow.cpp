@@ -30,7 +30,12 @@ namespace
 
 void removeNonexistentFiles(QStringList& filenames)
 {
-	filenames.erase(std::remove_if(filenames.begin(), filenames.end(), [](const QString& filename) { return !QFile::exists(filename); }), filenames.end());
+	filenames.erase(
+	    std::remove_if(
+	        filenames.begin(),
+	        filenames.end(),
+	        [](const QString& filename) { return !QFile::exists(filename); }),
+	    filenames.end());
 }
 
 } // namespace
@@ -365,14 +370,14 @@ void MainWindow::loadFile(QString filename)
 
 void MainWindow::on_actionAbout_triggered()
 {
-	QString message =
-	    QString("<b>") + PROJECT_VERSION + "</b><br><br>By Tim Hutt, &copy; 2010-2022 "
-	    "with contributiosn from Markus Schulz and others."
-	    "<br/><br/>"
-	    "This software allows you to read a vector image in <a "
-	    "href=\"http://en.wikipedia.org/wiki/Scalable_Vector_Graphics\">SVG format</a>, "
-	    "and send it to a <a href=\"http://www.graphteccorp.com/\">Graphtec</a> vinyl cutter. "
-	    "See <a href=\"http://robocut.org/\">robocut.org</a> for more information.";
+	QString message = QString("<b>") + PROJECT_VERSION +
+	                  "</b><br><br>By Tim Hutt, &copy; 2010-2022 "
+	                  "with contributiosn from Markus Schulz and others."
+	                  "<br/><br/>"
+	                  "This software allows you to read a vector image in <a "
+	                  "href=\"http://en.wikipedia.org/wiki/Scalable_Vector_Graphics\">SVG format</a>, "
+	                  "and send it to a <a href=\"http://www.graphteccorp.com/\">Graphtec</a> vinyl cutter. "
+	                  "See <a href=\"http://robocut.org/\">robocut.org</a> for more information.";
 	QMessageBox::information(this, "About", message);
 }
 

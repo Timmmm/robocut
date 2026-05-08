@@ -18,8 +18,7 @@ size_t qHash(const QPolygonF& key)
 	return qHash(repr);
 }
 
-PathPaintDevice::PathPaintDevice(double width, double height)
-	: width(width), height(height)
+PathPaintDevice::PathPaintDevice(double width, double height) : width(width), height(height)
 {
 }
 

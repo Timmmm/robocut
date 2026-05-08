@@ -3,7 +3,6 @@
 #include <charconv>
 #include <sstream>
 
-
 std::string ItoS(int i)
 {
 	std::stringstream s;
@@ -25,8 +24,7 @@ std::string ULLtoS(unsigned long long i)
 	return s.str();
 }
 
-template<typename I>
-SResult<I> StoInt(std::string_view s)
+template <typename I> SResult<I> StoInt(std::string_view s)
 {
 	I value = 0;
 	auto result = std::from_chars(s.data(), s.data() + s.size(), value);

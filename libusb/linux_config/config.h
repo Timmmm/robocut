@@ -4,7 +4,7 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
 /* Define to the attribute for default visibility. */
-#define DEFAULT_VISIBILITY __attribute__ ((visibility ("default")))
+#define DEFAULT_VISIBILITY __attribute__((visibility("default")))
 
 /* Define to 1 to start with debug message logging enabled. */
 /* #undef ENABLE_DEBUG_LOGGING */
@@ -133,7 +133,7 @@
 
 /* Define to the attribute for enabling parameter checks on printf-like
    functions. */
-#define PRINTF_FORMAT(a, b) __attribute__ ((__format__ (__printf__, a, b)))
+#define PRINTF_FORMAT(a, b) __attribute__((__format__(__printf__, a, b)))
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1

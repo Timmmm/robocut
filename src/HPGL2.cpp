@@ -5,7 +5,7 @@
 
 const double mm2hpgl = 40.0;
 
-std::string renderToHPGL2(const QList<QPolygonF> &paths, double widthMm, double heightMm)
+std::string renderToHPGL2(const QList<QPolygonF>& paths, double widthMm, double heightMm)
 {
 	std::stringstream ss;
 
@@ -24,9 +24,10 @@ std::string renderToHPGL2(const QList<QPolygonF> &paths, double widthMm, double 
 
 	// TODO: There is a binary encoding available.
 
-	for (const auto &path : paths)
+	for (const auto& path : paths)
 	{
-		for (unsigned i = 0; i < path.size(); ++i) {
+		for (unsigned i = 0; i < path.size(); ++i)
+		{
 			// Pen Up/Down (move to/draw to).
 			ss << (i == 0 ? "PU" : "PD") << path[i].x() * mm2hpgl << "," << path[i].y() * mm2hpgl << ";";
 		}

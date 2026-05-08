@@ -175,9 +175,11 @@ SResult<device_handle> UsbOpen()
 		return Ok(std::move(devH));
 	}
 
-	return Err(std::string("Couldn't find supported device. Is it connected to the system and powered "
-	                       "on? The current list of supported devices includes the CC200, CC300, "
-	                       "Silhouette SD 1, SD 2, Cameo, Cameo 3 and Portrait."));
+	return Err(
+	    std::string(
+	        "Couldn't find supported device. Is it connected to the system and powered "
+	        "on? The current list of supported devices includes the CC200, CC300, "
+	        "Silhouette SD 1, SD 2, Cameo, Cameo 3 and Portrait."));
 }
 
 // caller can use UsbSend() afterwards, and should
@@ -335,9 +337,10 @@ SResult<> Cut(CutParams p)
 	if (!e)
 		return e;
 
-	// "Interface clear". I added this (based on this documentation: https://www.ohthehugemanatee.net/2011/07/gpgl-reference-courtesy-of-graphtec/)
-	// because sometimes instead of 0\x03 I was getting the "    0,    0\x03" response. Unfortunately it doesn't seem to work so it is
-	// commented out for now.
+	// "Interface clear". I added this (based on this documentation:
+	// https://www.ohthehugemanatee.net/2011/07/gpgl-reference-courtesy-of-graphtec/) because sometimes instead of 0\x03
+	// I was getting the "    0,    0\x03" response. Unfortunately it doesn't seem to work so it is commented out for
+	// now.
 	//
 	//	e = UsbSend(handle, ";\x03");
 	//	if (!e)
@@ -364,7 +367,9 @@ SResult<> Cut(CutParams p)
 			return Err(std::string("Moving, please try again."));
 		if (resp == "2\x03")
 			return Err(std::string("Empty tray, please load media.")); // Silhouette Cameo
-		return Err("Unexpected response from plotter status request: '" + resp + "' (hex: " + string_to_hex(resp) + "), expected \"0\\x03\"");
+		return Err(
+		    "Unexpected response from plotter status request: '" + resp + "' (hex: " + string_to_hex(resp) +
+		    "), expected \"0\\x03\"");
 	}
 
 	// Home the cutter.
@@ -428,7 +433,9 @@ SResult<> Cut(CutParams p)
 	resp = sr.unwrap();
 
 	if (resp != "    0,    0\x03")
-		return Err("Unexpected response from plotter configuration: '" + resp + "' (hex: " + string_to_hex(resp) + "), expected \"    0,    0\\x03\"");
+		return Err(
+		    "Unexpected response from plotter configuration: '" + resp + "' (hex: " + string_to_hex(resp) +
+		    "), expected \"    0,    0\\x03\"");
 
 	// Begin page definition.
 	e = UsbSend(handle, "FA\x03");
