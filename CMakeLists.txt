@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-set(CMAKE_OSX_DEPLOYMENT_TARGET 10.14)
+set(CMAKE_OSX_DEPLOYMENT_TARGET 11.0)
 
 project(Robocut
 	VERSION 2.0.0
