@@ -40,6 +40,7 @@ int main(int argc, char* argv[])
 		// Don't show icons in menus, as was the fashion at the time.
 		app.setAttribute(Qt::AA_DontShowIconsInMenus);
 
+		// TODO: Restore this.
 		//		processCommandLineOptions(a, argc, argv);
 
 		MainWindow w;

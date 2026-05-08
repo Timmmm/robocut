@@ -3,13 +3,10 @@
 
 #include "CuttingDialog.h"
 #include "HPGL2.h"
-#include "PathPaintDevice.h"
 #include "PathSorter.h"
-#include "Plotter.h"
 #include "SvgRenderer.h"
 
 #include <cmath>
-#include <iostream>
 
 #include <QActionGroup>
 #include <QDebug>

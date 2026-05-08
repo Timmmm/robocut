@@ -2,10 +2,7 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include <limits>
-#include <sstream>
 #include <string>
-#include <vector>
 
 #include "Result.h"
 

@@ -1,6 +1,8 @@
 #include "Common.h"
 
 #include <charconv>
+#include <sstream>
+
 
 std::string ItoS(int i)
 {

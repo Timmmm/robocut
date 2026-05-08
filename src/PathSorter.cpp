@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <iostream>
 
 #include <nanoflann.hpp>
 

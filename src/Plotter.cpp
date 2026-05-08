@@ -1,5 +1,7 @@
 #include "Plotter.h"
 
+#include "Common.h"
+
 #include <libusb.h>
 
 #include <QDebug>
