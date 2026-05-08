@@ -106,7 +106,8 @@ You can have a look the CI config (`.gitlab/workflows/build.yaml`) to see precis
     cd robocut
     mkdir build
     # Qt path is something like ~/Qt/6.6.1/gcc_64/lib/cmake/
-    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=path/to/Wt/version/compiler/lib/cmake/ ..
+    # or C:/Qt/6.11.0/msvc2022_64/lib/cmake
+    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=path/to/Qt/version/compiler/lib/cmake/ ..
     cmake --build . --config Release --target artefact
 
 That should generate a zip or DMG file. If you don't need the finished package you can omit `--target artefact`.
