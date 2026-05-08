@@ -29,7 +29,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           submodules: 'recursive'
 
@@ -43,14 +43,14 @@ jobs:
         run: cmake --build '${{github.workspace}}/build' --config ${{env.BUILD_TYPE}} --target artefact
 
       - name: Upload Windows
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         if: matrix.os == 'windows-latest'
         with:
           name: robocut_windows
           path: ${{github.workspace}}/build/*-*.zip
 
       - name: Upload Mac
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         if: matrix.os == 'macos-latest'
         with:
           name: robocut_mac
