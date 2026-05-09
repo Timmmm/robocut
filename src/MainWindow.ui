@@ -67,7 +67,7 @@
             <item>
              <widget class="QListView" name="examplesList">
               <property name="viewMode">
-               <enum>QListView::ListMode</enum>
+               <enum>QListView::ViewMode::ListMode</enum>
               </property>
              </widget>
             </item>
@@ -94,13 +94,13 @@
         <item>
          <widget class="ZoomableGraphicsView" name="graphicsView">
           <property name="renderHints">
-           <set>QPainter::Antialiasing|QPainter::TextAntialiasing</set>
+           <set>QPainter::RenderHint::Antialiasing|QPainter::RenderHint::TextAntialiasing</set>
           </property>
           <property name="dragMode">
-           <enum>QGraphicsView::ScrollHandDrag</enum>
+           <enum>QGraphicsView::DragMode::ScrollHandDrag</enum>
           </property>
           <property name="transformationAnchor">
-           <enum>QGraphicsView::AnchorUnderMouse</enum>
+           <enum>QGraphicsView::ViewportAnchor::AnchorUnderMouse</enum>
           </property>
          </widget>
         </item>
@@ -111,14 +111,6 @@
    </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>823</width>
-     <height>25</height>
-    </rect>
-   </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
      <string>File</string>
