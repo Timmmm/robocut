@@ -32,6 +32,8 @@ struct CommandLineOptions
 	double marginRight;
 	int trackEnhancing;
 };
+
+// TODO: Restore command line parsing.
 /*
 CommandLineParseResult parseCommandLine(QCommandLineParser& parser,
                                         CommandLineOptions& result,

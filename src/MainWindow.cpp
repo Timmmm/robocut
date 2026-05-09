@@ -60,10 +60,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
 	ui->actionCutter_Path->setChecked(cutterPathEnabled);
 	ui->actionVinyl_Cutter->setChecked(vinylCutterEnabled);
 
-	// TODO: Implement this.
-	//	ui->menuEdit->hide();
-
-	// TODO: Implement this.
+	// TODO: Implement device list widget.
 	ui->devicesWidget->hide();
 
 	scene = new PathScene(this);
@@ -295,9 +292,6 @@ void MainWindow::loadFile(QString filename)
 	    QFont("Helvetica", 10));
 	dimensionsItem->setPos(0.0, mediaSize.height());
 	dimensionsItem->setVisible(dimensionsEnabled);
-
-	// Add the rulers.
-	//	addRulers(scene);
 
 	// Add the measuring tape and hide it.
 	measureItem = new MeasureItem();

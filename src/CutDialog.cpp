@@ -4,6 +4,7 @@
 CutDialog::CutDialog(QWidget* parent) : QDialog(parent), ui(new Ui::CutDialog)
 {
 	ui->setupUi(this);
+	// TODO: Restore loading from command line.
 	//	ui->mediaCombo->setCurrentIndex(ProgramOptions::Instance().getMedia());
 	//	ui->speedSlider->setValue(ProgramOptions::Instance().getSpeed());
 	//	ui->pressureSlider->setValue(ProgramOptions::Instance().getPressure());

@@ -76,6 +76,7 @@ int PathPaintDevice::metric(PaintDeviceMetric metric) const
 	case PdmDevicePixelRatioScaled:
 		return 1;
 	default:
+		// There are a couple more but we safely can return 0 for them.
 		return 0;
 	}
 }
