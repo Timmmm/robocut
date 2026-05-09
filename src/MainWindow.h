@@ -1,11 +1,11 @@
 #pragma once
 
+#include <memory>
 #include <variant>
-
-#include <QMainWindow>
 
 #include <QGraphicsItem>
 #include <QGraphicsScene>
+#include <QMainWindow>
 #include <QTimer>
 
 #include "CutDialog.h"
@@ -116,7 +116,7 @@ private:
 	void clearScene();
 
 private:
-	Ui::MainWindow* ui = nullptr;
+	std::unique_ptr<Ui::MainWindow> ui;
 
 	// Contains the data for when the file is loaded (if we are in the
 	// file loaded state.
