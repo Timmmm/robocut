@@ -216,16 +216,6 @@ void MainWindow::loadFile(QString filename)
 
 	auto render = renderResult.unwrap();
 
-	if (render.hasTspanPosition)
-	{
-		QMessageBox::warning(
-		    this,
-		    "Multi-line Text",
-		    "This SVG contains multi-line text which "
-		    "is not supported in SVG Tiny. Text may be rendered incorrectly. "
-		    "The easiest workaround is to convert the text to paths.");
-	}
-
 	StateFileLoaded loadedState;
 
 	// When Qt renders an SVG it sets its width and height based on the
@@ -350,11 +340,10 @@ void MainWindow::loadFile(QString filename)
 	// Redraw. Probably not necessary.
 	update();
 
-	// TODO: Show a non-modal warning at the top.
-	//	if (clipped)
-	//		QMessageBox::warning(this, "Paths clipped", "<b>WARNING!</b><br><br>Some paths lay outside the
-	// 210&times;297&thinsp;mm A4 area. These have been squeezed back onto the page in a most ugly fashion, so cutting
-	// will almost certainly not do what you want.");
+	// Show warnings if necessary.
+	ui->multilineWarning->setVisible(render.hasTspanPosition);
+	// TODO: What happened to clipped?
+	ui->clippedWarning->setVisible(/*render.clipped*/ false);
 
 	// Change window title and enable menu items.
 	updateUI();

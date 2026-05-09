@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>823</width>
-    <height>753</height>
+    <width>900</width>
+    <height>750</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -91,6 +91,44 @@
         <property name="bottomMargin">
          <number>0</number>
         </property>
+        <item>
+         <widget class="QFrame" name="multilineWarning">
+          <property name="frameShape">
+           <enum>QFrame::Shape::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Shadow::Raised</enum>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <widget class="QLabel" name="multilineWarningLabel">
+             <property name="text">
+              <string>Warning: This file contains multi-line text which is not supported. Convert the text to paths instead.</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QFrame" name="clippedWarning">
+          <property name="frameShape">
+           <enum>QFrame::Shape::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Shadow::Raised</enum>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <item>
+            <widget class="QLabel" name="clippedWarningLabel">
+             <property name="text">
+              <string>Warning: Some paths lay outside the cutting area. These have been squeezed back onto the page.</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
         <item>
          <widget class="ZoomableGraphicsView" name="graphicsView">
           <property name="renderHints">
