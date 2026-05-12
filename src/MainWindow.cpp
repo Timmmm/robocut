@@ -20,6 +20,7 @@
 #include <QSettings>
 #include <QShortcut>
 #include <QSvgRenderer>
+#include <QtVersion>
 
 #include <algorithm>
 
@@ -358,7 +359,9 @@ void MainWindow::on_actionAbout_triggered()
 	                  "This software allows you to read a vector image in <a "
 	                  "href=\"http://en.wikipedia.org/wiki/Scalable_Vector_Graphics\">SVG format</a>, "
 	                  "and send it to a <a href=\"http://www.graphteccorp.com/\">Graphtec</a> vinyl cutter. "
-	                  "See <a href=\"http://robocut.org/\">robocut.org</a> for more information.";
+	                  "See <a href=\"http://robocut.org/\">robocut.org</a> for more information."
+	                  "<br/><br/>"
+	                  "Qt " + QT_VERSION_STR;
 	QMessageBox::information(this, "About", message);
 }
 
