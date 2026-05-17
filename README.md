@@ -114,7 +114,7 @@ The build requirements are
 
 ## Changelog
 
-2.0.0.beta0
+2.0.0
 
 * New welcome UI with example files.
 * Background 1cm grid.
