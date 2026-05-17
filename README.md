@@ -3,7 +3,7 @@
 
 # Robocut
 
-Robocut is a simple graphical program to allow you to cut graphics with one of the following vinyl cutters made by Graphtec:
+Robocut is a simple graphical program to allow you to cut graphics with one of the following vinyl cutters made by Graphtec (though note I only own a CC200-20 so the others are all untested):
 
 * Craft Robo CC200-20
 * Craft Robo CC300-20
@@ -45,16 +45,9 @@ There is an old version available for Ubuntu.
 
 	sudo apt-get install robocut
 
-For the latest version you need to build from source. First install the dependencies - Qt6 and libusb-1.0. Then unzip the source and run
+For the latest version you need to build from source. Robocut uses a standard CMake build system. By default it uses bundled libusb but you can override that with `-DUSE_SYSTEM_LIBUSB=TRUE`.
 
-	qmake
-	make
-
-To install the binary system-wide just do
-
-	sudo cp Robocut /usr/local/bin
-
-Finally *remember to make sure you are in the lp group*:
+After building *remember to make sure you are in the lp group*:
 
 	adduser <you> lp
 
@@ -81,6 +74,10 @@ Qt SVG only supports the SVG 1.2 Tiny standard which does not support positionin
 * The cutter stops mid-cut.
 
 I'm not sure why this is.
+
+* It says "Unexpected response from plotter" the second time I cut.
+
+I'm not sure why this is. I need to re-reverse engineer the protocol. For now you can just turn the cutter off and on again to (temporarily) fix it.
 
 * The whole program crashes.
 
