@@ -58,9 +58,9 @@ You will probably have to log out and log in again after that.
 Basic instructions are:
 
 1. Create a new A4 portrait drawing in Inkscape. (For the registration mark feature you can use the supplied public domain letter_reg-marks.svg file)
-2. Make sure in the options that the default export DPI is 96.0
-3. Paste your stuff into the drawing.
-4. Export as Plain SVG.
+2. Paste your stuff into the drawing.
+3. Highly recommended: convert all text objects to paths. This is required for multiline text.
+4. Save the SVG (you can use the Inkscape SVG format).
 5. Open the SVG with Robocut.
 6. Make sure it will cut correctly with the View->Animate option.
 7. File->Cut.
