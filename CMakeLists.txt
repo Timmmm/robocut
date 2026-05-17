@@ -1,45 +1,85 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.16)
+
+set(CMAKE_OSX_DEPLOYMENT_TARGET 11.0)
 
 project(Robocut
-	VERSION 1.0.11
+	VERSION 2.0.0
 	DESCRIPTION "A program to control Graphtec vinyl cutters."
 	LANGUAGES C CXX)
 
-# Set the CMAKE_PREFIX_PATH environment variable to (e.g) ~/Qt/5.8/clang_64 so it can find Qt.
-find_package(Qt5 COMPONENTS Core Widgets Svg REQUIRED)
+# We can't use suffixes so this is necessary for pre-releases.
+set(FULL_PROJECT_VERSION "${PROJECT_VERSION}.beta0")
 
-set(CMAKE_CXX_STANDARD 14)
+# Export compile_commands.json - useful for IDEs.
+set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
+
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
-add_subdirectory(libusb)
+# Set the CMAKE_PREFIX_PATH environment variable to (e.g) ~/Qt/6.6.1/gcc_64/lib/cmake/
+# so it can find Qt. CoreTools is for win/macdeployqt.
+find_package(Qt6 REQUIRED COMPONENTS Core Widgets Svg CoreTools)
+
+qt_standard_project_setup()
+set(CMAKE_AUTORCC TRUE)
+
+option(USE_SYSTEM_LIBUSB "Use the system libusb instead of the bundled one" FALSE)
+if (USE_SYSTEM_LIBUSB)
+	# This requires pkg-config currently, but it's probably mainly useful only
+	# on Linux anyway.
+	find_package(PkgConfig REQUIRED)
+	pkg_check_modules(libusb REQUIRED IMPORTED_TARGET libusb-1.0)
+
+	set(libusb_target PkgConfig::libusb)
+else()
+	add_subdirectory(libusb)
+
+	set(libusb_target libusb)
+endif()
 
 set(src_files
-	"main.cpp"
-	"MainWindow.cpp"
-	"Plotter.cpp"
-	"Common.cpp"
-	"PathPaintEngine.cpp"
-	"CutDialog.cpp"
-	"CuttingDialog.cpp"
-	"CuttingThread.cpp"
-	"PathPaintPage.cpp"
-	"PathSorter.cpp"
-	"ProgramOptions.cpp"
-	"MainWindow.h"
-	"Plotter.h"
-	"NoCopy.h"
-	"Common.h"
-	"PathPaintEngine.h"
-	"CutDialog.h"
-	"CuttingDialog.h"
-	"CuttingThread.h"
-	"PathPaintPage.h"
-	"PathSorter.h"
-	"ProgramOptions.h"
-	"MainWindow.ui"
-	"CutDialog.ui"
-	"CuttingDialog.ui"
-	"Resources.qrc"
+	"src/Bezier.cpp"
+	"src/Bezier.h"
+	"src/CommandLineOptions.cpp"
+	"src/CommandLineOptions.h"
+	"src/Common.cpp"
+	"src/Common.h"
+	"src/CutDialog.cpp"
+	"src/CutDialog.h"
+	"src/CutDialog.ui"
+	"src/CuttingDialog.cpp"
+	"src/CuttingDialog.h"
+	"src/CuttingDialog.ui"
+	"src/CuttingThread.cpp"
+	"src/CuttingThread.h"
+	"src/HPGL2.cpp"
+	"src/HPGL2.h"
+	"src/MeasureItem.cpp"
+	"src/MeasureItem.h"
+	"src/MainWindow.cpp"
+	"src/MainWindow.h"
+	"src/MainWindow.ui"
+	"src/PathPaintDevice.cpp"
+	"src/PathPaintDevice.h"
+	"src/PathPaintEngine.cpp"
+	"src/PathPaintEngine.h"
+	"src/PathScene.cpp"
+	"src/PathScene.h"
+	"src/PathSorter.cpp"
+	"src/PathSorter.h"
+	"src/Plotter.cpp"
+	"src/Plotter.h"
+	"src/Resources.qrc"
+	"src/Result.h"
+	"src/SvgPreviewModel.cpp"
+	"src/SvgPreviewModel.h"
+	"src/SvgRenderer.cpp"
+	"src/SvgRenderer.h"
+	"src/VinylCutterItem.cpp"
+	"src/VinylCutterItem.h"
+	"src/ZoomableGraphicsView.cpp"
+	"src/ZoomableGraphicsView.h"
+	"src/main.cpp"
 )
 
 if (WIN32)
@@ -49,56 +89,84 @@ if (WIN32)
 elseif (APPLE)
 	# OSX Icon
 	# This is the property added to Info.plist
-	set(MACOSX_BUNDLE_ICON_FILE "Robocut.icns")
+	set(MACOSX_BUNDLE_ICON_FILE "${PROJECT_NAME}.icns")
 
 	# Add the file to the source.
-	set(osx_icon_file "${CMAKE_SOURCE_DIR}/icon/Robocut.icns")
+	set(osx_icon_file "${CMAKE_SOURCE_DIR}/icon/${PROJECT_NAME}.icns")
 	set_source_files_properties("${osx_icon_file}" PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 
 	list(APPEND src_files "${osx_icon_file}")
 endif ()
 
-# Automatically generate moc, UI & Resource Files
-set(CMAKE_AUTOMOC TRUE)
-set(CMAKE_AUTOUIC TRUE)
-set(CMAKE_AUTORCC TRUE)
-
-add_executable(Robocut MACOSX_BUNDLE WIN32
+add_executable(${PROJECT_NAME} MACOSX_BUNDLE WIN32
 	${src_files}
 )
 
-target_link_libraries(Robocut
-	Qt5::Widgets
-	Qt5::Svg
-	libusb
+target_link_libraries(${PROJECT_NAME}
+	Qt6::Widgets
+	Qt6::Svg
+	${libusb_target}
 )
 
-target_compile_definitions(Robocut PRIVATE "-DROBOCUT_VERSION=\"${PROJECT_VERSION}\"")
+target_include_directories(${PROJECT_NAME} PRIVATE "src")
+target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE "nanoflann/include")
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+	"-DPROJECT_VERSION=\"${FULL_PROJECT_VERSION}\""
+	# Stop Windows from defining min() and max().
+	"-DNOMINMAX"
+)
+
+set_target_properties(${PROJECT_NAME} PROPERTIES
+	WIN32_EXECUTABLE TRUE
+	MACOSX_BUNDLE TRUE
+	# A custom Info.plist is used to enable high dpi on OSX.
+	MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/MacOSXBundleInfo.plist.in"
+)
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+	# More sensible warnings/errors.
+	target_compile_options(${PROJECT_NAME} PRIVATE
+		-Wall -Wextra
+		-Werror
+
+		-pedantic
+	)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+	target_compile_options(${PROJECT_NAME} PRIVATE
+		-Wall -Wextra
+		-Werror
+		-pedantic
+
+		# Warns about structs that have any padding.
+		-Wno-padded
+	)
+endif ()
 
 # Packaging
 if (WIN32)
 	add_custom_target(pack
 		# Make a temporary directory for the zip.
-		COMMAND "${CMAKE_COMMAND}" "-E" "make_directory" "${CMAKE_BINARY_DIR}/Zip/Robocut"
+		COMMAND "${CMAKE_COMMAND}" "-E" "make_directory" "${CMAKE_BINARY_DIR}/Zip/${PROJECT_NAME}"
 
 		# Copy the EXE there.
-		COMMAND "${CMAKE_COMMAND}" "-E" "copy" "$<TARGET_FILE:Robocut>"
-			"${CMAKE_BINARY_DIR}/Zip/Robocut/Robocut.exe"
+		COMMAND "${CMAKE_COMMAND}" "-E" "copy" "$<TARGET_FILE:${PROJECT_NAME}>"
+		        "${CMAKE_BINARY_DIR}/Zip/${PROJECT_NAME}/${PROJECT_NAME}.exe"
 
 		# Deploy Qt to that directory. All the options are to save space.
-		COMMAND "${_qt5Core_install_prefix}/bin/windeployqt.exe" "--release" "--compiler-runtime"
-			"--no-angle" "--no-opengl-sw" "--no-translations" "--no-system-d3d-compiler"
-			"${CMAKE_BINARY_DIR}/Zip/Robocut/Robocut.exe"
+		COMMAND Qt6::windeployqt "--release" "--compiler-runtime"
+		        "--no-opengl-sw" "--no-translations" "--no-system-d3d-compiler"
+				"${CMAKE_BINARY_DIR}/Zip/${PROJECT_NAME}/${PROJECT_NAME}.exe"
 
-		DEPENDS Robocut
+		DEPENDS ${PROJECT_NAME}
 		COMMENT "Deploying Qt"
 		VERBATIM
 	)
 
-	# Zip the result
+	# Zip the result.
 	add_custom_target(artefact
-		COMMAND 7z a "${CMAKE_BINARY_DIR}/Robocut-${PROJECT_VERSION}.zip"
-			"${CMAKE_BINARY_DIR}/Zip/Robocut"
+		COMMAND 7z a "${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${PROJECT_VERSION}.zip"
+		    "${CMAKE_BINARY_DIR}/Zip/${PROJECT_NAME}"
 		DEPENDS pack
 		COMMENT "Creating Zip"
 		VERBATIM
@@ -108,10 +176,10 @@ elseif (APPLE)
 	# Note there is a slight bug (https://bugreports.qt.io/browse/QTBUG-60324) in macdeployqt
 	# which means we really want the working directory to be the place where the dmg is generated.
 	add_custom_target(artefact
-		COMMAND "${_qt5Core_install_prefix}/bin/macdeployqt" "Robocut.app" "-dmg"
-		COMMAND "${CMAKE_COMMAND}" "-E" "rename" "${CMAKE_BINARY_DIR}/Robocut.dmg"
-			"${CMAKE_BINARY_DIR}/Robocut-${PROJECT_VERSION}.dmg"
-		DEPENDS Robocut
+		COMMAND Qt6::macdeployqt "${PROJECT_NAME}.app" "-dmg"
+		COMMAND "${CMAKE_COMMAND}" "-E" "rename" "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.dmg"
+		        "${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${PROJECT_VERSION}.dmg"
+		DEPENDS ${PROJECT_NAME}
 		WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 		COMMENT "Creating DMG"
 		VERBATIM
@@ -119,12 +187,12 @@ elseif (APPLE)
 else ()
 	# This is just here for consistency with platforms that don't produce zip or dmg.
 	add_custom_Target(artefact
-		DEPENDS Robocut
+		DEPENDS ${PROJECT_NAME}
 		COMMENT "Not generating build artefact"
 		VERBATIM
 	)
 
-	install(TARGETS Robocut
+	install(TARGETS ${PROJECT_NAME}
 		RUNTIME DESTINATION bin)
 
 endif ()

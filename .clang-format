@@ -1,0 +1,13 @@
+---
+BasedOnStyle: Microsoft
+AccessModifierOffset: -4
+AlignAfterOpenBracket: AlwaysBreak
+AlignEscapedNewlines: DontAlign
+AllowAllArgumentsOnNextLine: 'false'
+AllowAllParametersOfDeclarationOnNextLine: 'false'
+BinPackArguments: 'false'
+BinPackParameters: 'false'
+PointerAlignment: Left
+UseTab: ForIndentation
+
+...
