@@ -24,9 +24,8 @@
       </header>
 
       <section id="downloads" class="clearfix">
-        <a href="https://github.com/Timmmm/robocut/releases/download/v1.0.11/Robocut-1.0.11-Windows.zip"
-          id="download-windows" class="button"><span>Windows</span></a>
-        <!--       <a href="https://github.com/Timmmm/robocut/tarball/master" id="download-osx" class="button"><span>OSX</span></a> -->
+        <a href="https://github.com/Timmmm/robocut/releases/download/v2.0.0/Robocut-2.0.0.zip" id="download-windows" class="button"><span>Windows</span></a>
+        <a href="https://github.com/Timmmm/robocut/releases/download/v2.0.0/Robocut-2.0.0.dmg" id="download-osx" class="button"><span>Mac</span></a>
         <a href="https://github.com/Timmmm/robocut" id="view-on-github" class="button"><span>View on Github</span></a>
       </section>
 
@@ -42,16 +41,16 @@
         <h3><a id="overview" class="anchor" href="#overview" aria-hidden="true"><span
               class="octicon octicon-link"></span></a>Overview</h3>
 
-        <p>Robocut is a simple program to control Craft Robo and other similar vinyl cutters. It takes an SVG file as
-          input and sends it to the
-          vinyl cutter for cutting. The program uses the Qt GUI toolkit and is available for Window, OSX and Linux. It
-          is very simple but gets the job
-          done. However there are some known issues.</p>
+        <p>
+          Robocut is a simple program to control Craft Robo and other similar vinyl cutters. It takes an SVG file as
+          input and sends it to the vinyl cutter for cutting. The program uses the Qt GUI toolkit and is available
+          for Window, OSX and Linux. It is very simple but gets the job done. However there are some known issues.
+        </p>
 
         <h3><a id="history" class="anchor" href="#history" aria-hidden="true"><span
               class="octicon octicon-link"></span></a>History</h3>
 
-        <p>Robocut was originally written by Tim Hutt. It was later maintained an improved by Markus Schulz.</p>
+        <p>Robocut is written and maintained by Tim Hutt, with some contributions from Markus Schulz.</p>
 
         <h3><a id="download" class="anchor" href="#download" aria-hidden="true"><span
               class="octicon octicon-link"></span></a>Download</h3>
@@ -62,15 +61,14 @@
 
         <ul>
           <li><a
-              href="https://github.com/Timmmm/robocut/releases/download/v1.0.11/Robocut-1.0.11-Windows.zip">Windows</a>
+              href="https://github.com/Timmmm/robocut/releases/download/v2.0.0/Robocut-2.0.0.zip">Windows</a>
           </li>
-          <li><a href="#">OSX is coming "soon"</a></li>
+          <li><a href="https://github.com/Timmmm/robocut/releases/download/v2.0.0/Robocut-2.0.0.dmg">Mac</a></li>
         </ul>
 
         <p>
-          On Ubuntu you can do
-        <pre>apt-get install robocut</pre> or build from source (dependencies are libusb-1.0 and Qt 5). Add yourself to
-        the lp group.
+          On Linux, you need to build from source. Ubuntu has a package that may or may not be extremely old.
+          I may look into Flatpak at some point.
         </p>
 
         <p>On Windows you must get a libusb-compatible driver for your device. The easiest way is to use <a
@@ -84,17 +82,18 @@
               class="octicon octicon-link"></span></a>Known Issues</h3>
 
         <ul>
-          <li>On OSX, the pressure settings sometimes gets reset to 1 for no apparent reason.</li>
+          <li>On Mac, the pressure settings sometimes gets reset to 1 for no apparent reason.</li>
           <li>It currently crashes if you feed it an SVG containing raster data. You probably don't want to do that
             anyway.</li>
           <li>Sometimes the cutter freezes mid-cut. I'm not sure if this is an issue with the cutter or the software
             (possibly a full buffer somewhere?).</li>
+          <li>If you try to cut twice in a row without power cycling your cutter you may get an "Unexpected response" error.</li>
           <li>It can't really handle SVG font objects. You must convert them to paths before exporting the SVG.</li>
         </ul>
 
         <img src="images/object_to_paths.png" />
 
-        <p>More information is available in the Readme.md (see <a href="https://github.com/Timmmm/robocut">Github</a>).
+        <p>More information is available in the README.md (see <a href="https://github.com/Timmmm/robocut">Github</a>).
         </p>
 
       </section>
